@@ -1,1 +1,13 @@
 rootProject.name = 'RavinAPI'
+
+include ':common'
+project(':common').projectDir = "$rootDir/common" as File
+
+include ':concurrent'
+project(':concurrent').projectDir = "$rootDir/concurrent" as File
+
+include ':gui'
+project(':gui').projectDir = "$rootDir/gui" as File
+
+include ':module'
+project(':module').projectDir = "$rootDir/module" as File

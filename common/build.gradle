@@ -1,0 +1,20 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+dependencies {
+    implementation 'javax.vecmath:vecmath:1.5.2'
+}
+
+shadowJar {
+    archiveBaseName.set('common')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+    relocate 'javax.vecmath', 'com.ravingarinc.libs.vecmath'
+}
+
+artifacts {
+    archives shadowJar
+}
+
+assemble.dependsOn shadowJar
