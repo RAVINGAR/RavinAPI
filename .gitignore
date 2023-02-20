@@ -1,3 +1,7 @@
 /.gradle/
 /.idea/
 /build/
+/common/build/
+/concurrent/build/
+/gui/build/
+/module/build/
