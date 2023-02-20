@@ -40,10 +40,11 @@ public class PlaceableIcon extends Element implements Interactive {
         this.actions = new LinkedList<>();
         this.locked = false;
         this.validator = validator;
-
-        final ItemMeta meta = placeholder.getItemMeta();
-        meta.getPersistentDataContainer().set(GuiProvider.getKey("identifier"), PersistentDataType.STRING, identifier);
-        placeholder.setItemMeta(meta);
+        if (placeholder != null) {
+            final ItemMeta meta = placeholder.getItemMeta();
+            meta.getPersistentDataContainer().set(GuiProvider.getKey("identifier"), PersistentDataType.STRING, identifier);
+            placeholder.setItemMeta(meta);
+        }
         //Give the identifier to the placeholder
         this.placeholder = placeholder;
         this.currentItem = null;
