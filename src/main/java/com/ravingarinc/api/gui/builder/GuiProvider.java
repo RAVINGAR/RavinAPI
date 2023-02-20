@@ -27,15 +27,12 @@ public class GuiProvider {
     private static GuiProvider instance;
     private final Map<UUID, List<BaseGui>> guiPlayers;
 
-    private final GuiListener listener;
-
     private final JavaPlugin plugin;
 
     private GuiProvider(final JavaPlugin plugin) {
-        guiPlayers = new HashMap<>();
+        this.guiPlayers = new HashMap<>();
         this.plugin = plugin;
-        this.listener = new GuiListener();
-        plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+        plugin.getServer().getPluginManager().registerEvents(new GuiListener(), plugin);
     }
 
     public static GuiProvider getInstance(final JavaPlugin plugin) {
