@@ -33,17 +33,20 @@ public class PlaceableIcon extends Element implements Interactive {
         this(identifier, parent, index, validator, null);
     }
 
+    @SuppressWarnings("PMD.UnusedAssignment")
     public PlaceableIcon(final String identifier, final String parent, final int index, final Predicate<ItemStack> validator, final ItemStack placeholder) {
         super(identifier, parent, 3);
         this.index = index;
-        actions = new LinkedList<>();
-        locked = false;
-        currentItem = placeholder;
+        this.actions = new LinkedList<>();
+        this.locked = false;
         this.validator = validator;
-        setMeta(PersistentDataType.STRING, "identifier", identifier);
+
+        final ItemMeta meta = placeholder.getItemMeta();
+        meta.getPersistentDataContainer().set(GuiProvider.getKey("identifier"), PersistentDataType.STRING, identifier);
+        placeholder.setItemMeta(meta);
         //Give the identifier to the placeholder
         this.placeholder = placeholder;
-        currentItem = null;
+        this.currentItem = null;
     }
 
     public void setLocked(final boolean locked) {
@@ -122,6 +125,7 @@ public class PlaceableIcon extends Element implements Interactive {
         return getMeta(type, key) != null;
     }
 
+    @SuppressWarnings("PMD.ConfusingTernary")
     @Override
     public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event) {
         if (locked) {

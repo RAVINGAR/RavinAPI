@@ -112,10 +112,10 @@ public class GuiProvider {
 
     private Optional<BaseGui> getCustomGui(final String identifier, final Player player) {
         final List<BaseGui> guis = guiPlayers.get(player.getUniqueId());
-        if (guis != null) {
-            return guis.stream().filter(base -> base.getIdentifier().equalsIgnoreCase(identifier)).findFirst();
-        } else {
+        if (guis == null) {
             return Optional.empty();
+        } else {
+            return guis.stream().filter(base -> base.getIdentifier().equalsIgnoreCase(identifier)).findFirst();
         }
     }
 

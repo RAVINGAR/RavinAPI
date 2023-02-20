@@ -32,6 +32,7 @@ subprojects {
     sourceCompatibility = 17
     targetCompatibility = 17
 
+
     pmd {
         consoleOutput = true
         toolVersion = '6.41.0'
@@ -39,6 +40,7 @@ subprojects {
         ruleSets = []
         ruleSetFiles = files("$rootDir/pmd-rules.xml")
     }
+
     javadoc {
         options.encoding 'UTF-8'
         options.charSet 'UTF-8'
