@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 
@@ -21,7 +22,7 @@ public class Menu extends Element {
     private final Material border1;
     private final Material border2;
     private final int backIcon;
-    protected LinkedList<ItemStack> iconsToPlace;
+    protected List<ItemStack> iconsToPlace;
     private Material background;
 
     /**
@@ -137,7 +138,7 @@ public class Menu extends Element {
     private void setItemsInRow(final int amount, int row, final Inventory inv) {
         row = row * 9 + 5 - amount;
         for (int i = row; i <= (row + (amount - 1) * 2) && !iconsToPlace.isEmpty(); i += 2) {
-            inv.setItem(i, iconsToPlace.removeFirst());
+            inv.setItem(i, iconsToPlace.remove(0));
         }
     }
 

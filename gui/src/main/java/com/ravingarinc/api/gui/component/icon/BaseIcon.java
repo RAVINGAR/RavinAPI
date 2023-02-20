@@ -60,7 +60,7 @@ public abstract class BaseIcon extends Element implements Interactive {
 
         actions = new LinkedList<>();
         if (action != null) {
-            addAction(action);
+            actions.add(action);
         }
 
         this.predicate = predicate;

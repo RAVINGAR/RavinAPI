@@ -4,7 +4,6 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Active;
 import com.ravingarinc.api.gui.api.Component;
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Closeable implements Component, Active {
     private final String parent;
-    private BukkitTask task;
     private Location origin;
 
     public Closeable(final String parent, final Location origin) {
@@ -24,6 +22,10 @@ public class Closeable implements Component, Active {
 
     public void updateOrigin(final Location location) {
         this.origin = location;
+    }
+
+    public Location getOrigin() {
+        return origin;
     }
 
     @Override

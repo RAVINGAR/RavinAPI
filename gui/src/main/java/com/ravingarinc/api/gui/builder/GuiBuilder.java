@@ -146,10 +146,12 @@ public class GuiBuilder<T extends BaseGui> {
             }
         }
 
+        /*
         if (!mainExists) {
             //COMMENTED UNTIL OTHER GUIS ARE DONE
-            //throw new IllegalArgumentException("Main menu was never added! Invalid use of GuiBuilder.class");
+            throw new IllegalArgumentException("Main menu was never added! Invalid use of GuiBuilder.class");
         }
+        */
 
         return gui;
     }

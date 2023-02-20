@@ -26,6 +26,7 @@ public class UpdateComponentAction extends Action {
         this.menu = menu;
     }
 
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     @Override
     public void performAction(final BaseGui gui) {
         final Optional<Dynamic> component = gui.findComponent(Component.MENU, menu)

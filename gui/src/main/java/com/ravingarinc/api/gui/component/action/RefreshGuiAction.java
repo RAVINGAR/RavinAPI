@@ -6,7 +6,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import java.util.logging.Level;
 
 public class RefreshGuiAction extends Action {
-    boolean iterate = true;
+    private boolean iterate = true;
 
     public RefreshGuiAction() {
         super("REFRESH", 8);
