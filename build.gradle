@@ -1,0 +1,80 @@
+plugins {
+    id 'java'
+    id 'pmd'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'maven-publish'
+}
+
+group 'com.ravingarinc.api'
+version '1.0.0'
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+
+        content {
+            includeGroup 'org.bukkit'
+            includeGroup 'org.spigotmc'
+        }
+    }
+}
+
+dependencies {
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+    implementation 'javax.vecmath:vecmath:1.5.2'
+}
+
+shadowJar {
+    archiveBaseName.set('RavinAPI')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+    relocate 'javax.vecmath', 'com.ravingarinc.libs.vecmath'
+}
+
+artifacts {
+    archives shadowJar
+}
+
+assemble.dependsOn shadowJar
+
+pmd {
+    consoleOutput = true
+    toolVersion = '6.41.0'
+    rulesMinimumPriority = 5
+    ruleSets = []
+    ruleSetFiles = files("$rootDir/pmd-rules.xml")
+}
+javadoc {
+    options.encoding 'UTF-8'
+    options.charSet 'UTF-8'
+    options.jFlags('-Xms256m', '-Xmx512m')
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.links(
+            'https://hub.spigotmc.org/javadocs/spigot/'
+    )
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+wrapper {
+    gradleVersion = "8.0"
+    distributionType = Wrapper.DistributionType.ALL
+}
