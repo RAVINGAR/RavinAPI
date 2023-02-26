@@ -2,7 +2,7 @@ package com.ravingarinc.api.gui.component.icon;
 
 import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
-import com.ravingarinc.api.gui.component.Page;
+import com.ravingarinc.api.gui.api.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,7 +17,7 @@ public class PageIcon extends BaseIcon {
 
     @Override
     protected void fillIcon(final BaseGui gui) {
-        gui.findComponent(Page.PAGE, this.parent).ifPresentOrElse((page) -> {
+        gui.findComponent(Component.PAGE, this.parent).ifPresentOrElse((page) -> {
             if (canDisplay(gui)) {
                 page.queueIconToPlace(this.item);
             }

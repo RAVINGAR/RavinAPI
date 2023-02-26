@@ -17,19 +17,19 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ObserverActionBuilder extends BaseActionBuilder {
-    private final IconBuilder<?> parent;
+    private final IconBuilder<?, ?> parent;
 
-    public ObserverActionBuilder(final Interactive icon, final Predicate<ItemStack> predicate, final IconBuilder<?> parent) {
+    public ObserverActionBuilder(final Interactive icon, final Predicate<ItemStack> predicate, final IconBuilder<?, ?> parent) {
         super(new Observer(icon, predicate), icon.getParent());
         this.parent = parent;
     }
 
-    public ObserverActionBuilder(final Interactive icon, final Supplier<Boolean> condition, final IconBuilder<?> parent) {
+    public ObserverActionBuilder(final Interactive icon, final Supplier<Boolean> condition, final IconBuilder<?, ?> parent) {
         super(new Observer(icon, condition), icon.getParent());
         this.parent = parent;
     }
 
-    public IconBuilder<?> finalise() {
+    public IconBuilder<?, ?> finalise() {
         parent.handleActionBuilder(this);
         return parent;
     }

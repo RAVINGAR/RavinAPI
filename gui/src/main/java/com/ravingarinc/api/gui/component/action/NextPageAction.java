@@ -3,7 +3,6 @@ package com.ravingarinc.api.gui.component.action;
 import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.component.Page;
 
 import java.util.logging.Level;
 
@@ -17,7 +16,7 @@ public class NextPageAction extends Action {
 
     @Override
     public void performAction(final BaseGui gui) {
-        gui.findComponent(Component.MENU, menu).map((menu) -> menu.findComponent(Page.PAGE, pointer)).ifPresentOrElse((optional) -> {
+        gui.findComponent(Component.MENU, menu).map((menu) -> menu.findComponent(Component.PAGE, pointer)).ifPresentOrElse((optional) -> {
             optional.ifPresentOrElse(page -> {
                 page.nextPage();
                 gui.fillElement(gui);

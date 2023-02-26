@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
 
 public class IconActionBuilder extends BaseActionBuilder {
-    private final IconBuilder<?> parent;
+    private final IconBuilder<?, ?> parent;
 
-    public IconActionBuilder(final Actionable reference, final String lastMenu, final IconBuilder<?> parent) {
+    public IconActionBuilder(final Actionable reference, final String lastMenu, final IconBuilder<?, ?> parent) {
         super(reference, lastMenu);
         this.parent = parent;
 
@@ -22,7 +22,7 @@ public class IconActionBuilder extends BaseActionBuilder {
     /**
      * Finalises the current action builder and returns the previous builder
      */
-    public IconBuilder<?> finalise() {
+    public IconBuilder<?, ?> finalise() {
         parent.handleActionBuilder(this);
         return parent;
     }

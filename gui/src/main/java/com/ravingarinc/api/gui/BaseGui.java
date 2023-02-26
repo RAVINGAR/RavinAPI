@@ -140,7 +140,7 @@ public class BaseGui extends Element {
     public Player getPlayer() {
         if (player == null) {
             I.log(Level.SEVERE, "Attempted to access player when player has not been initialised! Incorrect initialisation of BaseGui!");
-        }
+        } //todo potentially make the player irrelevant, and pass it through perform action and fill element instead!
         return player;
     }
 
