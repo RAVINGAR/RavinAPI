@@ -22,13 +22,13 @@ public class DelayedFutureTask<V> extends FutureTask<V> implements Delayed {
 
     @Override
     public long getDelay(@NotNull final TimeUnit unit) {
-        return unit.convert(this.readyTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        return isCancelled() ? 0 : unit.convert(this.readyTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override
     public int compareTo(@NotNull final Delayed other) {
         if (other instanceof DelayedFutureTask that) {
-            return (int) (this.readyTime - that.readyTime);
+            return (int) ((this.isCancelled() ? System.currentTimeMillis() : this.readyTime) - (that.isCancelled() ? System.currentTimeMillis() : that.readyTime));
         }
         throw new IllegalArgumentException("Cannot compare DelayedEvent to generic Delayed object!");
     }

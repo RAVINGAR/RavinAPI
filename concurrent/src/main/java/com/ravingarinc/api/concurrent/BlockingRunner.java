@@ -52,12 +52,13 @@ public class BlockingRunner<T extends Future<?> & Runnable> extends BukkitRunnab
     }
 
     /**
-     * Queues the cancellation for this task and blocks until that task is executed.
+     * Cancels this blocking runner by queueing a cancel task at the end of the queue. All current tasks in the queue
+     * must be executed before the runner is cancelled.
      *
-     * @param function The function to create a task for this given type
+     * @param function The function to create the cancel task.
      */
     @Blocking
-    public synchronized void blockUntilCancelled(final Function<Runnable, T> function) {
+    public synchronized void cancelAndWait(final Function<Runnable, T> function) {
         final T task = function.apply(() -> {
             cancelled.setRelease(true);
             if (!isCancelled()) {
@@ -72,8 +73,15 @@ public class BlockingRunner<T extends Future<?> & Runnable> extends BukkitRunnab
         }
     }
 
+    /**
+     * Cancels all current tasks in this runner and then queues a final cancellation task. This method blocks until
+     * the cancellation task is run.
+     *
+     * @param function The function to create the cancel task
+     */
     @Blocking
     public synchronized void cancelNow(final Function<Runnable, T> function) {
+        getRemaining().forEach(task -> task.cancel(false));
         final T task = function.apply(() -> {
             cancelled.setRelease(true);
             if (!isCancelled()) {
