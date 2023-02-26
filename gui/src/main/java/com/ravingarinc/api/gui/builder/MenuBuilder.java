@@ -1,9 +1,10 @@
 package com.ravingarinc.api.gui.builder;
 
 import com.ravingarinc.api.gui.BaseGui;
+import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.component.Decoration;
+import com.ravingarinc.api.gui.component.InputComponent;
 import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.Icon;
@@ -13,16 +14,14 @@ import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class MenuBuilder {
-    private final List<InternalIconBuilder<?>> iconBuilders;
+public class MenuBuilder implements Builder<Menu> {
+    private final List<IconBuilder<?, MenuBuilder>> iconBuilders;
     private final Menu lastMenu;
     private PageBuilder lastPageBuilder = null;
 
@@ -62,52 +61,52 @@ public class MenuBuilder {
         return this;
     }
 
-    public InternalIconBuilder<Icon> addIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate) {
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate) {
         return addIcon(identifier, display, lore, material, predicate, i -> {
         });
     }
 
-    public InternalIconBuilder<Icon> addIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
-        final InternalIconBuilder<Icon> newBuilder = new InternalIconBuilder<>(this, new Icon(identifier, display, lore, lastMenu.getIdentifier(), material, null, predicate, consumer));
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
+        final IconBuilder<Icon, MenuBuilder> newBuilder = new IconBuilder<>(this, new Icon(identifier, display, lore, lastMenu.getIdentifier(), material, null, predicate, consumer));
         iconBuilders.add(newBuilder);
         return newBuilder;
     }
 
-    public InternalIconBuilder<StaticIcon> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final int index) {
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final int index) {
         return addStaticIcon(identifier, display, lore, material, p -> true, i -> {
         }, index);
     }
 
-    public InternalIconBuilder<StaticIcon> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final int index) {
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final int index) {
         return addStaticIcon(identifier, display, lore, material, predicate, i -> {
         }, index);
     }
 
-    public InternalIconBuilder<StaticIcon> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Consumer<ItemStack> consumer, final int index) {
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Consumer<ItemStack> consumer, final int index) {
         return addStaticIcon(identifier, display, lore, material, p -> true, consumer, index);
     }
 
-    public InternalIconBuilder<StaticIcon> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
-        final InternalIconBuilder<StaticIcon> newBuilder = new InternalIconBuilder<>(this, new StaticIcon(identifier, display, lore, lastMenu.getIdentifier(), material, null, predicate, consumer, index));
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
+        final IconBuilder<StaticIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(identifier, display, lore, lastMenu.getIdentifier(), material, null, predicate, consumer, index));
         iconBuilders.add(newBuilder);
         return newBuilder;
     }
 
-    public <T> InternalStateIconBuilder<T> addStateIcon(final String identifier, final Action action, final int index, final Supplier<T> determiner) {
-        final InternalStateIconBuilder<T> newBuilder = new InternalStateIconBuilder<>(this, new StateIcon<>(identifier, lastMenu.getIdentifier(), action, t -> true, index, determiner));
+    public <T> StateIconBuilder<T> addStateIcon(final String identifier, final Action action, final int index, final Supplier<T> determiner) {
+        final StateIconBuilder<T> newBuilder = new StateIconBuilder<>(this, new StateIcon<>(identifier, lastMenu.getIdentifier(), action, t -> true, index, determiner));
         iconBuilders.add(newBuilder);
         return newBuilder;
     }
 
 
-    public InternalIconBuilder<PlaceableIcon> addPlaceableIcon(final String identifier, final int index, final Predicate<ItemStack> validator) {
-        final InternalIconBuilder<PlaceableIcon> newBuilder = new InternalIconBuilder<>(this, new PlaceableIcon(identifier, lastMenu.getIdentifier(), index, validator));
+    public IconBuilder<PlaceableIcon, MenuBuilder> addPlaceableIcon(final String identifier, final int index, final Predicate<ItemStack> validator) {
+        final IconBuilder<PlaceableIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new PlaceableIcon(identifier, lastMenu.getIdentifier(), index, validator));
         iconBuilders.add(newBuilder);
         return newBuilder;
     }
 
-    public InternalIconBuilder<PlaceableIcon> addPlaceableIcon(final String identifier, final int index, final Predicate<ItemStack> validator, final ItemStack placeholder) {
-        final InternalIconBuilder<PlaceableIcon> newBuilder = new InternalIconBuilder<>(this, new PlaceableIcon(identifier, lastMenu.getIdentifier(), index, validator, placeholder));
+    public IconBuilder<PlaceableIcon, MenuBuilder> addPlaceableIcon(final String identifier, final int index, final Predicate<ItemStack> validator, final ItemStack placeholder) {
+        final IconBuilder<PlaceableIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new PlaceableIcon(identifier, lastMenu.getIdentifier(), index, validator, placeholder));
         iconBuilders.add(newBuilder);
         return newBuilder;
     }
@@ -123,64 +122,34 @@ public class MenuBuilder {
         return this;
     }
 
+    public MenuBuilder addInputComponent(final String identifier, final String description, final Consumer<String> onResponse) {
+        lastMenu.addChild(() -> new InputComponent(identifier, lastMenu.getIdentifier(), description, onResponse));
+        return this;
+    }
+
+    public MenuBuilder addMiscComponent(final Supplier<Component> component) {
+        lastMenu.addChild(component);
+        return this;
+    }
+
     public void handleLastPageBuilder() {
         if (lastPageBuilder != null) {
-            lastMenu.addChild(() -> lastPageBuilder.getPage());
+            lastMenu.addChild(() -> lastPageBuilder.get());
             lastPageBuilder = null;
         }
     }
 
-    protected Menu getMenu() {
-        lastMenu.finalise();
-        handleLastPageBuilder();
-        iconBuilders.forEach(builder -> lastMenu.addChild(builder.getIcon()));
-        iconBuilders.clear();
+    @Override
+    public Menu reference() {
         return lastMenu;
     }
 
-    public static class InternalIconBuilder<I extends Interactive> extends IconBuilder<I, MenuBuilder> {
-
-        protected InternalIconBuilder(final MenuBuilder owner, final I icon) {
-            super(owner, icon);
-        }
-
-        public IconBuilder<I, MenuBuilder> setDynamic() {
-            return setDynamic(owner.lastMenu);
-        }
-    }
-
-    public static class InternalStateIconBuilder<T> extends InternalIconBuilder<StateIcon<T>> {
-        private final List<StateActionBuilder> builders;
-
-        protected InternalStateIconBuilder(final MenuBuilder owner, final StateIcon<T> icon) {
-            super(owner, icon);
-            builders = new ArrayList<>();
-        }
-
-        public StateActionBuilder addState(final T state) {
-            icon.addState(state);
-            return getStateActionBuilder(state);
-        }
-
-        public StateActionBuilder getStateActionBuilder(final T type) {
-            final Optional<StateIcon.State<T>> opt = icon.getState(type);
-            if (opt.isPresent()) {
-                final StateActionBuilder builder = new StateActionBuilder(opt.get(), icon.getParent());
-                builders.add(builder);
-                return builder;
-            }
-            throw new IllegalArgumentException("Unknown type called '" + type.toString() + "' for state icon " + icon.getIdentifier());
-        }
-
-        @Override
-        public Supplier<Component> getIcon() {
-            builders.forEach(StateActionBuilder::build);
-            builders.clear();
-            return super.getIcon();
-        }
-
-        public StateIcon<T> get() {
-            return icon;
-        }
+    @Override
+    public Menu get() {
+        lastMenu.finalise();
+        handleLastPageBuilder();
+        iconBuilders.forEach(builder -> lastMenu.addChild(builder::get));
+        iconBuilders.clear();
+        return lastMenu;
     }
 }
