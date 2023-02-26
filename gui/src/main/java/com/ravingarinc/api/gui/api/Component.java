@@ -5,7 +5,9 @@ import com.ravingarinc.api.gui.component.Background;
 import com.ravingarinc.api.gui.component.Border;
 import com.ravingarinc.api.gui.component.Closeable;
 import com.ravingarinc.api.gui.component.Decoration;
+import com.ravingarinc.api.gui.component.InputComponent;
 import com.ravingarinc.api.gui.component.Menu;
+import com.ravingarinc.api.gui.component.Page;
 import com.ravingarinc.api.gui.component.Queueable;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.Dynamic;
@@ -104,6 +106,11 @@ public interface Component {
     }, 0);
     StateIcon<?> STATE_ICON = new StateIcon<>("STATE_ICON", "", null, t -> true, 0, () -> 0);
     Queueable QUEUEABLE = new Queueable("", false);
+
+    Page PAGE = new Page("PAGE", "");
+
+    InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (string) -> {
+    });
 
     String getIdentifier();
 

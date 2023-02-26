@@ -14,21 +14,23 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
-public class IconBuilder<U extends Interactive> {
+public class IconBuilder<U extends Interactive, B> {
+    protected final B owner;
     protected final U icon;
     protected final List<BaseActionBuilder> actionBuilders;
 
-    protected IconBuilder(final U icon) {
+    protected IconBuilder(final B owner, final U icon) {
+        this.owner = owner;
         this.icon = icon;
         actionBuilders = new LinkedList<>();
     }
 
-    public <T, Z> IconBuilder<U> setMeta(final PersistentDataType<T, Z> type, final String key, final Z value) {
+    public <T, Z> IconBuilder<U, B> setMeta(final PersistentDataType<T, Z> type, final String key, final Z value) {
         icon.setMeta(type, key, value);
         return this;
     }
 
-    public IconBuilder<U> setDynamic(final Component grandparent) {
+    public IconBuilder<U, B> setDynamic(final Component grandparent) {
         final String parent = icon.getIdentifier();
         icon.addChild(() -> new Dynamic(parent, grandparent));
         return this;
@@ -86,7 +88,7 @@ public class IconBuilder<U extends Interactive> {
         icon.addChild(child);
     }
 
-    public MenuBuilder finalise() {
-        return null;
+    public B finalise() {
+        return owner;
     }
 }

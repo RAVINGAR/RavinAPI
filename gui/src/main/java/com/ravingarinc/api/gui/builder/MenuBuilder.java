@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 public class MenuBuilder {
     private final List<InternalIconBuilder<?>> iconBuilders;
     private final Menu lastMenu;
+    private PageBuilder lastPageBuilder = null;
 
     public MenuBuilder(final GuiBuilder<?> owner, final String identifier, final String parent, final int backIcon) {
         lastMenu = new Menu(identifier, parent, owner.getPrimaryBorder(), owner.getSecondaryBorder(), backIcon);
@@ -111,33 +112,40 @@ public class MenuBuilder {
         return newBuilder;
     }
 
+    public PageBuilder addPage(final String identifier, final int... slots) {
+        handleLastPageBuilder();
+        lastPageBuilder = new PageBuilder(identifier, lastMenu.getIdentifier(), slots);
+        return lastPageBuilder;
+    }
+
     public MenuBuilder addDecoration(final String identifier, final Material material, final int[] slots) {
         lastMenu.addChild(() -> new Decoration(identifier, lastMenu.getIdentifier(), material, slots));
         return this;
     }
 
+    public void handleLastPageBuilder() {
+        if (lastPageBuilder != null) {
+            lastMenu.addChild(() -> lastPageBuilder.getPage());
+            lastPageBuilder = null;
+        }
+    }
+
     protected Menu getMenu() {
         lastMenu.finalise();
+        handleLastPageBuilder();
         iconBuilders.forEach(builder -> lastMenu.addChild(builder.getIcon()));
         iconBuilders.clear();
         return lastMenu;
     }
 
-    public static class InternalIconBuilder<I extends Interactive> extends IconBuilder<I> {
-        private final MenuBuilder owner;
+    public static class InternalIconBuilder<I extends Interactive> extends IconBuilder<I, MenuBuilder> {
 
         protected InternalIconBuilder(final MenuBuilder owner, final I icon) {
-            super(icon);
-            this.owner = owner;
+            super(owner, icon);
         }
 
-        public IconBuilder<I> setDynamic() {
+        public IconBuilder<I, MenuBuilder> setDynamic() {
             return setDynamic(owner.lastMenu);
-        }
-
-        @Override
-        public MenuBuilder finalise() {
-            return owner;
         }
     }
 
