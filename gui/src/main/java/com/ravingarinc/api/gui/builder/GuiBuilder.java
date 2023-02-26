@@ -3,6 +3,7 @@ package com.ravingarinc.api.gui.builder;
 import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Actionable;
+import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -120,7 +121,12 @@ public class GuiBuilder<T extends BaseGui> {
         return builder;
     }
 
-    private void handleLastActionBuilder() {
+    public GuiBuilder<T> addMiscComponent(final Supplier<Component> component) {
+        gui.addChild(component);
+        return this;
+    }
+
+    protected void handleLastActionBuilder() {
         if (lastActionBuilder != null) {
             lastActionBuilder.build();
             lastActionBuilder = null;
@@ -139,7 +145,7 @@ public class GuiBuilder<T extends BaseGui> {
 
         boolean mainExists = false;
         for (final MenuBuilder builder : menusToAdd) {
-            final Menu menu = builder.getMenu();
+            final Menu menu = builder.get();
             gui.addChild(() -> menu);
             if (menu.getIdentifier().equalsIgnoreCase("MAIN")) {
                 mainExists = true;
