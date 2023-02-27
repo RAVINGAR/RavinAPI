@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.api.Element;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,8 +34,11 @@ public class Page extends Element {
 
     public void placeIcons(final BaseGui gui) {
         final Inventory inventory = gui.getInventory();
+        final List<ItemStack> icons = new ArrayList<>(iconsToPlace);
         for (int i = currentPage * slots.length; i < iconsToPlace.size(); i++) {
-            inventory.setItem(slots[i], iconsToPlace.get(i));
+            final ItemStack stack = icons.get(i);
+            inventory.setItem(slots[i], stack);
+            iconsToPlace.remove(stack);
         }
     }
 
