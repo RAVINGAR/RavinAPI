@@ -39,13 +39,21 @@ public class Page extends Element {
     }
 
     public void nextPage() {
-        if (iconsToPlace.size() > 0) {
+        if (hasNextPage()) {
             currentPage++;
         }
     }
 
+    public boolean hasNextPage() {
+        return iconsToPlace.size() > 0;
+    }
+
+    public boolean hasPreviousPage() {
+        return currentPage > 0;
+    }
+
     public void previousPage() {
-        if (currentPage != 0) {
+        if (hasPreviousPage()) {
             currentPage--;
         }
     }
