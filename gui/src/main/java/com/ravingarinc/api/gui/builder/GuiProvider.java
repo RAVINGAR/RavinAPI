@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class GuiProvider {
     private static GuiProvider instance;
@@ -119,19 +120,24 @@ public class GuiProvider {
         }
     }
 
+    @Deprecated
+    public void openCustomGui(final GuiBuilder<?> builder, final Player player) {
+        openCustomGui("", () -> builder, player);
+    }
+
     /**
      * Attempts to open a custom gui using the given builder
      *
      * @param builder The builder
      * @param player  The player
      */
-    public void openCustomGui(final GuiBuilder<?> builder, final Player player) {
+    public void openCustomGui(final String identifier, final Supplier<GuiBuilder<?>> builder, final Player player) {
         final List<BaseGui> guis = guiPlayers.computeIfAbsent(player.getUniqueId(), k -> new LinkedList<>());
         guis.stream()
-                .filter(gui -> gui.getIdentifier().equalsIgnoreCase(builder.identifier()))
+                .filter(gui -> gui.getIdentifier().equalsIgnoreCase(identifier))
                 .findFirst()
                 .ifPresentOrElse(BaseGui::openGui, () -> {
-                    final BaseGui gui = builder.build(player);
+                    final BaseGui gui = builder.get().build(player);
                     guis.add(gui);
                     gui.openGui();
                 });
@@ -151,7 +157,7 @@ public class GuiProvider {
                         guis.remove(g);
                     });
         }
-        openCustomGui(builder, player);
+        openCustomGui(builder.identifier(), () -> builder, player);
     }
 
     /**

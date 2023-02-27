@@ -6,6 +6,7 @@ import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.InputComponent;
 import com.ravingarinc.api.gui.component.Menu;
+import com.ravingarinc.api.gui.component.Page;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.Icon;
 import com.ravingarinc.api.gui.component.icon.PlaceableIcon;
@@ -134,7 +135,8 @@ public class MenuBuilder implements Builder<Menu> {
 
     public void handleLastPageBuilder() {
         if (lastPageBuilder != null) {
-            lastMenu.addChild(() -> lastPageBuilder.get());
+            final Page page = lastPageBuilder.get();
+            lastMenu.addChild(() -> page);
             lastPageBuilder = null;
         }
     }
@@ -148,7 +150,10 @@ public class MenuBuilder implements Builder<Menu> {
     public Menu get() {
         lastMenu.finalise();
         handleLastPageBuilder();
-        iconBuilders.forEach(builder -> lastMenu.addChild(builder::get));
+        iconBuilders.forEach(builder -> {
+            final Component c = builder.get();
+            lastMenu.addChild(() -> c);
+        });
         iconBuilders.clear();
         return lastMenu;
     }
