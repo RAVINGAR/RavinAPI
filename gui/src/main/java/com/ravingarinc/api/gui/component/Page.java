@@ -35,7 +35,7 @@ public class Page extends Element {
     public void placeIcons(final BaseGui gui) {
         final Inventory inventory = gui.getInventory();
         final List<ItemStack> icons = new ArrayList<>(iconsToPlace);
-        for (int i = currentPage * slots.length; i < iconsToPlace.size(); i++) {
+        for (int i = currentPage * slots.length; i < icons.size(); i++) {
             final ItemStack stack = icons.get(i);
             inventory.setItem(slots[i], stack);
             iconsToPlace.remove(stack);
