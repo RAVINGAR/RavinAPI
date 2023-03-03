@@ -2,6 +2,7 @@ package com.ravingarinc.api.gui.component;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -14,15 +15,15 @@ public class Border implements Component {
 
     public Border(@NotNull final Material pattern1, @NotNull final Material pattern2) {
         this.pattern1 = new ItemStack(pattern1, 1);
-        if (this.pattern1.hasItemMeta()) {
-            final ItemMeta meta = this.pattern1.getItemMeta();
-            meta.setDisplayName(" ");
+        ItemMeta meta = this.pattern1.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.DARK_GRAY + "");
             this.pattern1.setItemMeta(meta);
         }
         this.pattern2 = new ItemStack(pattern2, 1);
-        if (this.pattern2.hasItemMeta()) {
-            final ItemMeta meta = this.pattern2.getItemMeta();
-            meta.setDisplayName(" ");
+        meta = this.pattern2.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.DARK_GRAY + "");
             this.pattern2.setItemMeta(meta);
         }
     }
