@@ -13,13 +13,13 @@ import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.Dynamic;
 import com.ravingarinc.api.gui.component.icon.Icon;
 import com.ravingarinc.api.gui.component.icon.Observer;
+import com.ravingarinc.api.gui.component.icon.PageFiller;
 import com.ravingarinc.api.gui.component.icon.PlaceableIcon;
 import com.ravingarinc.api.gui.component.icon.StateIcon;
 import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -30,20 +30,6 @@ public interface Component {
         @Override
         public String getIdentifier() {
             return "INTERACTIVE";
-        }
-
-        @Override
-        public <T, Z> void setMeta(final PersistentDataType<T, Z> type, final String key, final Z value) {
-        }
-
-        @Override
-        public <T, Z> Z getMeta(final PersistentDataType<T, Z> type, final String key) {
-            return null;
-        }
-
-        @Override
-        public <T, Z> boolean hasMeta(final PersistentDataType<T, Z> type, final String key) {
-            return false;
         }
 
         @Override
@@ -111,6 +97,8 @@ public interface Component {
 
     InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (string) -> {
     });
+
+    PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", null, null, null);
 
     String getIdentifier();
 

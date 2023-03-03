@@ -78,7 +78,6 @@ public abstract class BaseIcon extends Element implements Interactive {
         actions.forEach(action -> action.performAction(gui));
     }
 
-    @Override
     public <T, Z> void setMeta(final PersistentDataType<T, Z> type, final String key, final Z value) {
         if (item == null) {
             return;
@@ -91,7 +90,6 @@ public abstract class BaseIcon extends Element implements Interactive {
         item.setItemMeta(meta);
     }
 
-    @Override
     public <T, Z> Z getMeta(final PersistentDataType<T, Z> type, final String key) {
         if (item == null) {
             return null;
@@ -103,7 +101,6 @@ public abstract class BaseIcon extends Element implements Interactive {
         return meta.getPersistentDataContainer().get(GuiProvider.getKey(key), type);
     }
 
-    @Override
     public <T, Z> boolean hasMeta(final PersistentDataType<T, Z> type, final String key) {
         return getMeta(type, key) != null;
     }

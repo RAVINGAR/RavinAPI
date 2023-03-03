@@ -11,3 +11,6 @@ project(':gui').projectDir = "$rootDir/gui" as File
 
 include ':module'
 project(':module').projectDir = "$rootDir/module" as File
+
+include ':localtest'
+project(':localtest').projectDir = "$rootDir/localtest" as File

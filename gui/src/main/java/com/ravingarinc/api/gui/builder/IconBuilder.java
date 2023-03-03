@@ -8,7 +8,6 @@ import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.api.ParentBuilder;
 import com.ravingarinc.api.gui.component.icon.Dynamic;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -30,11 +29,6 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         this.owner = owner;
         this.icon = icon;
         actionBuilders = new LinkedList<>();
-    }
-
-    public <T, Z> IconBuilder<C, P> setMeta(final PersistentDataType<T, Z> type, final String key, final Z value) {
-        icon.setMeta(type, key, value);
-        return this;
     }
 
     public IconBuilder<C, P> setDynamic() {

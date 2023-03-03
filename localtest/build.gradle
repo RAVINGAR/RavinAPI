@@ -1,0 +1,30 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+dependencies {
+    implementation project(':common')
+    implementation project(':gui')
+
+    shadow project(':common')
+    shadow project(':gui')
+}
+
+jar {
+    archiveFileName.set('localtest-original.jar')
+    archiveBaseName.set('localtest')
+    archiveVersion.set(null)
+    archiveClassifier.set('original')
+}
+
+shadowJar {
+    archiveClassifier.set(null)
+    relocate 'javax.vecmath', 'com.ravingarinc.libs.vecmath'
+
+}
+
+artifacts {
+    archives shadowJar
+}
+
+assemble.dependsOn shadowJar
