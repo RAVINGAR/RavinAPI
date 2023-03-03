@@ -45,9 +45,7 @@ public abstract class BaseIcon extends Element implements Interactive {
 
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            if (display != null) {
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', display));
-            }
+            meta.setDisplayName(display == null ? " " : ChatColor.translateAlternateColorCodes('&', display));
             if (lore != null && !lore.equals("")) {
                 meta.setLore(new ArrayList<>(Arrays.asList(ChatColor.translateAlternateColorCodes('&', lore).split("\n"))));
             }

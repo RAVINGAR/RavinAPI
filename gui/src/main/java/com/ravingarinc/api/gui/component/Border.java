@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.api.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class Border implements Component {
@@ -13,7 +14,17 @@ public class Border implements Component {
 
     public Border(@NotNull final Material pattern1, @NotNull final Material pattern2) {
         this.pattern1 = new ItemStack(pattern1, 1);
+        if (this.pattern1.hasItemMeta()) {
+            final ItemMeta meta = this.pattern1.getItemMeta();
+            meta.setDisplayName(" ");
+            this.pattern1.setItemMeta(meta);
+        }
         this.pattern2 = new ItemStack(pattern2, 1);
+        if (this.pattern2.hasItemMeta()) {
+            final ItemMeta meta = this.pattern2.getItemMeta();
+            meta.setDisplayName(" ");
+            this.pattern2.setItemMeta(meta);
+        }
     }
 
     @Override

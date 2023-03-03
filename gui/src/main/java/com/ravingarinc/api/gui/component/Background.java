@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.api.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class Background implements Component {
@@ -12,6 +13,11 @@ public class Background implements Component {
 
     public Background(final Material background) {
         this.background = new ItemStack(background, 1);
+        if (this.background.hasItemMeta()) {
+            final ItemMeta meta = this.background.getItemMeta();
+            meta.setDisplayName(" ");
+            this.background.setItemMeta(meta);
+        }
     }
 
     public Background() {
