@@ -21,8 +21,9 @@ public class StateIcon<T> extends BaseIcon {
     private State<T> currentState;
 
     public StateIcon(final String identifier, final String parent, final Action action, final Predicate<BaseGui> predicate, final int index, final Supplier<T> initial) {
-        super(identifier, identifier, "", parent, Material.BARRIER, action, predicate, i -> {
+        super(identifier, identifier, "", parent, Material.BARRIER, predicate, i -> {
         });
+        addAction(action);
         this.index = index;
         states = new ArrayList<>();
         currentState = null;

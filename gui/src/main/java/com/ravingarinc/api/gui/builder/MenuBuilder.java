@@ -68,7 +68,11 @@ public class MenuBuilder implements Builder<Menu> {
     }
 
     public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
-        final IconBuilder<Icon, MenuBuilder> newBuilder = new IconBuilder<>(this, new Icon(identifier, display, lore, lastMenu.getIdentifier(), material, null, predicate, consumer));
+        return addIcon(identifier, display, lore, material, null, predicate, consumer);
+    }
+
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
+        final IconBuilder<Icon, MenuBuilder> newBuilder = new IconBuilder<>(this, new Icon(identifier, display, lore, lastMenu.getIdentifier(), material, action, predicate, consumer));
         iconBuilders.add(newBuilder);
         return newBuilder;
     }
@@ -88,7 +92,11 @@ public class MenuBuilder implements Builder<Menu> {
     }
 
     public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
-        final IconBuilder<StaticIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(identifier, display, lore, lastMenu.getIdentifier(), material, null, predicate, consumer, index));
+        return addStaticIcon(identifier, display, lore, material, null, predicate, consumer, index);
+    }
+
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
+        final IconBuilder<StaticIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(identifier, display, lore, lastMenu.getIdentifier(), material, action, predicate, consumer, index));
         iconBuilders.add(newBuilder);
         return newBuilder;
     }

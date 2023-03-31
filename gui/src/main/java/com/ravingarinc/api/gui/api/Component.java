@@ -1,22 +1,9 @@
 package com.ravingarinc.api.gui.api;
 
 import com.ravingarinc.api.gui.BaseGui;
-import com.ravingarinc.api.gui.component.Background;
-import com.ravingarinc.api.gui.component.Border;
-import com.ravingarinc.api.gui.component.Closeable;
-import com.ravingarinc.api.gui.component.Decoration;
-import com.ravingarinc.api.gui.component.InputComponent;
-import com.ravingarinc.api.gui.component.Menu;
-import com.ravingarinc.api.gui.component.Page;
-import com.ravingarinc.api.gui.component.Queueable;
+import com.ravingarinc.api.gui.component.*;
 import com.ravingarinc.api.gui.component.action.Action;
-import com.ravingarinc.api.gui.component.icon.Dynamic;
-import com.ravingarinc.api.gui.component.icon.Icon;
-import com.ravingarinc.api.gui.component.icon.Observer;
-import com.ravingarinc.api.gui.component.icon.PageFiller;
-import com.ravingarinc.api.gui.component.icon.PlaceableIcon;
-import com.ravingarinc.api.gui.component.icon.StateIcon;
-import com.ravingarinc.api.gui.component.icon.StaticIcon;
+import com.ravingarinc.api.gui.component.icon.*;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

@@ -16,11 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -30,14 +26,8 @@ public abstract class BaseIcon extends Element implements Interactive {
     protected ItemStack item;
     protected Predicate<BaseGui> predicate;
 
-    public BaseIcon(final String identifier, final String display, final String lore, final String parent, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
+    public BaseIcon(final String identifier, final String display, final String lore, final String parent, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
         super(identifier, parent, 3);
-
-        init(display, lore, material, action, predicate, consumer);
-    }
-
-
-    private void init(final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
         if (material.isAir()) {
             throw new IllegalArgumentException("\nIcon material cannot be air!");
         }
@@ -53,14 +43,9 @@ public abstract class BaseIcon extends Element implements Interactive {
             item.setItemMeta(meta);
             setMeta(PersistentDataType.STRING, "identifier", this.getIdentifier());
         }
-
         consumer.accept(item);
 
-        actions = new LinkedList<>();
-        if (action != null) {
-            actions.add(action);
-        }
-
+        this.actions = new LinkedList<>();
         this.predicate = predicate;
     }
 

@@ -14,12 +14,10 @@ import java.util.List;
  */
 public abstract class EventAction extends Action implements Actionable {
     private final List<Action> preActions;
-    private final List<Action> postActions;
 
     public EventAction(final String parent) {
         super(parent);
         preActions = new ArrayList<>();
-        postActions = new ArrayList<>();
     }
 
 
@@ -47,22 +45,8 @@ public abstract class EventAction extends Action implements Actionable {
         }
     }
 
-    public void addPostAction(final Action action) {
-        if (action != null) {
-            postActions.add(action);
-        }
-    }
-
     @Override
     public void performAllActions(final BaseGui gui) {
-        preActions.forEach(action -> {
-            action.performAction(gui);
-        });
-    }
-
-    public void performAllPostActions(final BaseGui gui) {
-        postActions.forEach(action -> {
-            action.performAction(gui);
-        });
+        preActions.forEach(action -> action.performAction(gui));
     }
 }

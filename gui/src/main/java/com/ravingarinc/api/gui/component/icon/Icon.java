@@ -10,7 +10,8 @@ import java.util.function.Predicate;
 
 public class Icon extends BaseIcon {
     public Icon(final String identifier, final String display, final String lore, final String parent, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
-        super(identifier, display, lore, parent, material, action, predicate, consumer);
+        super(identifier, display, lore, parent, material, predicate, consumer);
+        addAction(action);
     }
 
     @Override

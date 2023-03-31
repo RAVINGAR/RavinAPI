@@ -12,7 +12,7 @@ import java.util.logging.Level;
 
 public class PageIcon extends BaseIcon {
     public PageIcon(final String identifier, final String display, final String lore, final String parent, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
-        super(identifier, display, lore, parent, material, null, predicate, consumer);
+        super(identifier, display, lore, parent, material, predicate, consumer);
     }
 
     @Override

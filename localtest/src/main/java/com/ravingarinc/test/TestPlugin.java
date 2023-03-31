@@ -5,7 +5,6 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.builder.GuiBuilder;
 import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.action.RunnableAction;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,7 +33,7 @@ public class TestPlugin extends JavaPlugin {
     }
 
     private GuiBuilder<BaseGui> getBuilder() {
-        final GuiBuilder<BaseGui> builder = new GuiBuilder<>(this, GUI, BaseGui.class, () -> Bukkit.createInventory(null, 27));
+        final GuiBuilder<BaseGui> builder = new GuiBuilder<>(this, GUI, BaseGui.class, 27);
 
         /*
             0  1  2  3  4  5  6  7  8

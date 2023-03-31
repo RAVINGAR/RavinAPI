@@ -15,7 +15,8 @@ public class StaticIcon extends BaseIcon {
     private final int index;
 
     public StaticIcon(final String identifier, final String display, final String lore, final String parent, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
-        super(identifier, display, lore, parent, material, action, predicate, consumer);
+        super(identifier, display, lore, parent, material, predicate, consumer);
+        addAction(action);
         this.index = index;
     }
 

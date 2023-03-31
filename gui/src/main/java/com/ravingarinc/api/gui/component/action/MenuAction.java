@@ -10,9 +10,7 @@ public class MenuAction extends Action {
     @Override
     public void performAction(final BaseGui gui) {
         if (pointer.equalsIgnoreCase(gui.getIdentifier())) {
-            //If attempting to go back to the BaseGui, this means you should exit!
             gui.getPlayer().closeInventory();
-            gui.closeGui();
         } else {
             gui.updateCurrentMenu(pointer);
         }

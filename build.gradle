@@ -1,9 +1,11 @@
 allprojects {
     apply plugin: 'java-library'
     apply plugin: 'idea'
+    apply plugin: 'pmd'
+    apply plugin: 'maven-publish'
 
     group 'com.ravingarinc.api'
-    version '1.1.9'
+    version '1.2.0'
 
     repositories {
         gradlePluginPortal()
@@ -25,9 +27,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-    apply plugin: 'pmd'
 
     sourceCompatibility = 17
     targetCompatibility = 17
@@ -64,6 +63,12 @@ subprojects {
                 version project.version
                 from components.java
             }
+        }
+    }
+
+    tasks.withType(PublishToMavenRepository).configureEach {
+        onlyIf {
+            (publication.artifactId != "localtest")
         }
     }
 }

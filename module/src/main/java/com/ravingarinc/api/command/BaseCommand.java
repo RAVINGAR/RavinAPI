@@ -1,11 +1,8 @@
 package com.ravingarinc.api.command;
 
+import com.ravingarinc.api.module.RavinPlugin;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,16 +11,42 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 public class BaseCommand extends CommandOption implements CommandExecutor {
+    protected final RavinPlugin plugin;
 
+    @Deprecated
     public BaseCommand(final String identifier, final String permission) {
-        super(identifier, null, permission, "", 1, (p, s) -> false);
+        this(null, identifier, permission, "", 1, (p, s) -> false);
     }
 
+    @Deprecated
     public BaseCommand(final String identifier, final String permission, final String description, final int requiredArgs, final BiFunction<CommandSender, String[], Boolean> function) {
-        super(identifier, null, permission, description, requiredArgs, function);
+        this(null, identifier, permission, description, requiredArgs, function);
     }
 
+    public BaseCommand(final RavinPlugin plugin, final String identifier, final String permission) {
+        this(plugin, identifier, permission, "", 1, (p, s) -> false);
+    }
+
+    public BaseCommand(final RavinPlugin plugin, final String identifier, final String permission, final String description, final int requiredArgs, final BiFunction<CommandSender, String[], Boolean> function) {
+        super(identifier, null, permission, description, requiredArgs, function);
+        this.plugin = plugin;
+    }
+
+    /**
+     * Use {@link #register()} and provide the plugin in the constructor of the command!
+     *
+     * @param plugin The plugin
+     */
+    @Deprecated
     public void register(final JavaPlugin plugin) {
+        final PluginCommand command = plugin.getCommand(identifier);
+        Objects.requireNonNull(command, "Command /" + identifier + " was not registered correctly!");
+        command.setExecutor(this);
+        command.setTabCompleter(new CommandCompleter(this));
+    }
+
+    @Override
+    public void register() {
         final PluginCommand command = plugin.getCommand(identifier);
         Objects.requireNonNull(command, "Command /" + identifier + " was not registered correctly!");
         command.setExecutor(this);

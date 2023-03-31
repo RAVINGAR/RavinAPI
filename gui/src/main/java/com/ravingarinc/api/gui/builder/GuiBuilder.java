@@ -34,13 +34,13 @@ public class GuiBuilder<T extends BaseGui> {
 
 
     public GuiBuilder(final JavaPlugin plugin, final String guiName, final Class<T> type) {
-        this(plugin, guiName, type, () -> Bukkit.createInventory(null, 45, guiName));
+        this(plugin, guiName, type, 45);
     }
 
-    public GuiBuilder(final JavaPlugin plugin, final String guiName, final Class<T> type, final Supplier<Inventory> supplier) {
+    public GuiBuilder(final JavaPlugin plugin, final String guiName, final Class<T> type, final int inventorySize) {
         try {
             final Constructor<T> constructor = type.getConstructor(JavaPlugin.class, String.class, Inventory.class);
-            this.gui = constructor.newInstance(plugin, guiName, supplier.get());
+            this.gui = constructor.newInstance(plugin, guiName, Bukkit.createInventory(null, inventorySize, guiName));
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             I.log(Level.SEVERE, "Something went wrong finding constructor for BaseGui!" + e);
         } catch (final InvocationTargetException e) {
