@@ -6,11 +6,7 @@ import org.jetbrains.annotations.Blocking;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -58,7 +54,7 @@ public class BlockingRunner<T extends Future<?> & Runnable> extends BukkitRunnab
      * @param function The function to create the cancel task.
      */
     @Blocking
-    public synchronized void cancelAndWait(final Function<Runnable, T> function) {
+    public void cancelAndWait(final Function<Runnable, T> function) {
         final T task = function.apply(() -> {
             cancelled.setRelease(true);
             if (!isCancelled()) {
@@ -80,30 +76,8 @@ public class BlockingRunner<T extends Future<?> & Runnable> extends BukkitRunnab
      * @param function The function to create the cancel task
      */
     @Blocking
-    public synchronized void cancelNow(final Function<Runnable, T> function) {
+    public void cancelNow(final Function<Runnable, T> function) {
         getRemaining().forEach(task -> task.cancel(false));
-        final T task = function.apply(() -> {
-            cancelled.setRelease(true);
-            if (!isCancelled()) {
-                cancel();
-            }
-        });
-        getRemaining().forEach(t -> t.cancel(false));
-        this.queue.add(task);
-        try {
-            task.get(1000, TimeUnit.MILLISECONDS);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            I.log(Level.SEVERE, "Encountered exception waiting for BlockingRunner to cancel!", e);
-        }
-    }
-
-    @Override
-    public synchronized void cancel() throws IllegalStateException {
-        this.cancel(false);
-    }
-
-    public synchronized void cancel(final boolean mayInterruptIfRunning) throws IllegalStateException {
-        super.cancel();
-        getRemaining().forEach(task -> task.cancel(mayInterruptIfRunning));
+        cancelAndWait(function);
     }
 }
