@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -101,7 +102,12 @@ public class MenuBuilder implements Builder<Menu> {
         return newBuilder;
     }
 
+    @Deprecated
     public <T> StateIconBuilder<T> addStateIcon(final String identifier, final Action action, final int index, final Supplier<T> determiner) {
+        return addStateIcon(identifier, action, index, (g) -> determiner.get());
+    }
+
+    public <T> StateIconBuilder<T> addStateIcon(final String identifier, final Action action, final int index, final Function<BaseGui, T> determiner) {
         final StateIconBuilder<T> newBuilder = new StateIconBuilder<>(this, new StateIcon<>(identifier, lastMenu.getIdentifier(), action, t -> true, index, determiner));
         iconBuilders.add(newBuilder);
         return newBuilder;

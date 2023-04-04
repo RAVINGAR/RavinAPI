@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class StateIcon<T> extends BaseIcon {
     private final List<State<T>> states;
-    private final Supplier<T> determiner; //Provides the value such that this state icon's current state will always equal to the value presented
+    private final Function<BaseGui, T> determiner; //Provides the value such that this state icon's current state will always equal to the value presented
     private final int index;
     private State<T> currentState;
 
-    public StateIcon(final String identifier, final String parent, final Action action, final Predicate<BaseGui> predicate, final int index, final Supplier<T> initial) {
+    public StateIcon(final String identifier, final String parent, final Action action, final Predicate<BaseGui> predicate, final int index, final Function<BaseGui, T> initial) {
         super(identifier, identifier, "", parent, Material.BARRIER, predicate, i -> {
         });
         addAction(action);
@@ -76,7 +76,7 @@ public class StateIcon<T> extends BaseIcon {
 
     @Override
     protected void fillIcon(final BaseGui gui) {
-        final T type = determiner.get();
+        final T type = determiner.apply(gui);
         final State<T> nextState = type == null ? states.get(0) : getState(type).orElseGet(() -> states.get(0));
         if (currentState == null || !currentState.equals(nextState)) {
             switchState(nextState, gui);

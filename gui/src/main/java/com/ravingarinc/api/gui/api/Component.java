@@ -77,7 +77,7 @@ public interface Component {
     PlaceableIcon PLACEABLE_ICON = new PlaceableIcon("PLACEABLE_ICON", null, 0, (t) -> true);
     StaticIcon STATIC_ICON = new StaticIcon("STATIC_ICON", "", "", "", Material.STONE, null, p -> true, i -> {
     }, 0);
-    StateIcon<?> STATE_ICON = new StateIcon<>("STATE_ICON", "", null, t -> true, 0, () -> 0);
+    StateIcon<?> STATE_ICON = new StateIcon<>("STATE_ICON", "", null, t -> true, 0, (g) -> 0);
     Queueable QUEUEABLE = new Queueable("", false);
 
     Page PAGE = new Page("PAGE", "");
