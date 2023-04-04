@@ -82,7 +82,7 @@ public interface Component {
 
     Page PAGE = new Page("PAGE", "");
 
-    InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (string) -> {
+    InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, string) -> {
     });
 
     PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", null, null, null);

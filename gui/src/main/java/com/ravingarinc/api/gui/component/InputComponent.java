@@ -12,21 +12,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class InputComponent implements Component {
     private final ChatListener listener;
     private final String identifier;
     private final String parent;
     private final String description;
-    private final Consumer<String> onResponse;
+    private final BiConsumer<BaseGui, String> onResponse;
     private final AtomicReference<Player> listening;
 
     private final AtomicReference<String> response;
 
     private BaseGui lastGui;
 
-    public InputComponent(final String identifier, final String parent, final String description, final Consumer<String> onResponse) {
+    public InputComponent(final String identifier, final String parent, final String description, final BiConsumer<BaseGui, String> onResponse) {
         this.identifier = identifier;
         this.listening = new AtomicReference<>(null);
         this.response = new AtomicReference<>(null);
@@ -53,7 +53,7 @@ public class InputComponent implements Component {
             listener.unregister();
             listening.setRelease(null);
             response.setRelease(null);
-            onResponse.accept(message);
+            onResponse.accept(gui, message);
         }
     }
 

@@ -1,18 +1,10 @@
 package com.ravingarinc.api.gui.builder;
 
+import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.ActionBuilder;
 import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.component.Decoration;
-import com.ravingarinc.api.gui.component.action.Action;
-import com.ravingarinc.api.gui.component.action.ActivateDecorationAction;
-import com.ravingarinc.api.gui.component.action.ChangeAmountAction;
-import com.ravingarinc.api.gui.component.action.ConsumeMetaAction;
-import com.ravingarinc.api.gui.component.action.LockPlaceableAction;
-import com.ravingarinc.api.gui.component.action.MenuAction;
-import com.ravingarinc.api.gui.component.action.RefreshGuiAction;
-import com.ravingarinc.api.gui.component.action.SoundAction;
-import com.ravingarinc.api.gui.component.action.UpdateComponentAction;
-import com.ravingarinc.api.gui.component.action.UpdateMetaAction;
+import com.ravingarinc.api.gui.component.action.*;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,6 +14,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class BaseActionBuilder<P> implements ActionBuilder<P> {
@@ -60,11 +53,18 @@ public abstract class BaseActionBuilder<P> implements ActionBuilder<P> {
     }
 
     public BaseActionBuilder<P> addUpdateComponentAction(final String pointer, final Supplier<String> name, final Supplier<String> lore, final Material material) {
-        actionsToAdd.add(new UpdateComponentAction(pointer, lastMenu, name, lore, material));
-        return this;
+        return addUpdateComponentAction(pointer, lastMenu, name, lore, material);
     }
 
     public BaseActionBuilder<P> addUpdateComponentAction(final String pointer, final String menu, final Supplier<String> name, final Supplier<String> lore, final Material material) {
+        return addUpdateComponentAction(pointer, menu, (g) -> name.get(), (g) -> lore.get(), material);
+    }
+
+    public BaseActionBuilder<P> addUpdateComponentAction(final String pointer, final Function<BaseGui, String> name, final Function<BaseGui, String> lore, final Material material) {
+        return addUpdateComponentAction(pointer, lastMenu, name, lore, material);
+    }
+
+    public BaseActionBuilder<P> addUpdateComponentAction(final String pointer, final String menu, final Function<BaseGui, String> name, final Function<BaseGui, String> lore, final Material material) {
         actionsToAdd.add(new UpdateComponentAction(pointer, menu, name, lore, material));
         return this;
     }

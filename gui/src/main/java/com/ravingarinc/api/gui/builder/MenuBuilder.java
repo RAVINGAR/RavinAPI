@@ -17,10 +17,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 public class MenuBuilder implements Builder<Menu> {
     private final List<IconBuilder<?, MenuBuilder>> iconBuilders;
@@ -96,6 +93,11 @@ public class MenuBuilder implements Builder<Menu> {
         return addStaticIcon(identifier, display, lore, material, null, predicate, consumer, index);
     }
 
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final int index) {
+        return addStaticIcon(identifier, display, lore, material, action, g -> true, i -> {
+        }, index);
+    }
+
     public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
         final IconBuilder<StaticIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(identifier, display, lore, lastMenu.getIdentifier(), material, action, predicate, consumer, index));
         iconBuilders.add(newBuilder);
@@ -138,6 +140,10 @@ public class MenuBuilder implements Builder<Menu> {
     }
 
     public MenuBuilder addInputComponent(final String identifier, final String description, final Consumer<String> onResponse) {
+        return addInputComponent(identifier, description, (gui, str) -> onResponse.accept(str));
+    }
+
+    public MenuBuilder addInputComponent(final String identifier, final String description, final BiConsumer<BaseGui, String> onResponse) {
         lastMenu.addChild(() -> new InputComponent(identifier, lastMenu.getIdentifier(), description, onResponse));
         return this;
     }
