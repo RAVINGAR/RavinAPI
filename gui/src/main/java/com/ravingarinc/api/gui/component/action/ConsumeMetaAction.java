@@ -2,7 +2,7 @@ package com.ravingarinc.api.gui.component.action;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.component.icon.Dynamic;
+import com.ravingarinc.api.gui.api.Interactive;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Optional;
@@ -20,12 +20,11 @@ public class ConsumeMetaAction extends Action {
 
     @Override
     public void performAction(final BaseGui gui) {
-        final Optional<Dynamic> component = gui.findComponent(Component.MENU, menu)
-                .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer)
-                        .flatMap(e -> e.findComponent(Component.DYNAMIC, pointer + "_DYNAMIC")));
+        final Optional<Interactive> component = gui.findComponent(Component.MENU, menu)
+                .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer));
         if (component.isPresent()) {
-            final Dynamic dynamic = component.get();
-            dynamic.consumeMeta(meta);
+            final Interactive interactive = component.get();
+            interactive.updateMeta(meta);
         }
     }
 }

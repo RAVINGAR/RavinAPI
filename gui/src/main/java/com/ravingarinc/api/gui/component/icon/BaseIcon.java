@@ -5,7 +5,6 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Element;
 import com.ravingarinc.api.gui.api.Interactive;
-import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
 import org.bukkit.ChatColor;
@@ -61,33 +60,6 @@ public abstract class BaseIcon extends Element implements Interactive {
         actions.forEach(action -> action.performAction(gui));
     }
 
-    public <T, Z> void setMeta(final PersistentDataType<T, Z> type, final String key, final Z value) {
-        if (item == null) {
-            return;
-        }
-        final ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return;
-        }
-        meta.getPersistentDataContainer().set(GuiProvider.getKey(key), type, value);
-        item.setItemMeta(meta);
-    }
-
-    public <T, Z> Z getMeta(final PersistentDataType<T, Z> type, final String key) {
-        if (item == null) {
-            return null;
-        }
-        final ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return null;
-        }
-        return meta.getPersistentDataContainer().get(GuiProvider.getKey(key), type);
-    }
-
-    public <T, Z> boolean hasMeta(final PersistentDataType<T, Z> type, final String key) {
-        return getMeta(type, key) != null;
-    }
-
     @Override
     public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event) {
         performAllActions(gui);
@@ -104,15 +76,10 @@ public abstract class BaseIcon extends Element implements Interactive {
     }
 
     @Override
-    public void setItem(final ItemStack item) {
-        if (item == null || item.getType().isAir()) {
-            this.item.setType(Material.AIR);
-            this.item = null;
-        } else {
-            this.item.setType(item.getType());
-            this.item.setAmount(item.getAmount());
-            this.item.setItemMeta(item.getItemMeta());
-            this.item.setData(item.getData());
+    public void addAmount(final int delta) {
+        final int amount = item.getAmount() + delta;
+        if (amount > 0 && amount < 65) {
+            item.setAmount(amount);
         }
     }
 

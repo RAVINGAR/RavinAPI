@@ -3,7 +3,7 @@ package com.ravingarinc.api.gui.component.action;
 import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.component.icon.Dynamic;
+import com.ravingarinc.api.gui.api.Interactive;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Optional;
@@ -25,10 +25,9 @@ public class UpdateMetaAction<T, Z> extends Action {
 
     @Override
     public void performAction(final BaseGui gui) {
-        final Optional<Dynamic> component = gui.findComponent(Component.MENU, menu)
-                .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer)
-                        .flatMap(e -> e.findComponent(Component.DYNAMIC, pointer + "_DYNAMIC")));
-        component.ifPresentOrElse(dynamic -> dynamic.setMeta(type, key, value)
+        final Optional<Interactive> component = gui.findComponent(Component.MENU, menu)
+                .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer));
+        component.ifPresentOrElse(c -> c.setMeta(type, key, value)
                 , () -> I.log(Level.WARNING, "Could not find dynamic child of component " + this.getPointer()));
     }
 }

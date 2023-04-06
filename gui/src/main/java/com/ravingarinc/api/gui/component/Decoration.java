@@ -3,7 +3,7 @@ package com.ravingarinc.api.gui.component;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Element;
-import com.ravingarinc.api.gui.component.icon.Dynamic;
+import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -31,10 +31,8 @@ public class Decoration extends Element {
 
     public void addDecor(final Material material, final int index) {
         final String identifier = "DECOR_" + index;
-        final StaticIcon icon = new StaticIcon(identifier, null, "", this.getIdentifier(), material, null, p -> true, i -> {
-        }, index);
-        icon.addChild(() -> new Dynamic(identifier, this));
-        addChild(() -> icon);
+        addChild(() -> new StaticIcon(identifier, null, "", this.getIdentifier(), material, null, p -> true, i -> {
+        }, index));
     }
 
     public void updateWithPattern(final Pattern type, final Material update, final long duration, final BaseGui gui) {
@@ -129,11 +127,8 @@ public class Decoration extends Element {
             if (duration > 0) {
                 duration -= interval;
                 list.forEach(item -> {
-                    item.findComponent(Component.DYNAMIC, item.getIdentifier() + "_DYNAMIC")
-                            .ifPresent(dynamic -> {
-                                dynamic.updateItem(null, null, material);
-                                item.fillElement(gui);
-                            });
+                    ((Interactive) item).updateItem(null, null, material);
+                    item.fillElement(gui);
                 });
             } else {
                 this.cancel();
@@ -144,24 +139,21 @@ public class Decoration extends Element {
     private static class DecorationUpdateTask extends BukkitRunnable {
 
         private final Iterator<Component> iterator;
-        private final Material update;
+        private final Material material;
         private final BaseGui gui;
 
-        public DecorationUpdateTask(final Iterator<Component> iterator, final BaseGui gui, final Material update) {
+        public DecorationUpdateTask(final Iterator<Component> iterator, final BaseGui gui, final Material material) {
             this.iterator = iterator;
-            this.update = update;
+            this.material = material;
             this.gui = gui;
         }
 
         @Override
         public void run() {
             if (iterator.hasNext()) {
-                final Component component = iterator.next();
-                component.findComponent(DYNAMIC, component.getIdentifier() + "_DYNAMIC")
-                        .ifPresent(dynamic -> {
-                            dynamic.updateItem(null, null, update);
-                            component.fillElement(gui);
-                        });
+                final Interactive component = (Interactive) iterator.next();
+                component.updateItem(null, null, material);
+                component.fillElement(gui);
             } else {
                 this.cancel();
             }

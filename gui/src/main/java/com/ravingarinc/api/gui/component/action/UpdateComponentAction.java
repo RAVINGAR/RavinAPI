@@ -3,7 +3,7 @@ package com.ravingarinc.api.gui.component.action;
 import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.component.icon.Dynamic;
+import com.ravingarinc.api.gui.api.Interactive;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,12 +29,11 @@ public class UpdateComponentAction extends Action {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     @Override
     public void performAction(final BaseGui gui) {
-        final Optional<Dynamic> component = gui.findComponent(Component.MENU, menu)
-                .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer)
-                        .flatMap(e -> e.findComponent(Component.DYNAMIC, pointer + "_DYNAMIC")));
+        final Optional<Interactive> component = gui.findComponent(Component.MENU, menu)
+                .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer));
 
         if (component.isPresent()) {
-            final Dynamic dynamic = component.get();
+            final Interactive interactive = component.get();
             String name = null, lore = null;
             try {
                 name = this.name.apply(gui);
@@ -42,9 +41,9 @@ public class UpdateComponentAction extends Action {
             } catch (final Exception e) {
                 I.log(Level.SEVERE, "Encountered exception updating dynamic icon! ", e);
             }
-            dynamic.updateItem(name, lore, material);
+            interactive.updateItem(name, lore, material);
         } else {
-            I.log(Level.WARNING, "Could not find dynamic child of component " + this.getPointer());
+            I.log(Level.WARNING, "Could not find interactive component " + this.getPointer());
         }
     }
 }

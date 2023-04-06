@@ -30,7 +30,8 @@ public interface Component {
         }
 
         @Override
-        public void setItem(final ItemStack item) {
+        public void addAmount(final int delta) {
+
         }
 
         @Override
@@ -70,7 +71,6 @@ public interface Component {
     Closeable CLOSEABLE = new Closeable(null, null);
     Decoration DECORATION = new Decoration("DECORATION", null);
     Menu MENU = new Menu("MENU", null, Material.AIR, Material.AIR, -1);
-    Dynamic DYNAMIC = new Dynamic(null, null);
     Icon ICON = new Icon("ICON", "", "", "", Material.STONE, null, p -> true, (i) -> {
     });
     Observer OBSERVER = new Observer(ICON) {

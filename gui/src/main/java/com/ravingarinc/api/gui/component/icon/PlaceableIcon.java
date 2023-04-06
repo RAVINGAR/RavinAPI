@@ -1,5 +1,6 @@
 package com.ravingarinc.api.gui.component.icon;
 
+import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Element;
 import com.ravingarinc.api.gui.api.Interactive;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Level;
 
 //Placeholders will only allow name and lore changes via Dynamic, if the current item is the placeholder.
 public class PlaceableIcon extends Element implements Interactive {
@@ -96,35 +98,6 @@ public class PlaceableIcon extends Element implements Interactive {
         actions.forEach(action -> action.performAction(gui));
     }
 
-    public <T, Z> void setMeta(final PersistentDataType<T, Z> type, final String key, final Z value) {
-        if (currentItem == null) {
-            return;
-        }
-        final ItemMeta meta = currentItem.getItemMeta();
-        if (meta == null) {
-            return;
-        }
-        meta.getPersistentDataContainer().set(GuiProvider.getKey(key), type, value);
-        currentItem.setItemMeta(meta);
-    }
-
-
-    public <T, Z> Z getMeta(final PersistentDataType<T, Z> type, final String key) {
-        if (currentItem == null) {
-            return null;
-        }
-        final ItemMeta meta = currentItem.getItemMeta();
-        if (meta == null) {
-            return null;
-        }
-        return meta.getPersistentDataContainer().get(GuiProvider.getKey(key), type);
-    }
-
-
-    public <T, Z> boolean hasMeta(final PersistentDataType<T, Z> type, final String key) {
-        return getMeta(type, key) != null;
-    }
-
     @SuppressWarnings("PMD.ConfusingTernary")
     @Override
     public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event) {
@@ -152,13 +125,13 @@ public class PlaceableIcon extends Element implements Interactive {
     }
 
     private boolean handlePlacingItem(final InventoryClickEvent event, final boolean isPlaceholder) {
-        final ItemStack cursor = event.getCursor();
+        final ItemStack cursor = event.getCursor(); //todo fix the spaghetti!
         if (isPlaceholder) {
             currentItem = cursor;
             event.getWhoClicked().setItemOnCursor(null);
         } else {
             if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-                if (cursor.isSimilar(currentItem)) {
+                if (cursor != null && cursor.isSimilar(currentItem)) {
                     cursor.setAmount(cursor.getAmount() + currentItem.getAmount());
                     event.getWhoClicked().setItemOnCursor(cursor);
                     currentItem = null;
@@ -196,18 +169,29 @@ public class PlaceableIcon extends Element implements Interactive {
     }
 
     @Override
-    public void setItem(final ItemStack item) {
-        if (item == null || item.getType().isAir()) {
-            this.currentItem.setType(Material.AIR);
-            this.currentItem = null;
-        } else {
-            this.currentItem.setAmount(item.getAmount());
+    public void updateItem(@Nullable final String name, @Nullable final String lore, @Nullable final Material material) {
+        if (currentItem == null) {
+            I.log(Level.WARNING, "Attempted to update PlaceableIcon when it was null! This shouldn't have occurred!");
+            return;
+        }
+        if (currentItem.isSimilar(placeholder)) {
+            Interactive.super.updateItem(name, lore, material);
+        }
+    }
 
-            if (currentItem.isSimilar(placeholder)) {
-                this.currentItem.setType(item.getType());
-                this.currentItem.setItemMeta(item.getItemMeta());
-                this.currentItem.setData(item.getData());
+    @Override
+    public void addAmount(final int delta) {
+        if (currentItem == null) {
+            I.log(Level.WARNING, "Attempted to update PlaceableIcon when it was null! This shouldn't have occurred!");
+            return;
+        }
+        final int amount = currentItem.getAmount() + delta;
+        if (amount > 0) {
+            if (amount < 65) {
+                currentItem.setAmount(amount);
             }
+        } else if (!placeholder.isSimilar(currentItem)) {
+            currentItem = null;
         }
     }
 }

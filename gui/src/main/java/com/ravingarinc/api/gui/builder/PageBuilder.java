@@ -4,7 +4,6 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.component.Page;
 import com.ravingarinc.api.gui.component.action.Action;
-import com.ravingarinc.api.gui.component.icon.Dynamic;
 import com.ravingarinc.api.gui.component.icon.PageFiller;
 import com.ravingarinc.api.gui.component.icon.PageIcon;
 import org.bukkit.ChatColor;
@@ -146,7 +145,6 @@ public class PageBuilder implements Builder<Page> {
                         predicateProvider == null ? (g) -> true : predicateProvider.apply(gui, val),
                         consumerProvider == null ? (i) -> {
                         } : consumerProvider.apply(gui, val));
-                icon.addChild(() -> new Dynamic(identifier, this.parent.reference()));
                 actionsToAdd.forEach(fun -> icon.addAction(fun.apply(gui, val)));
                 return icon;
             };

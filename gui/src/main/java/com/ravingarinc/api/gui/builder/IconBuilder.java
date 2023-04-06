@@ -2,7 +2,6 @@ package com.ravingarinc.api.gui.builder;
 
 import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.api.*;
-import com.ravingarinc.api.gui.component.icon.Dynamic;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +26,8 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         actionBuilders = new LinkedList<>();
     }
 
+    @Deprecated
     public IconBuilder<C, P> setDynamic() {
-        final String parent = icon.getIdentifier();
-        icon.addChild(() -> new Dynamic(parent, owner.reference()));
         return this;
     }
 
