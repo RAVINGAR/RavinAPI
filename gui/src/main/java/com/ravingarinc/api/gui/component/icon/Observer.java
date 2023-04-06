@@ -1,54 +1,29 @@
 package com.ravingarinc.api.gui.component.icon;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.component.action.Action;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.logging.Level;
 
-/*
-A submodule of a component which will update its parent if a predicate is true
+/**
+ * A submodule of a component which will update its parent if a predicate is true
  */
-public class Observer implements Component, Actionable {
-    private final List<Action> actions;
-    private final Interactive parent;
-    private final String identifier;
-    private final Predicate<ItemStack> condition;
-    private final Supplier<Boolean> supplier;
+public abstract class Observer implements Component, Actionable {
+    protected final List<Action> actions;
+    protected final Component parent;
+    protected final String identifier;
 
     /**
      * An observer's actions will be called after it's parent as an item returns true for the predicate. It's actions in
      * most cases will point towards its parent
-     *
-     * @param parent
-     * @param condition
      */
-    public Observer(final Interactive parent, final Predicate<ItemStack> condition) {
-        this.identifier = (parent == null ? "?" : parent.getIdentifier()) + "_OBSERVER";
-        this.parent = parent;
-        this.condition = condition;
-        supplier = null;
-        actions = new LinkedList<>();
-    }
-
-    public Observer(final Component parent, final Supplier<Boolean> condition) {
+    public Observer(@NotNull final Component parent) {
         this.identifier = parent.getIdentifier() + "_OBSERVER";
-        this.parent = parent instanceof Interactive ? (Interactive) parent : null;
-
-        if (this.parent == null) {
-            I.log(Level.SEVERE, "Observer component was NOT child of Icon type!");
-        }
-        this.supplier = condition;
-        this.condition = null;
+        this.parent = parent;
         actions = new LinkedList<>();
     }
 
@@ -67,13 +42,6 @@ public class Observer implements Component, Actionable {
     @Override
     public String getParent() {
         return parent.getIdentifier();
-    }
-
-    @Override
-    public void fillElement(final BaseGui gui) {
-        if ((condition != null && condition.test(this.parent.getItem())) || (supplier != null && supplier.get())) {
-            performAllActions(gui);
-        }
     }
 
     @Override

@@ -73,7 +73,12 @@ public interface Component {
     Dynamic DYNAMIC = new Dynamic(null, null);
     Icon ICON = new Icon("ICON", "", "", "", Material.STONE, null, p -> true, (i) -> {
     });
-    Observer OBSERVER = new Observer(ICON, () -> true);
+    Observer OBSERVER = new Observer(ICON) {
+        @Override
+        public void fillElement(final BaseGui gui) {
+
+        }
+    };
     PlaceableIcon PLACEABLE_ICON = new PlaceableIcon("PLACEABLE_ICON", null, 0, (t) -> true);
     StaticIcon STATIC_ICON = new StaticIcon("STATIC_ICON", "", "", "", Material.STONE, null, p -> true, i -> {
     }, 0);
@@ -81,6 +86,9 @@ public interface Component {
     Queueable QUEUEABLE = new Queueable("", false);
 
     Page PAGE = new Page("PAGE", "");
+
+    PageIcon PAGE_ICON = new PageIcon("PAGE_ICON", "", "", "", Material.STONE, (i) -> true, itemStack -> {
+    });
 
     InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, string) -> {
     });

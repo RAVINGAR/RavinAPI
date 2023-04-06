@@ -6,7 +6,6 @@ import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.InputComponent;
 import com.ravingarinc.api.gui.component.Menu;
-import com.ravingarinc.api.gui.component.Page;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.Icon;
 import com.ravingarinc.api.gui.component.icon.PlaceableIcon;
@@ -20,13 +19,12 @@ import java.util.List;
 import java.util.function.*;
 
 public class MenuBuilder implements Builder<Menu> {
-    private final List<IconBuilder<?, MenuBuilder>> iconBuilders;
+    private final List<Builder<?>> builders;
     private final Menu lastMenu;
-    private PageBuilder lastPageBuilder = null;
 
     public MenuBuilder(final GuiBuilder<?> owner, final String identifier, final String parent, final int backIcon) {
         lastMenu = new Menu(identifier, parent, owner.getPrimaryBorder(), owner.getSecondaryBorder(), backIcon);
-        iconBuilders = new LinkedList<>();
+        builders = new LinkedList<>();
     }
 
     public MenuBuilder setBackground(final Material material) {
@@ -71,7 +69,7 @@ public class MenuBuilder implements Builder<Menu> {
 
     public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
         final IconBuilder<Icon, MenuBuilder> newBuilder = new IconBuilder<>(this, new Icon(identifier, display, lore, lastMenu.getIdentifier(), material, action, predicate, consumer));
-        iconBuilders.add(newBuilder);
+        builders.add(newBuilder);
         return newBuilder;
     }
 
@@ -100,7 +98,7 @@ public class MenuBuilder implements Builder<Menu> {
 
     public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
         final IconBuilder<StaticIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(identifier, display, lore, lastMenu.getIdentifier(), material, action, predicate, consumer, index));
-        iconBuilders.add(newBuilder);
+        builders.add(newBuilder);
         return newBuilder;
     }
 
@@ -111,27 +109,33 @@ public class MenuBuilder implements Builder<Menu> {
 
     public <T> StateIconBuilder<T> addStateIcon(final String identifier, final Action action, final int index, final Function<BaseGui, T> determiner) {
         final StateIconBuilder<T> newBuilder = new StateIconBuilder<>(this, new StateIcon<>(identifier, lastMenu.getIdentifier(), action, t -> true, index, determiner));
-        iconBuilders.add(newBuilder);
+        builders.add(newBuilder);
+        return newBuilder;
+    }
+
+    public GuiObserverActionBuilder<Menu, MenuBuilder> addObserver(final Predicate<BaseGui> predicate) {
+        final GuiObserverActionBuilder<Menu, MenuBuilder> newBuilder = new GuiObserverActionBuilder<>(lastMenu, predicate, this);
+        builders.add(newBuilder);
         return newBuilder;
     }
 
 
     public IconBuilder<PlaceableIcon, MenuBuilder> addPlaceableIcon(final String identifier, final int index, final Predicate<ItemStack> validator) {
         final IconBuilder<PlaceableIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new PlaceableIcon(identifier, lastMenu.getIdentifier(), index, validator));
-        iconBuilders.add(newBuilder);
+        builders.add(newBuilder);
         return newBuilder;
     }
 
     public IconBuilder<PlaceableIcon, MenuBuilder> addPlaceableIcon(final String identifier, final int index, final Predicate<ItemStack> validator, final ItemStack placeholder) {
         final IconBuilder<PlaceableIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new PlaceableIcon(identifier, lastMenu.getIdentifier(), index, validator, placeholder));
-        iconBuilders.add(newBuilder);
+        builders.add(newBuilder);
         return newBuilder;
     }
 
     public PageBuilder addPage(final String identifier, final int... slots) {
-        handleLastPageBuilder();
-        lastPageBuilder = new PageBuilder(identifier, lastMenu.getIdentifier(), slots);
-        return lastPageBuilder;
+        final PageBuilder newBuilder = new PageBuilder(identifier, lastMenu.getIdentifier(), slots);
+        builders.add(newBuilder);
+        return newBuilder;
     }
 
     public MenuBuilder addDecoration(final String identifier, final Material material, final int[] slots) {
@@ -153,14 +157,6 @@ public class MenuBuilder implements Builder<Menu> {
         return this;
     }
 
-    public void handleLastPageBuilder() {
-        if (lastPageBuilder != null) {
-            final Page page = lastPageBuilder.get();
-            lastMenu.addChild(() -> page);
-            lastPageBuilder = null;
-        }
-    }
-
     @Override
     public Menu reference() {
         return lastMenu;
@@ -169,12 +165,11 @@ public class MenuBuilder implements Builder<Menu> {
     @Override
     public Menu get() {
         lastMenu.finalise();
-        handleLastPageBuilder();
-        iconBuilders.forEach(builder -> {
+        builders.forEach(builder -> {
             final Component c = builder.get();
             lastMenu.addChild(() -> c);
         });
-        iconBuilders.clear();
+        builders.clear();
         return lastMenu;
     }
 }

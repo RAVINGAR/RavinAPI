@@ -1,11 +1,7 @@
 package com.ravingarinc.api.gui.builder;
 
 import com.ravingarinc.api.I;
-import com.ravingarinc.api.gui.api.ActionBuilder;
-import com.ravingarinc.api.gui.api.Builder;
-import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.api.Interactive;
-import com.ravingarinc.api.gui.api.ParentBuilder;
+import com.ravingarinc.api.gui.api.*;
 import com.ravingarinc.api.gui.component.icon.Dynamic;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -37,14 +33,8 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         return this;
     }
 
-    public ObserverActionBuilder<C, P> addObserver(final Predicate<ItemStack> predicate) {
-        final ObserverActionBuilder<C, P> observerActionBuilder = new ObserverActionBuilder<>(icon, predicate, this);
-        actionBuilders.add(observerActionBuilder);
-        return observerActionBuilder;
-    }
-
-    public ObserverActionBuilder<C, P> addObserver(final Supplier<Boolean> condition) {
-        final ObserverActionBuilder<C, P> observerActionBuilder = new ObserverActionBuilder<>(icon, condition, this);
+    public ItemObserverActionBuilder<C, P> addObserver(final Predicate<ItemStack> predicate) {
+        final ItemObserverActionBuilder<C, P> observerActionBuilder = new ItemObserverActionBuilder<>(icon, predicate, this);
         actionBuilders.add(observerActionBuilder);
         return observerActionBuilder;
     }

@@ -4,6 +4,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.component.Page;
 import com.ravingarinc.api.gui.component.action.Action;
+import com.ravingarinc.api.gui.component.icon.Dynamic;
 import com.ravingarinc.api.gui.component.icon.PageFiller;
 import com.ravingarinc.api.gui.component.icon.PageIcon;
 import org.bukkit.ChatColor;
@@ -115,7 +116,8 @@ public class PageBuilder implements Builder<Page> {
             }
             final Function<T, PageIcon> function = (val) -> {
                 final String name = nameProvider.apply(val);
-                final PageIcon icon = new PageIcon(ChatColor.stripColor(name).toUpperCase().replaceAll(" ", "_"),
+                final String identifier = ChatColor.stripColor(name).toUpperCase().replaceAll(" ", "_");
+                final PageIcon icon = new PageIcon(identifier,
                         name,
                         loreProvider.apply(val),
                         identifier,
@@ -123,6 +125,7 @@ public class PageBuilder implements Builder<Page> {
                         predicateProvider == null ? (g) -> true : predicateProvider.apply(val),
                         consumerProvider == null ? (i) -> {
                         } : consumerProvider.apply(val));
+                icon.addChild(() -> new Dynamic(identifier, this.parent.reference()));
                 actionsToAdd.forEach(fun -> icon.addAction(fun.apply(val)));
                 return icon;
             };

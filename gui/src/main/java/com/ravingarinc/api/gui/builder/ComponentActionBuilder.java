@@ -13,11 +13,6 @@ public class ComponentActionBuilder<T extends BaseGui> extends BaseActionBuilder
     }
 
     @Override
-    public Actionable getActionable() {
-        return super.getActionable();
-    }
-
-    @Override
     public void build() {
         builder.get().addChild(() -> (Component) getActionable());
     }
