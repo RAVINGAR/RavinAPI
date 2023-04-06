@@ -11,17 +11,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class PageFiller<P> extends Element {
-    private final Function<P, PageIcon> forEach;
+    private final BiFunction<BaseGui, P, PageIcon> forEach;
     private final Supplier<Collection<P>> iterableSupplier;
 
     private final Map<String, PageIcon> lastIcons;
 
-    public PageFiller(final String identifier, final String parent, final Function<P, PageIcon> forEach, final Supplier<Collection<P>> iterableSupplier) {
+    public PageFiller(final String identifier, final String parent, final BiFunction<BaseGui, P, PageIcon> forEach, final Supplier<Collection<P>> iterableSupplier) {
         super(identifier, parent, 0);
         this.forEach = forEach;
         this.iterableSupplier = iterableSupplier;
@@ -34,7 +34,7 @@ public class PageFiller<P> extends Element {
         super.fillElement(gui);
         gui.findComponent(Component.PAGE, parent).ifPresentOrElse(page -> {
             lastIcons.clear();
-            iterableSupplier.get().stream().map(forEach).filter(i -> i.canDisplay(gui)).forEachOrdered(icon -> {
+            iterableSupplier.get().stream().map(t -> forEach.apply(gui, t)).filter(i -> i.canDisplay(gui)).forEachOrdered(icon -> {
                 page.queueIconToPlace(icon.getItem());
                 lastIcons.put(icon.getIdentifier(), icon);
             });

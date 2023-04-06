@@ -15,10 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 public class PageBuilder implements Builder<Page> {
     private final Page page;
@@ -58,13 +55,13 @@ public class PageBuilder implements Builder<Page> {
     public class PageFillerBuilder<T> implements Builder<PageFiller<T>> {
         private final String identifier;
         private final Supplier<Collection<T>> iterableSupplier;
-        private final List<Function<T, Action>> actionsToAdd;
+        private final List<BiFunction<BaseGui, T, Action>> actionsToAdd;
         private final PageBuilder parent;
-        private Function<T, String> nameProvider = null;
-        private Function<T, String> loreProvider = null;
-        private Function<T, Material> materialProvider = null;
-        private Function<T, Predicate<BaseGui>> predicateProvider = null;
-        private Function<T, Consumer<ItemStack>> consumerProvider = null;
+        private BiFunction<BaseGui, T, String> nameProvider = null;
+        private BiFunction<BaseGui, T, String> loreProvider = null;
+        private BiFunction<BaseGui, T, Material> materialProvider = null;
+        private BiFunction<BaseGui, T, Predicate<BaseGui>> predicateProvider = null;
+        private BiFunction<BaseGui, T, Consumer<ItemStack>> consumerProvider = null;
 
         public PageFillerBuilder(final String identifier, final PageBuilder builder, final Supplier<Collection<T>> iterableSupplier) {
             this.iterableSupplier = iterableSupplier;
@@ -74,31 +71,55 @@ public class PageBuilder implements Builder<Page> {
         }
 
         public PageFillerBuilder<T> setDisplayNameProvider(@NotNull final Function<T, String> provider) {
+            return setDisplayNameProvider((g, t) -> provider.apply(t));
+        }
+
+        public PageFillerBuilder<T> setLoreProvider(@NotNull final Function<T, String> provider) {
+            return setLoreProvider((g, t) -> provider.apply(t));
+        }
+
+        public PageFillerBuilder<T> setMaterialProvider(@NotNull final Function<T, Material> provider) {
+            return setMaterialProvider((g, t) -> provider.apply(t));
+        }
+
+        public PageFillerBuilder<T> setPredicateProvider(@NotNull final Function<T, Predicate<BaseGui>> provider) {
+            return setPredicateProvider((g, t) -> provider.apply(t));
+        }
+
+        public PageFillerBuilder<T> setConsumerProvider(@NotNull final Function<T, Consumer<ItemStack>> provider) {
+            return setConsumerProvider((g, t) -> provider.apply(t));
+        }
+
+        public PageFillerBuilder<T> addActionProvider(@NotNull final Function<T, Action> provider) {
+            return addActionProvider((g, t) -> provider.apply(t));
+        }
+
+        public PageFillerBuilder<T> setDisplayNameProvider(@NotNull final BiFunction<BaseGui, T, String> provider) {
             this.nameProvider = provider;
             return this;
         }
 
-        public PageFillerBuilder<T> setLoreProvider(@NotNull final Function<T, String> provider) {
+        public PageFillerBuilder<T> setLoreProvider(@NotNull final BiFunction<BaseGui, T, String> provider) {
             this.loreProvider = provider;
             return this;
         }
 
-        public PageFillerBuilder<T> setMaterialProvider(@NotNull final Function<T, Material> provider) {
+        public PageFillerBuilder<T> setMaterialProvider(@NotNull final BiFunction<BaseGui, T, Material> provider) {
             this.materialProvider = provider;
             return this;
         }
 
-        public PageFillerBuilder<T> setPredicateProvider(@NotNull final Function<T, Predicate<BaseGui>> provider) {
+        public PageFillerBuilder<T> setPredicateProvider(@NotNull final BiFunction<BaseGui, T, Predicate<BaseGui>> provider) {
             this.predicateProvider = provider;
             return this;
         }
 
-        public PageFillerBuilder<T> setConsumerProvider(@NotNull final Function<T, Consumer<ItemStack>> provider) {
+        public PageFillerBuilder<T> setConsumerProvider(@NotNull final BiFunction<BaseGui, T, Consumer<ItemStack>> provider) {
             this.consumerProvider = provider;
             return this;
         }
 
-        public PageFillerBuilder<T> addActionProvider(@NotNull final Function<T, Action> provider) {
+        public PageFillerBuilder<T> addActionProvider(@NotNull final BiFunction<BaseGui, T, Action> provider) {
             this.actionsToAdd.add(provider);
             return this;
         }
@@ -114,19 +135,19 @@ public class PageBuilder implements Builder<Page> {
             if (nameProvider == null || loreProvider == null || materialProvider == null) {
                 throw new IllegalArgumentException("Cannot get() sizeable page icon when name, lore or material provider is null!");
             }
-            final Function<T, PageIcon> function = (val) -> {
-                final String name = nameProvider.apply(val);
+            final BiFunction<BaseGui, T, PageIcon> function = (gui, val) -> {
+                final String name = nameProvider.apply(gui, val);
                 final String identifier = ChatColor.stripColor(name).toUpperCase().replaceAll(" ", "_");
                 final PageIcon icon = new PageIcon(identifier,
                         name,
-                        loreProvider.apply(val),
+                        loreProvider.apply(gui, val),
                         identifier,
-                        materialProvider.apply(val),
-                        predicateProvider == null ? (g) -> true : predicateProvider.apply(val),
+                        materialProvider.apply(gui, val),
+                        predicateProvider == null ? (g) -> true : predicateProvider.apply(gui, val),
                         consumerProvider == null ? (i) -> {
-                        } : consumerProvider.apply(val));
+                        } : consumerProvider.apply(gui, val));
                 icon.addChild(() -> new Dynamic(identifier, this.parent.reference()));
-                actionsToAdd.forEach(fun -> icon.addAction(fun.apply(val)));
+                actionsToAdd.forEach(fun -> icon.addAction(fun.apply(gui, val)));
                 return icon;
             };
             return new PageFiller<>(identifier, page.getIdentifier(), function, iterableSupplier);
