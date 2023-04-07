@@ -133,9 +133,13 @@ public class MenuBuilder implements Builder<Menu> {
     }
 
     public PageBuilder addPage(final String identifier, final int... slots) {
-        final PageBuilder newBuilder = new PageBuilder(identifier, lastMenu.getIdentifier(), slots);
+        final PageBuilder newBuilder = new PageBuilder(identifier, this, slots);
         builders.add(newBuilder);
         return newBuilder;
+    }
+
+    protected void addBuilder(final Builder<?> builder) {
+        this.builders.add(builder);
     }
 
     public MenuBuilder addDecoration(final String identifier, final Material material, final int[] slots) {

@@ -50,9 +50,26 @@ public class TestPlugin extends JavaPlugin {
         list.add("Test 3");
         list.add("Test 4");
         list.add("Test 5");
+        list.add("Test 6");
+        list.add("Test 7");
+        list.add("Test 8");
+        list.add("Test 9");
+        list.add("Test 10");
 
+        /*
+        .addStaticIcon("PREVIOUS_PAGE", "&cPrevious Page", "&7Navigate to the previous page", Material.ARROW,
+                            new PreviousPageAction("EDITOR_ACTOR_PAGE", "FRAME"),
+                            (g) -> page.hasPreviousPage(), i -> {
+                            }, 9).finalise()
+                    .addStaticIcon("NEXT_PAGE", "&cNext Page", "&7Navigate to the next page", Material.ARROW,
+                            new NextPageAction("EDITOR_ACTOR_PAGE", "FRAME"),
+                            (g) -> page.hasNextPage(), i -> {
+                            }, 17);
+         */
         builder.createMenu("MAIN", null)
                 .addPage("SPECIAL_PAGE", 10, 11, 12, 13, 14, 15, 16)
+                .addPreviousPageIcon(9).finalise()
+                .addNextPageIcon(17).finalise()
                 .addPageFiller("SIZEABLE", () -> list)
                 .setDisplayNameProvider((s) -> s)
                 .setLoreProvider((s) -> "This is lore of " + s)

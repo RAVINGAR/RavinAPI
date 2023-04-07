@@ -171,6 +171,17 @@ public class GuiProvider {
         }
     }
 
+    /**
+     * Destroy and remove a custom gui, shutting it down and removing it from memory
+     */
+    public void destroyCustomGui(final String identifier, final Player player) {
+        getCustomGui(identifier, player).ifPresent(gui -> {
+            gui.closeGui();
+            gui.shutdown();
+            guiPlayers.get(player.getUniqueId()).remove(gui);
+        });
+    }
+
     public List<BaseGui> getAllGuis(final Player player) {
         final List<BaseGui> guis = guiPlayers.computeIfAbsent(player.getUniqueId(), k -> new LinkedList<>());
         return Collections.unmodifiableList(guis);
