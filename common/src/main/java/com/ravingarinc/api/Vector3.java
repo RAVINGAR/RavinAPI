@@ -58,6 +58,10 @@ public class Vector3 extends Vector3d {
         return Math.sqrt(square(this.x - to.x) + square(this.y - to.y) + square(this.z - to.z));
     }
 
+    public double distanceSquared(final Vector3 to) {
+        return square(this.x - to.x) + square(this.y - to.y) + square(this.z - to.z);
+    }
+
     private double square(final double num) {
         return num * num;
     }

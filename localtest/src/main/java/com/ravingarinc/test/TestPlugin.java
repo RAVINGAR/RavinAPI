@@ -74,7 +74,8 @@ public class TestPlugin extends JavaPlugin {
                 .setDisplayNameProvider((s) -> s)
                 .setLoreProvider((s) -> "This is lore of " + s)
                 .setMaterialProvider((s) -> Material.GLASS)
-                .addActionProvider((s) -> new RunnableAction((gui) -> gui.getPlayer().sendMessage("You clicked this!")));
+                .addActionProvider((s) -> new RunnableAction((gui) -> gui.getPlayer().sendMessage("You clicked this " + s)))
+        ;
 
         return builder;
     }

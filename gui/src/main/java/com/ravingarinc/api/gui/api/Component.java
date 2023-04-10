@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -93,7 +94,7 @@ public interface Component {
     InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, string) -> {
     });
 
-    PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", null, null, null);
+    PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, g -> new ArrayList<>());
 
     String getIdentifier();
 

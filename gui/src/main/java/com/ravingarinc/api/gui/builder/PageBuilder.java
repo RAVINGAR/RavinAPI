@@ -99,7 +99,7 @@ public class PageBuilder implements Builder<Page> {
 
     public class PageFillerBuilder<T> implements Builder<PageFiller<T>> {
         private final String identifier;
-        private final Supplier<Collection<T>> iterableSupplier;
+        private final Function<BaseGui, Collection<T>> iterableSupplier;
         private final List<BiFunction<BaseGui, T, Action>> actionsToAdd;
         private final PageBuilder parent;
         private BiFunction<BaseGui, T, String> nameProvider = null;
@@ -109,6 +109,10 @@ public class PageBuilder implements Builder<Page> {
         private BiFunction<BaseGui, T, Consumer<ItemStack>> consumerProvider = null;
 
         public PageFillerBuilder(final String identifier, final PageBuilder builder, final Supplier<Collection<T>> iterableSupplier) {
+            this(identifier, builder, (gui) -> iterableSupplier.get());
+        }
+
+        public PageFillerBuilder(final String identifier, final PageBuilder builder, final Function<BaseGui, Collection<T>> iterableSupplier) {
             this.iterableSupplier = iterableSupplier;
             this.identifier = identifier;
             this.parent = builder;
@@ -186,7 +190,7 @@ public class PageBuilder implements Builder<Page> {
                 final PageIcon icon = new PageIcon(identifier,
                         name,
                         loreProvider.apply(gui, val),
-                        identifier,
+                        this.identifier,
                         materialProvider.apply(gui, val),
                         predicateProvider == null ? (g) -> true : predicateProvider.apply(gui, val),
                         consumerProvider == null ? (i) -> {
