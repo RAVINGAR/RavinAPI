@@ -102,6 +102,7 @@ public class PageBuilder implements Builder<Page> {
         private final Function<BaseGui, Collection<T>> iterableSupplier;
         private final List<BiFunction<BaseGui, T, Action>> actionsToAdd;
         private final PageBuilder parent;
+        private BiFunction<BaseGui, T, String> identifierProvider = null;
         private BiFunction<BaseGui, T, String> nameProvider = null;
         private BiFunction<BaseGui, T, String> loreProvider = null;
         private BiFunction<BaseGui, T, Material> materialProvider = null;
@@ -117,6 +118,10 @@ public class PageBuilder implements Builder<Page> {
             this.identifier = identifier;
             this.parent = builder;
             this.actionsToAdd = new ArrayList<>();
+        }
+
+        public PageFillerBuilder<T> setIdentifierProvider(@NotNull final Function<T, String> provider) {
+            return setIdentifierProvider((g, t) -> provider.apply(t));
         }
 
         public PageFillerBuilder<T> setDisplayNameProvider(@NotNull final Function<T, String> provider) {
@@ -141,6 +146,11 @@ public class PageBuilder implements Builder<Page> {
 
         public PageFillerBuilder<T> addActionProvider(@NotNull final Function<T, Action> provider) {
             return addActionProvider((g, t) -> provider.apply(t));
+        }
+
+        public PageFillerBuilder<T> setIdentifierProvider(@NotNull final BiFunction<BaseGui, T, String> provider) {
+            this.identifierProvider = provider;
+            return this;
         }
 
         public PageFillerBuilder<T> setDisplayNameProvider(@NotNull final BiFunction<BaseGui, T, String> provider) {
@@ -186,7 +196,9 @@ public class PageBuilder implements Builder<Page> {
             }
             final BiFunction<BaseGui, T, PageIcon> function = (gui, val) -> {
                 final String name = nameProvider.apply(gui, val);
-                final String identifier = ChatColor.stripColor(name).toUpperCase().replaceAll(" ", "_");
+                final String identifier = identifierProvider == null
+                        ? ChatColor.stripColor(name).toUpperCase().replaceAll(" ", "_")
+                        : identifierProvider.apply(gui, val);
                 final PageIcon icon = new PageIcon(identifier,
                         name,
                         loreProvider.apply(gui, val),
