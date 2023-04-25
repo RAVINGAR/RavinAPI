@@ -4,6 +4,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -40,7 +41,7 @@ public class Background implements Component {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
+    public void fillElement(final BaseGui gui, Player player) {
         final Inventory inv = gui.getInventory();
 
         final int rows = inv.getSize() / 9;

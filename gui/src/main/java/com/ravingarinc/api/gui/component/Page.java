@@ -2,6 +2,7 @@ package com.ravingarinc.api.gui.component;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Element;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,9 +22,9 @@ public class Page extends Element {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
+    public void fillElement(final BaseGui gui, Player player) {
         iconsToPlace.clear(); // Cleared here so that next-page() can count how many leftover icons there are
-        super.fillElement(gui);
+        super.fillElement(gui, player);
         placeIcons(gui);
     }
 

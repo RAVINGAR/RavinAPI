@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.component.*;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.*;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public interface Component {
         }
 
         @Override
-        public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event) {
+        public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event, Player player) {
             return true;
         }
 
@@ -44,7 +45,7 @@ public interface Component {
         }
 
         @Override
-        public void performAllActions(final BaseGui gui) {
+        public void performAllActions(final BaseGui gui, Player player) {
         }
 
         @Override
@@ -53,7 +54,7 @@ public interface Component {
         }
 
         @Override
-        public void fillElement(final BaseGui gui) {
+        public void fillElement(final BaseGui gui, Player player) {
         }
 
         @Override
@@ -76,7 +77,7 @@ public interface Component {
     });
     Observer OBSERVER = new Observer(ICON) {
         @Override
-        public void fillElement(final BaseGui gui) {
+        public void fillElement(final BaseGui gui, Player player) {
 
         }
     };
@@ -100,7 +101,7 @@ public interface Component {
 
     String getParent();
 
-    void fillElement(BaseGui gui);
+    void fillElement(BaseGui gui, Player player);
 
     /**
      * Get priority of a component. Lower values mean higher priority

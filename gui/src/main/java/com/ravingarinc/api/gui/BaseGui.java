@@ -13,32 +13,42 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 
-//If we want a generic Gui API later, move most of this to an inheriting class called TradeGui
-public class BaseGui extends Element {
+/**
+ * BaseGui represents an InventoryHolder that exists at some given place and can be viewed by multiple players.
+ * To open this inventory, simply call {@link Player#openInventory(Inventory)} with the parameter of
+ * {@link BaseGui#getInventory()}.
+ * A BaseGui is not destroyed until {@link #destroy()} is called.
+ */
+public class BaseGui extends Element implements InventoryHolder {
+    private final UUID internalId;
     protected final Inventory inventory;
     protected final JavaPlugin plugin;
+    @Deprecated
     protected Player player;
-    protected Menu currentMenu;
-    protected boolean guiOpen;
 
+    protected List<Player> players;
+    protected Menu currentMenu;
+
+    @Deprecated
     public BaseGui(final JavaPlugin plugin, final String name, final Inventory inventory) {
+        this(plugin, name, inventory.getSize());
+    }
+
+    public BaseGui(final JavaPlugin plugin, final String name, final int inventorySize) {
         super(name.toUpperCase(), null, -1);
-        this.inventory = inventory;
+        GuiProvider.register(plugin);
+        this.internalId = UUID.randomUUID();
+        this.inventory = plugin.getServer().createInventory(this, inventorySize, name);
+        this.players = new LinkedList<>();
         this.plugin = plugin;
-        //Add possibility to have GUI of any size providing size % 2 == 1
-        //Mainly support 45 or 63 size inventories
-        this.player = null;
-        this.guiOpen = false;
         currentMenu = null;
         children = new HashMap<>();
     }
@@ -47,17 +57,18 @@ public class BaseGui extends Element {
         return plugin;
     }
 
-    public void shutdown() {
+    public void destroy() {
         getChildren().forEach(component -> {
             if (component instanceof Active active) {
                 active.shutdown(this);
             }
         });
+        GuiProvider.register(plugin).unregister(this);
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
-        this.currentMenu.fillElement(this);
+    public void fillElement(final BaseGui gui, Player player) {
+        this.currentMenu.fillElement(this, player);
     }
 
     @Override
@@ -65,34 +76,32 @@ public class BaseGui extends Element {
         return BaseGui.class;
     }
 
-    public Inventory getInventory() {
+    @Override
+    public @NotNull Inventory getInventory() {
         return inventory;
-    }
-
-    public boolean isGuiOpen() {
-        return guiOpen;
     }
 
     public Menu getCurrentMenu() {
         return this.currentMenu;
     }
 
-    public void updateCurrentMenu(final String pointer) {
+    public void updateCurrentMenu(final String pointer, final Player player) {
         final Optional<Menu> nextMenu = findComponent(Component.MENU, pointer);
         if (nextMenu.isPresent()) {
             this.currentMenu = nextMenu.get();
-            refresh();
+            refresh(player);
         } else {
             I.log(Level.WARNING, "Could not update menu to " + pointer + " as it doesn't exist!");
         }
     }
 
-    public void refresh() {
-        fillElement(this);
+    public void refresh(Player player) {
+        fillElement(this, player);
     }
 
     public void handleClickedItem(final InventoryClickEvent event) {
         final ItemStack item = event.getCurrentItem();
+        final Player player = (Player) event.getWhoClicked();
         Optional<Interactive> interactive = Optional.empty();
         if (GuiProvider.hasMeta(item, "identifier")) {
             interactive = currentMenu.findComponent(Component.INTERACTIVE, GuiProvider.getMetaString(item, "identifier"));
@@ -108,23 +117,22 @@ public class BaseGui extends Element {
             }
             if (interactive.isEmpty() && event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
                 for (final PlaceableIcon placed : placeables) {
-                    if (!placed.isPlaceholder() && placed.handleClickedItem(this, event)) {
+                    if (!placed.isPlaceholder() && placed.handleClickedItem(this, event, player)) {
                         interactive = Optional.of(placed);
                         break;
                     }
                 }
             }
         }
-        interactive.ifPresentOrElse(i -> i.handleClickedItem(this, event), this::denySound);
+        interactive.ifPresentOrElse(i -> i.handleClickedItem(this, event, player), () -> denySound(player));
     }
 
-    public void playSound(final Sound sound, final float pitch) {
-        final Player clicker = player.getPlayer();
-        clicker.playSound(clicker.getLocation(), sound, 0.7F, pitch);
+    public void playSound(final Player player, final Sound sound, final float pitch) {
+        player.playSound(player.getLocation(), sound, 0.7F, pitch);
     }
 
-    public void denySound() {
-        playSound(Sound.BLOCK_NOTE_BLOCK_HAT, 0.1F);
+    public void denySound(Player player) {
+        playSound(player, Sound.BLOCK_NOTE_BLOCK_HAT, 0.1F);
     }
 
     @NotNull
@@ -133,60 +141,50 @@ public class BaseGui extends Element {
         return 0;
     }
 
-    /*
-    Returns ANY menu contained within this GUI
+    /**
+     * Returns the first player currently viewing the BaseGui.
+     *
+     * @return
+     * @deprecated In most cases, the GuiInstance class will be used instead as this holds the current clicker of said action.
      */
-
+    @Deprecated
     public Player getPlayer() {
-        if (player == null) {
-            I.log(Level.SEVERE, "Attempted to access player when player has not been initialised! Incorrect initialisation of BaseGui!");
-        } //todo potentially make the player irrelevant, and pass it through perform action and fill element instead!
-        return player;
+        return players.get(0);
     }
 
-    public void setPlayer(final Player player) {
-        if (this.player == null) {
-            this.player = player;
-        }
-    }
-
-    public void openGui() {
-        //At this point, when the GUI is created it should have a main menu fill
-        //After that whenever this is called it should resume on whatever gui the user was previously at
-        if (!guiOpen) {
-            player.openInventory(inventory);
+    /**
+     * Handle opening this gui. Does not open the physical inventory. This generally is called by a Listener and nothing else
+     */
+    public void handleOpen(Player player) {
+        if (!players.contains(player)) {
             if (currentMenu == null) {
                 currentMenu = findComponent(Component.MENU, "MAIN").orElseThrow();
             }
-            currentMenu.fillElement(this); //Refresh gui
-            guiOpen = true;
+            currentMenu.fillElement(this, player); //Refresh gui
+            players.add(player);
         }
     }
 
     /**
-     * Set's this GUIs state to closed. Does NOT close inventory.
+     * Handle closing this gui. Does not close the physical inventory. This generally is called by a Listener and nothing else
      */
-    public void closeGui() {
-        if (guiOpen) {
-            guiOpen = false;
-            findFirstComponent(Component.QUEUEABLE).ifPresent(q -> q.fillElement(this));
+    public void handleClose(Player player) {
+        if (players.contains(player)) {
+            findFirstComponent(Component.QUEUEABLE).ifPresent(q -> q.fillElement(this, player));
+            players.remove(player);
         }
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final BaseGui baseGui = (BaseGui) o;
-        return identifier.equals(baseGui.identifier) && player.equals(baseGui.player);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseGui baseGui = (BaseGui) o;
+        return Objects.equals(internalId, baseGui.internalId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier, player);
+        return Objects.hash(internalId);
     }
 }

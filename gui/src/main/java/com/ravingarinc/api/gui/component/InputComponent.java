@@ -47,9 +47,10 @@ public class InputComponent implements Component {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
+    public void fillElement(final BaseGui gui, Player player) {
+        //todo refactor this to work with multiple players (put things in a list instead!)
         final String message = response.getAcquire();
-        if (message != null && gui.getPlayer().equals(listening.getAcquire())) {
+        if (message != null && player.equals(listening.getAcquire())) {
             listener.unregister();
             listening.setRelease(null);
             response.setRelease(null);
@@ -57,10 +58,9 @@ public class InputComponent implements Component {
         }
     }
 
-    public void getResponse(final BaseGui gui) {
-        final Player player = gui.getPlayer();
+    public void getResponse(final BaseGui gui, final Player player) {
+        player.closeInventory();
         lastGui = gui;
-        gui.closeGui();
         for (final String line : description.split("\n")) {
             player.sendMessage(line);
         }
@@ -80,9 +80,11 @@ public class InputComponent implements Component {
 
     private class ChatListener implements Listener {
         private boolean isRegistered = false;
+        private JavaPlugin plugin;
 
         public void register(final JavaPlugin plugin) {
             if (!isRegistered) {
+                this.plugin = plugin;
                 plugin.getServer().getPluginManager().registerEvents(this, plugin);
                 isRegistered = true;
             }
@@ -99,7 +101,8 @@ public class InputComponent implements Component {
         public void onChatEvent(final AsyncPlayerChatEvent event) {
             if (event.getPlayer().equals(listening.getAcquire())) {
                 response.setRelease(event.getMessage());
-                lastGui.openGui();
+                final Player player = event.getPlayer();
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> player.openInventory(lastGui.getInventory()));
             }
         }
     }

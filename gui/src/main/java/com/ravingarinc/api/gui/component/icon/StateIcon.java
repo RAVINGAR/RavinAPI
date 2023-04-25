@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.action.Action;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -34,12 +35,12 @@ public class StateIcon<T> extends BaseIcon {
         states.add(new State<>(states.size(), state));
     }
 
-    public void nextState(final BaseGui gui) {
+    public void nextState(final BaseGui gui, final Player player) {
         int nextState = currentState.getIndex() + 1;
         if (nextState > states.size() - 1) {
             nextState = 0;
         }
-        switchState(nextState, gui);
+        switchState(nextState, gui, player);
     }
 
     @NotNull
@@ -65,21 +66,21 @@ public class StateIcon<T> extends BaseIcon {
         return Optional.empty();
     }
 
-    public void switchState(final int index, final BaseGui gui) {
-        getState(index).ifPresent(s -> switchState(s, gui));
+    public void switchState(final int index, final BaseGui gui, final Player player) {
+        getState(index).ifPresent(s -> switchState(s, gui, player));
     }
 
-    public void switchState(final State<T> state, final BaseGui gui) {
+    public void switchState(final State<T> state, final BaseGui gui, final Player player) {
         currentState = state;
-        currentState.performAllActions(gui);
+        currentState.performAllActions(gui, player);
     }
 
     @Override
-    protected void fillIcon(final BaseGui gui) {
+    protected void fillIcon(final BaseGui gui, Player player) {
         final T type = determiner.apply(gui);
         final State<T> nextState = type == null ? states.get(0) : getState(type).orElseGet(() -> states.get(0));
         if (currentState == null || !currentState.equals(nextState)) {
-            switchState(nextState, gui);
+            switchState(nextState, gui, player);
         }
         if (this.canDisplay(gui)) {
             gui.getInventory().setItem(index, this.item);
@@ -109,8 +110,8 @@ public class StateIcon<T> extends BaseIcon {
         }
 
         @Override
-        public void performAllActions(final BaseGui gui) {
-            this.actions.forEach(a -> a.performAction(gui));
+        public void performAllActions(final BaseGui gui, Player player) {
+            this.actions.forEach(a -> a.performAction(gui, player));
         }
 
         @Override

@@ -9,6 +9,7 @@ import com.ravingarinc.api.gui.component.icon.Icon;
 import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -147,8 +148,8 @@ public class Menu extends Element {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
-        super.fillElement(gui);
+    public void fillElement(final BaseGui gui, Player player) {
+        super.fillElement(gui, player);
         placeIcons(gui);
     }
 

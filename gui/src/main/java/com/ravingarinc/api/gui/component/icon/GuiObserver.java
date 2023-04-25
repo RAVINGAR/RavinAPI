@@ -2,6 +2,7 @@ package com.ravingarinc.api.gui.component.icon;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -19,9 +20,9 @@ public class GuiObserver extends Observer {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
+    public void fillElement(final BaseGui gui, Player player) {
         if (predicate.test(gui)) {
-            performAllActions(gui);
+            performAllActions(gui, player);
         }
     }
 }

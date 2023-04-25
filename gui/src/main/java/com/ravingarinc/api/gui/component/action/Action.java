@@ -1,6 +1,7 @@
 package com.ravingarinc.api.gui.component.action;
 
 import com.ravingarinc.api.gui.BaseGui;
+import org.bukkit.entity.Player;
 
 public abstract class Action implements Comparable<Action> {
     protected final String pointer;
@@ -24,7 +25,7 @@ public abstract class Action implements Comparable<Action> {
         return pointer;
     }
 
-    public abstract void performAction(BaseGui gui);
+    public abstract void performAction(BaseGui gui, Player performer);
 
     @Override
     public int compareTo(final Action other) {

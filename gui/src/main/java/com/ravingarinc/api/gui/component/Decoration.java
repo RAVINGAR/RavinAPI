@@ -6,6 +6,7 @@ import com.ravingarinc.api.gui.api.Element;
 import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
@@ -35,12 +36,12 @@ public class Decoration extends Element {
         }, index));
     }
 
-    public void updateWithPattern(final Pattern type, final Material update, final long duration, final BaseGui gui) {
-        type.performPattern(this, update, gui, duration);
+    public void updateWithPattern(final Pattern type, final Material update, final long duration, final BaseGui gui, final Player player) {
+        type.performPattern(this, update, gui, player, duration);
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
+    public void fillElement(final BaseGui gui, Player player) {
         if (this.children.isEmpty()) {
             if (index != null && material != null) {
                 for (final int i : index) {
@@ -48,7 +49,7 @@ public class Decoration extends Element {
                 }
             }
         }
-        super.fillElement(gui);
+        super.fillElement(gui, player);
     }
 
     @Override
@@ -60,19 +61,19 @@ public class Decoration extends Element {
     public enum Pattern {
         ASCENDING() {
             @Override
-            protected void performPattern(final Decoration decoration, final Material update, final BaseGui gui, final long duration) {
-                scheduleIterativeTask(decoration.getChildren(), gui, update, 0, duration);
+            protected void performPattern(final Decoration decoration, final Material update, final BaseGui gui, final Player player, final long duration) {
+                scheduleIterativeTask(decoration.getChildren(), gui, player, update, 0, duration);
             }
         }, //Update each child incrementally
         INSTANT() {
             @Override
-            protected void performPattern(final Decoration decoration, final Material update, final BaseGui gui, final long delay) {
-                scheduleInstantTask(decoration.getChildren(), gui, update, delay, 20, 20);
+            protected void performPattern(final Decoration decoration, final Material update, final BaseGui gui, final Player player, final long delay) {
+                scheduleInstantTask(decoration.getChildren(), gui, player, update, delay, 20, 20);
             }
         },
         EVEN() {
             @Override
-            protected void performPattern(final Decoration decoration, final Material update, final BaseGui gui, final long duration) {
+            protected void performPattern(final Decoration decoration, final Material update, final BaseGui gui, final Player player, final long duration) {
                 final List<Component> firstList = new LinkedList<>();
                 final List<Component> secondList = new LinkedList<>();
                 final Iterator<Component> iter = decoration.getChildren().iterator();
@@ -86,34 +87,37 @@ public class Decoration extends Element {
                     }
                 }
                 //Should alternate even colours technically or something like that
-                scheduleInstantTask(firstList, gui, update, 0, 40, duration);
-                scheduleInstantTask(secondList, gui, Material.WHITE_STAINED_GLASS_PANE, 20, 40, duration);
+                scheduleInstantTask(firstList, gui, player, update, 0, 40, duration);
+                scheduleInstantTask(secondList, gui, player, Material.WHITE_STAINED_GLASS_PANE, 20, 40, duration);
             }
         }; //Update every 2nd child in order. Will
 
 
-        private static void scheduleIterativeTask(final List<Component> list, final BaseGui gui, final Material update, final long delay, final long duration) {
+        private static void scheduleIterativeTask(final List<Component> list, final BaseGui gui, final Player player, final Material update, final long delay, final long duration) {
             final Iterator<Component> iterator = list.iterator();
-            new DecorationUpdateTask(iterator, gui, update).runTaskTimer(gui.getPlugin(), delay, duration / list.size());
+            new DecorationUpdateTask(iterator, gui, player, update).runTaskTimer(gui.getPlugin(), delay, duration / list.size());
         }
 
-        private static void scheduleInstantTask(final List<Component> list, final BaseGui gui, final Material update, final long delay, final long interval, final long duration) {
-            new DecorationInsantTask(list, gui, update, interval, duration).runTaskTimer(gui.getPlugin(), delay, interval);
+        private static void scheduleInstantTask(final List<Component> list, final BaseGui gui, final Player player, final Material update, final long delay, final long interval, final long duration) {
+            new DecorationInsantTask(list, gui, player, update, interval, duration).runTaskTimer(gui.getPlugin(), delay, interval);
         }
 
-        protected abstract void performPattern(Decoration decoration, Material update, BaseGui gui, long duration);
+        protected abstract void performPattern(Decoration decoration, Material update, BaseGui gui, Player player, long duration);
     }
 
     private static class DecorationInsantTask extends BukkitRunnable {
         private final List<Component> list;
         private final Material material;
         private final BaseGui gui;
+
+        private final Player player;
         private final long interval;
         private long duration;
 
-        public DecorationInsantTask(final List<Component> list, final BaseGui gui, final Material material, final long interval, final long duration) {
+        public DecorationInsantTask(final List<Component> list, final BaseGui gui, final Player player, final Material material, final long interval, final long duration) {
             this.list = list;
             this.gui = gui;
+            this.player = player;
             this.material = material;
             if (duration <= 0 || interval <= 0) {
                 throw new IllegalArgumentException("Cannot assign duration or interval of 0 or less!");
@@ -128,7 +132,7 @@ public class Decoration extends Element {
                 duration -= interval;
                 list.forEach(item -> {
                     ((Interactive) item).updateItem(null, null, material);
-                    item.fillElement(gui);
+                    item.fillElement(gui, player);
                 });
             } else {
                 this.cancel();
@@ -140,11 +144,13 @@ public class Decoration extends Element {
 
         private final Iterator<Component> iterator;
         private final Material material;
+        private final Player player;
         private final BaseGui gui;
 
-        public DecorationUpdateTask(final Iterator<Component> iterator, final BaseGui gui, final Material material) {
+        public DecorationUpdateTask(final Iterator<Component> iterator, final BaseGui gui, final Player player, final Material material) {
             this.iterator = iterator;
             this.material = material;
+            this.player = player;
             this.gui = gui;
         }
 
@@ -153,7 +159,7 @@ public class Decoration extends Element {
             if (iterator.hasNext()) {
                 final Interactive component = (Interactive) iterator.next();
                 component.updateItem(null, null, material);
-                component.fillElement(gui);
+                component.fillElement(gui, player);
             } else {
                 this.cancel();
             }

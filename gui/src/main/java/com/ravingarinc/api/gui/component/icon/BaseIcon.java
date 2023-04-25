@@ -9,6 +9,7 @@ import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -56,13 +57,13 @@ public abstract class BaseIcon extends Element implements Interactive {
     }
 
     @Override
-    public void performAllActions(final BaseGui gui) {
-        actions.forEach(action -> action.performAction(gui));
+    public void performAllActions(final BaseGui gui, Player player) {
+        actions.forEach(action -> action.performAction(gui, player));
     }
 
     @Override
-    public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event) {
-        performAllActions(gui);
+    public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event, Player player) {
+        performAllActions(gui, player);
         return true;
     }
 
@@ -84,12 +85,12 @@ public abstract class BaseIcon extends Element implements Interactive {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
-        super.fillElement(gui);
-        fillIcon(gui);
+    public void fillElement(final BaseGui gui, Player player) {
+        super.fillElement(gui, player);
+        fillIcon(gui, player);
     }
 
-    protected void fillIcon(final BaseGui gui) {
+    protected void fillIcon(final BaseGui gui, Player player) {
         final Optional<Menu> parent = gui.findComponent(Component.MENU, this.parent);
         parent.ifPresentOrElse(menu -> {
             if (BaseIcon.this.canDisplay(gui)) {

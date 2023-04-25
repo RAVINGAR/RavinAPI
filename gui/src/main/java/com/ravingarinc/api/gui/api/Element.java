@@ -3,14 +3,10 @@ package com.ravingarinc.api.gui.api;
 import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -50,8 +46,8 @@ public abstract class Element implements Component {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
-        this.getChildren().forEach(element -> element.fillElement(gui));
+    public void fillElement(final BaseGui gui, Player player) {
+        this.getChildren().forEach(element -> element.fillElement(gui, player));
     }
 
     /**

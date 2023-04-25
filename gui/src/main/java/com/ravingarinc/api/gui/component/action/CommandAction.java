@@ -2,6 +2,7 @@ package com.ravingarinc.api.gui.component.action;
 
 import com.ravingarinc.api.gui.BaseGui;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
@@ -20,7 +21,7 @@ public class CommandAction extends Action {
     }
 
     @Override
-    public void performAction(final BaseGui gui) {
-        gui.getPlugin().getServer().dispatchCommand(asConsole ? Bukkit.getConsoleSender() : gui.getPlayer(), parser.apply(pointer));
+    public void performAction(final BaseGui gui, Player performer) {
+        gui.getPlugin().getServer().dispatchCommand(asConsole ? Bukkit.getConsoleSender() : performer, parser.apply(pointer));
     }
 }

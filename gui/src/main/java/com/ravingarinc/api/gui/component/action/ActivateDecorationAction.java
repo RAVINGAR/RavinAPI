@@ -6,6 +6,7 @@ import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.Menu;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -27,12 +28,12 @@ public class ActivateDecorationAction extends Action {
     }
 
     @Override
-    public void performAction(final BaseGui gui) {
+    public void performAction(final BaseGui gui, Player performer) {
         final Optional<Menu> menuOp = gui.findComponent(Component.MENU, menu);
         if (menuOp.isPresent()) {
             final Optional<Decoration> decor = menuOp.get().findComponent(Component.DECORATION, pointer + "_DECORATION");
             decor.ifPresentOrElse(
-                    d -> d.updateWithPattern(pattern, material, duration.get(), gui)
+                    d -> d.updateWithPattern(pattern, material, duration.get(), gui, performer)
                     , () -> I.log(Level.WARNING, "Could not find decoration of " + pointer));
         }
     }

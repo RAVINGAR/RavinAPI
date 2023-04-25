@@ -4,6 +4,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.action.Action;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -50,9 +51,9 @@ public abstract class Observer implements Component, Actionable {
     }
 
     @Override
-    public void performAllActions(final BaseGui gui) {
+    public void performAllActions(final BaseGui gui, Player player) {
         actions.forEach(action -> {
-            action.performAction(gui);
+            action.performAction(gui, player);
         });
     }
 

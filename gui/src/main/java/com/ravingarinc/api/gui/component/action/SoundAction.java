@@ -17,8 +17,7 @@ public class SoundAction extends Action {
     }
 
     @Override
-    public void performAction(final BaseGui gui) {
-        final Player player = gui.getPlayer();
-        player.playSound(player.getLocation(), sound, volume, pitch); //TODO change this to use the BaseGui's location
+    public void performAction(final BaseGui gui, Player performer) {
+        performer.playSound(performer.getLocation(), sound, volume, pitch); //TODO change this to use the BaseGui's location
     }
 }

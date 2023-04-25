@@ -8,6 +8,7 @@ import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.action.Action;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -80,8 +81,8 @@ public class PlaceableIcon extends Element implements Interactive {
     }
 
     @Override
-    public void fillElement(final BaseGui gui) {
-        super.fillElement(gui);
+    public void fillElement(final BaseGui gui, Player player) {
+        super.fillElement(gui, player);
         if (currentItem == null || currentItem.getType().isAir()) {
             currentItem = placeholder.clone();
         }
@@ -94,15 +95,15 @@ public class PlaceableIcon extends Element implements Interactive {
     }
 
     @Override
-    public void performAllActions(final BaseGui gui) {
-        actions.forEach(action -> action.performAction(gui));
+    public void performAllActions(final BaseGui gui, Player player) {
+        actions.forEach(action -> action.performAction(gui, player));
     }
 
     @SuppressWarnings("PMD.ConfusingTernary")
     @Override
-    public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event) {
+    public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event, Player player) {
         if (locked) {
-            gui.denySound();
+            gui.denySound(player);
             return false;
         } else {
             boolean handled = true;
@@ -111,14 +112,14 @@ public class PlaceableIcon extends Element implements Interactive {
             if (cursor != null && !cursor.getType().isAir()) {
                 if (validator.test(cursor)) {
                     handled = handlePlacingItem(event, isPlaceholder);
-                    performAllActions(gui);
+                    performAllActions(gui, player);
                 }
             } else if (!isPlaceholder) { //If is not placeholder and has empty hand
                 handled = handlePlacingItem(event, false);
-                performAllActions(gui);
+                performAllActions(gui, player);
             }
             if (handled) {
-                gui.playSound(Sound.ITEM_ARMOR_EQUIP_LEATHER, 0.5F);
+                gui.playSound(player, Sound.ITEM_ARMOR_EQUIP_LEATHER, 0.5F);
             }
             return handled;
         }

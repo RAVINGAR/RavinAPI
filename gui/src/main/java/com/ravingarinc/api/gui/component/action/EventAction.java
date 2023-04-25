@@ -3,6 +3,7 @@ package com.ravingarinc.api.gui.component.action;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Actionable;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
@@ -46,7 +47,7 @@ public abstract class EventAction extends Action implements Actionable {
     }
 
     @Override
-    public void performAllActions(final BaseGui gui) {
-        preActions.forEach(action -> action.performAction(gui));
+    public void performAllActions(final BaseGui gui, Player player) {
+        preActions.forEach(action -> action.performAction(gui, player));
     }
 }

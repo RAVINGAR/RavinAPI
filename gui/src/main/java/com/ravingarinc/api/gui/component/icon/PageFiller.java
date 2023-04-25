@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Element;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -30,8 +31,8 @@ public class PageFiller<P> extends Element {
 
 
     @Override
-    public void fillElement(final BaseGui gui) {
-        super.fillElement(gui);
+    public void fillElement(final BaseGui gui, Player player) {
+        super.fillElement(gui, player);
         gui.findComponent(Component.PAGE, parent).ifPresentOrElse(page -> {
             lastIcons.clear();
             iterableSupplier.apply(gui).stream().map(t -> forEach.apply(gui, t)).filter(i -> i.canDisplay(gui)).forEachOrdered(icon -> {

@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Interactive;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class UpdateComponentAction extends Action {
 
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     @Override
-    public void performAction(final BaseGui gui) {
+    public void performAction(final BaseGui gui, Player performer) {
         final Optional<Interactive> component = gui.findComponent(Component.MENU, menu)
                 .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer));
 

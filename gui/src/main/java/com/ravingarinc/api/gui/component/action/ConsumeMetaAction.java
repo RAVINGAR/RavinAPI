@@ -3,6 +3,7 @@ package com.ravingarinc.api.gui.component.action;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Interactive;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Optional;
@@ -19,7 +20,7 @@ public class ConsumeMetaAction extends Action {
     }
 
     @Override
-    public void performAction(final BaseGui gui) {
+    public void performAction(final BaseGui gui, Player performer) {
         final Optional<Interactive> component = gui.findComponent(Component.MENU, menu)
                 .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer));
         if (component.isPresent()) {

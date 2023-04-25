@@ -7,12 +7,14 @@ import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.action.*;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -86,6 +88,15 @@ public abstract class BaseActionBuilder<P> implements ActionBuilder<P> {
 
     public BaseActionBuilder<P> addMiscAction(final Action action) {
         actionsToAdd.add(action);
+        return this;
+    }
+
+    public BaseActionBuilder<P> addRunnableAction(final Consumer<Player> consumer) {
+        return addRunnableAction((gui, player) -> consumer.accept(player));
+    }
+
+    public BaseActionBuilder<P> addRunnableAction(final BiConsumer<BaseGui, Player> consumer) {
+        actionsToAdd.add(new RunnableAction(consumer));
         return this;
     }
 

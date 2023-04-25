@@ -7,7 +7,6 @@ import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -137,11 +136,9 @@ public class GuiBuilder<T extends BaseGui> {
         return gui;
     }
 
-    protected T build(final Player player) {
+    public T build() {
         handleLastActionBuilder();
         handleLastQueueable();
-
-        gui.setPlayer(player);
 
         boolean mainExists = false;
         for (final MenuBuilder builder : menusToAdd) {
@@ -152,7 +149,7 @@ public class GuiBuilder<T extends BaseGui> {
             }
         }
         if (!mainExists) {
-            I.log(Level.SEVERE, "Main menu was never added for GuiBuilder for " + gui.getIdentifier() + "! This is a developer error!");
+            I.log(Level.SEVERE, "Main Menu was never added for GuiBuilder for " + gui.getIdentifier() + "! This is a developer error!");
         }
         return gui;
     }

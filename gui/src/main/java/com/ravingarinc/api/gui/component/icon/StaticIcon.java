@@ -3,6 +3,7 @@ package com.ravingarinc.api.gui.component.icon;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.component.action.Action;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
@@ -21,7 +22,7 @@ public class StaticIcon extends BaseIcon {
     }
 
     @Override
-    protected void fillIcon(final BaseGui gui) {
+    protected void fillIcon(final BaseGui gui, Player player) {
         if (this.canDisplay(gui)) {
             gui.getInventory().setItem(index, this.item);
         }

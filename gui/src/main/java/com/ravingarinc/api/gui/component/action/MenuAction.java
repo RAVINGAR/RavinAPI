@@ -1,6 +1,7 @@
 package com.ravingarinc.api.gui.component.action;
 
 import com.ravingarinc.api.gui.BaseGui;
+import org.bukkit.entity.Player;
 
 public class MenuAction extends Action {
     public MenuAction(final String pointer) {
@@ -8,11 +9,11 @@ public class MenuAction extends Action {
     }
 
     @Override
-    public void performAction(final BaseGui gui) {
+    public void performAction(final BaseGui gui, Player performer) {
         if (pointer.equalsIgnoreCase(gui.getIdentifier())) {
-            gui.getPlayer().closeInventory();
+            performer.closeInventory();
         } else {
-            gui.updateCurrentMenu(pointer);
+            gui.updateCurrentMenu(pointer, performer);
         }
     }
 }

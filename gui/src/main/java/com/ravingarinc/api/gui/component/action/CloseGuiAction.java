@@ -9,8 +9,7 @@ public class CloseGuiAction extends Action {
     }
 
     @Override
-    public void performAction(final BaseGui gui) {
-        final Player player = gui.getPlayer();
+    public void performAction(final BaseGui gui, Player player) {
         if (player.getOpenInventory().getTitle().equalsIgnoreCase(gui.getIdentifier())) {
             player.closeInventory();
         }
