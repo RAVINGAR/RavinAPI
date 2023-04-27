@@ -66,9 +66,15 @@ subprojects {
         }
     }
 
+    tasks.withType(PublishToMavenLocal).configureEach {
+        onlyIf {
+            (publication == publishing.publications.maven && publication.artifactId != 'localtest')
+        }
+    }
+
     tasks.withType(PublishToMavenRepository).configureEach {
         onlyIf {
-            (publication.artifactId != "localtest")
+            (publication == publishing.publications.maven && publication.artifactId != 'localtest')
         }
     }
 }
