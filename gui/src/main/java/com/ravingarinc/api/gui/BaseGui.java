@@ -1,6 +1,5 @@
 package com.ravingarinc.api.gui;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.api.Active;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Element;
@@ -15,11 +14,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * BaseGui represents an InventoryHolder that exists at some given place and can be viewed by multiple players.
@@ -29,6 +31,7 @@ import java.util.logging.Level;
  */
 public class BaseGui extends Element implements InventoryHolder {
     private final UUID internalId;
+    private final Logger logger;
     protected final Inventory inventory;
     protected final JavaPlugin plugin;
     @Deprecated
@@ -42,9 +45,10 @@ public class BaseGui extends Element implements InventoryHolder {
         this(plugin, name, inventory.getSize());
     }
 
-    public BaseGui(final JavaPlugin plugin, final String name, final int inventorySize) {
+    public BaseGui(final JavaPlugin plugin, final String name, final Integer inventorySize) {
         super(name.toUpperCase(), null, -1);
         GuiProvider.register(plugin);
+        this.logger = plugin.getLogger();
         this.internalId = UUID.randomUUID();
         this.inventory = plugin.getServer().createInventory(this, inventorySize, name);
         this.players = new LinkedList<>();
@@ -91,7 +95,7 @@ public class BaseGui extends Element implements InventoryHolder {
             this.currentMenu = nextMenu.get();
             refresh(player);
         } else {
-            I.log(Level.WARNING, "Could not update menu to " + pointer + " as it doesn't exist!");
+            GuiProvider.log(Level.WARNING, "Could not update menu to " + pointer + " as it doesn't exist!");
         }
     }
 
@@ -102,10 +106,9 @@ public class BaseGui extends Element implements InventoryHolder {
     public void handleClickedItem(final InventoryClickEvent event) {
         final ItemStack item = event.getCurrentItem();
         final Player player = (Player) event.getWhoClicked();
+        final String meta = getMetaString(item, "identifier");
         Optional<Interactive> interactive = Optional.empty();
-        if (GuiProvider.hasMeta(item, "identifier")) {
-            interactive = currentMenu.findComponent(Component.INTERACTIVE, GuiProvider.getMetaString(item, "identifier"));
-        } else {
+        if (meta == null) {
             //If clicked item does not have identifier, (Either item is null, or it's a placeable item)
             //todo maybe figure out how shift clicks from the inventory can auto place in placeable icons?
             final List<PlaceableIcon> placeables = currentMenu.findAllComponents(Component.PLACEABLE_ICON);
@@ -123,8 +126,21 @@ public class BaseGui extends Element implements InventoryHolder {
                     }
                 }
             }
+        } else {
+            interactive = currentMenu.findComponent(Component.INTERACTIVE, meta);
         }
         interactive.ifPresentOrElse(i -> i.handleClickedItem(this, event, player), () -> denySound(player));
+    }
+
+    public String getMetaString(final ItemStack item, final String key) {
+        if (item == null) {
+            return null;
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return null;
+        }
+        return meta.getPersistentDataContainer().get(getKey(key), PersistentDataType.STRING);
     }
 
     public void playSound(final Player player, final Sound sound, final float pitch) {

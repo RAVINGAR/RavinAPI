@@ -5,6 +5,7 @@ import com.ravingarinc.api.gui.component.*;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.*;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -118,5 +119,10 @@ public interface Component {
 
     default boolean isSameType(final Component component) {
         return component.getThisClass().equals(this.getThisClass());
+    }
+
+    @SuppressWarnings("deprecated")
+    default NamespacedKey getKey(final String key) {
+        return new NamespacedKey("ravinapi_gui", key);
     }
 }

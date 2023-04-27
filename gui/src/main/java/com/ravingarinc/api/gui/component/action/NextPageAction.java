@@ -1,8 +1,8 @@
 package com.ravingarinc.api.gui.component.action;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
@@ -21,7 +21,7 @@ public class NextPageAction extends Action {
             optional.ifPresentOrElse(page -> {
                 page.nextPage();
                 gui.fillElement(gui, performer);
-            }, () -> I.log(Level.WARNING, "Could not find page called " + pointer + "!"));
-        }, () -> I.log(Level.WARNING, "Could not find menu called " + menu + "!"));
+            }, () -> GuiProvider.log(Level.WARNING, "Could not find page called " + pointer + "!"));
+        }, () -> GuiProvider.log(Level.WARNING, "Could not find menu called " + menu + "!"));
     }
 }

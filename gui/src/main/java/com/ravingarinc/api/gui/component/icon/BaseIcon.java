@@ -1,10 +1,10 @@
 package com.ravingarinc.api.gui.component.icon;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Element;
 import com.ravingarinc.api.gui.api.Interactive;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
 import org.bukkit.ChatColor;
@@ -35,7 +35,7 @@ public abstract class BaseIcon extends Element implements Interactive {
 
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(display == null ? ChatColor.DARK_GRAY + "" : ChatColor.translateAlternateColorCodes('&', display));
+            meta.setDisplayName(display == null ? String.valueOf(ChatColor.DARK_GRAY) : ChatColor.translateAlternateColorCodes('&', display));
             if (lore != null && !lore.equals("")) {
                 meta.setLore(new ArrayList<>(Arrays.asList(ChatColor.translateAlternateColorCodes('&', lore).split("\n"))));
             }
@@ -96,7 +96,7 @@ public abstract class BaseIcon extends Element implements Interactive {
             if (BaseIcon.this.canDisplay(gui)) {
                 menu.queueIconToPlace(this.item);
             }
-        }, () -> I.log(Level.SEVERE, "Parent of icon was not menu!"));
+        }, () -> GuiProvider.log(Level.SEVERE, "Parent of icon was not menu!"));
         //This could be replaced with getCurrentMenu, but this is safer as it should only fillElement based on the icon's parent
     }
 }

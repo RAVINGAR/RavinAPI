@@ -1,9 +1,9 @@
 package com.ravingarinc.api.gui.component.action;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Interactive;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -40,11 +40,11 @@ public class UpdateComponentAction extends Action {
                 name = this.name.apply(gui);
                 lore = this.lore.apply(gui);
             } catch (final Exception e) {
-                I.log(Level.SEVERE, "Encountered exception updating dynamic icon! ", e);
+                GuiProvider.log(Level.SEVERE, "Encountered exception updating dynamic icon! ", e);
             }
             interactive.updateItem(name, lore, material);
         } else {
-            I.log(Level.WARNING, "Could not find interactive component " + this.getPointer());
+            GuiProvider.log(Level.WARNING, "Could not find interactive component " + this.getPointer());
         }
     }
 }

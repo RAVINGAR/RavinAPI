@@ -1,7 +1,7 @@
 package com.ravingarinc.api.gui.api;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -140,7 +140,7 @@ public abstract class Element implements Component {
                 final Component child = c.get();
                 final String id = child.getIdentifier();
                 if (children.containsKey(id)) {
-                    I.log(Level.WARNING, "Encountered duplicate component of " + id + " in element " + identifier);
+                    GuiProvider.log(Level.WARNING, "Encountered duplicate component of " + id + " in element " + identifier);
                 }
                 children.put(id, child);
                 toBeAdded.remove(c);

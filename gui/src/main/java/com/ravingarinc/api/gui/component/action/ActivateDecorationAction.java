@@ -1,8 +1,8 @@
 package com.ravingarinc.api.gui.component.action;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.Menu;
 import org.bukkit.Material;
@@ -34,7 +34,7 @@ public class ActivateDecorationAction extends Action {
             final Optional<Decoration> decor = menuOp.get().findComponent(Component.DECORATION, pointer + "_DECORATION");
             decor.ifPresentOrElse(
                     d -> d.updateWithPattern(pattern, material, duration.get(), gui, performer)
-                    , () -> I.log(Level.WARNING, "Could not find decoration of " + pointer));
+                    , () -> GuiProvider.log(Level.WARNING, "Could not find decoration of " + pointer));
         }
     }
 }

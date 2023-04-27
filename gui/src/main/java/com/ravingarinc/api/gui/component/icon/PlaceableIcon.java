@@ -1,6 +1,5 @@
 package com.ravingarinc.api.gui.component.icon;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Element;
 import com.ravingarinc.api.gui.api.Interactive;
@@ -45,7 +44,7 @@ public class PlaceableIcon extends Element implements Interactive {
         this.validator = validator;
         if (placeholder != null) {
             final ItemMeta meta = placeholder.getItemMeta();
-            meta.getPersistentDataContainer().set(GuiProvider.getKey("identifier"), PersistentDataType.STRING, identifier);
+            meta.getPersistentDataContainer().set(getKey("identifier"), PersistentDataType.STRING, identifier);
             placeholder.setItemMeta(meta);
         }
         //Give the identifier to the placeholder
@@ -172,7 +171,7 @@ public class PlaceableIcon extends Element implements Interactive {
     @Override
     public void updateItem(@Nullable final String name, @Nullable final String lore, @Nullable final Material material) {
         if (currentItem == null) {
-            I.log(Level.WARNING, "Attempted to update PlaceableIcon when it was null! This shouldn't have occurred!");
+            GuiProvider.log(Level.WARNING, "Attempted to update PlaceableIcon when it was null! This shouldn't have occurred!");
             return;
         }
         if (currentItem.isSimilar(placeholder)) {
@@ -183,7 +182,7 @@ public class PlaceableIcon extends Element implements Interactive {
     @Override
     public void addAmount(final int delta) {
         if (currentItem == null) {
-            I.log(Level.WARNING, "Attempted to update PlaceableIcon when it was null! This shouldn't have occurred!");
+            GuiProvider.log(Level.WARNING, "Attempted to update PlaceableIcon when it was null! This shouldn't have occurred!");
             return;
         }
         final int amount = currentItem.getAmount() + delta;

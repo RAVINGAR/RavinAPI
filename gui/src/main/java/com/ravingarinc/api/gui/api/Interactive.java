@@ -1,7 +1,6 @@
 package com.ravingarinc.api.gui.api;
 
 import com.ravingarinc.api.gui.BaseGui;
-import com.ravingarinc.api.gui.builder.GuiProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,7 +30,7 @@ public interface Interactive extends Actionable, Component {
         if (meta == null) {
             return;
         }
-        meta.getPersistentDataContainer().set(GuiProvider.getKey(key), type, value);
+        meta.getPersistentDataContainer().set(getKey(key), type, value);
         item.setItemMeta(meta);
     }
 
@@ -44,7 +43,7 @@ public interface Interactive extends Actionable, Component {
         if (meta == null) {
             return null;
         }
-        return meta.getPersistentDataContainer().get(GuiProvider.getKey(key), type);
+        return meta.getPersistentDataContainer().get(getKey(key), type);
     }
 
     default <T, Z> boolean hasMeta(final PersistentDataType<T, Z> type, final String key) {

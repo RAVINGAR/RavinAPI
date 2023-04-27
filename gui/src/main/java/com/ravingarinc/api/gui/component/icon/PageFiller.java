@@ -1,9 +1,9 @@
 package com.ravingarinc.api.gui.component.icon;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Element;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class PageFiller<P> extends Element {
                 page.queueIconToPlace(icon.getItem());
                 lastIcons.put(icon.getIdentifier(), icon);
             });
-        }, () -> I.log(Level.WARNING, "Could not find page component for identifier " + parent));
+        }, () -> GuiProvider.log(Level.WARNING, "Could not find page component for identifier " + parent));
     }
 
     @Override

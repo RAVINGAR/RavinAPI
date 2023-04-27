@@ -1,13 +1,10 @@
 package com.ravingarinc.api.gui.builder;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Menu;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,14 +33,14 @@ public class GuiBuilder<T extends BaseGui> {
         this(plugin, guiName, type, 45);
     }
 
-    public GuiBuilder(final JavaPlugin plugin, final String guiName, final Class<T> type, final int inventorySize) {
+    public GuiBuilder(final JavaPlugin plugin, final String guiName, final Class<T> type, final Integer inventorySize) {
         try {
-            final Constructor<T> constructor = type.getConstructor(JavaPlugin.class, String.class, Inventory.class);
-            this.gui = constructor.newInstance(plugin, guiName, Bukkit.createInventory(null, inventorySize, guiName));
+            final Constructor<T> constructor = type.getConstructor(JavaPlugin.class, String.class, Integer.class);
+            this.gui = constructor.newInstance(plugin, guiName, inventorySize);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-            I.log(Level.SEVERE, "Something went wrong finding constructor for BaseGui!" + e);
+            GuiProvider.log(Level.SEVERE, "Something went wrong finding constructor for BaseGui!" + e);
         } catch (final InvocationTargetException e) {
-            I.log(Level.SEVERE, "Gui constructor threw exception!", e.getTargetException());
+            GuiProvider.log(Level.SEVERE, "Gui constructor threw exception!", e.getTargetException());
         }
         init();
     }
@@ -149,7 +146,7 @@ public class GuiBuilder<T extends BaseGui> {
             }
         }
         if (!mainExists) {
-            I.log(Level.SEVERE, "Main Menu was never added for GuiBuilder for " + gui.getIdentifier() + "! This is a developer error!");
+            GuiProvider.log(Level.SEVERE, "Main Menu was never added for GuiBuilder for " + gui.getIdentifier() + "! This is a developer error!");
         }
         return gui;
     }

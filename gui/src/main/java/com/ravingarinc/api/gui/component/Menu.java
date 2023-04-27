@@ -1,8 +1,8 @@
 package com.ravingarinc.api.gui.component;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Element;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.action.MenuAction;
 import com.ravingarinc.api.gui.component.icon.Icon;
@@ -104,7 +104,7 @@ public class Menu extends Element {
             final int size = inv.getSize();
             if (amount > (size - 18 - (size / 9 - 2) * 2)) {
                 //If amount of items is greater than available blank inventory space
-                I.log(Level.WARNING, "Amount of items for menu " + this.identifier + " was too large!");
+                GuiProvider.log(Level.WARNING, "Amount of items for menu " + this.identifier + " was too large!");
             }
             //Mental note: I hate math
 
@@ -128,7 +128,7 @@ public class Menu extends Element {
                         setItemsInRow(Math.min(7, iconsToPlace.size()), r, inv);
                     }
                     if (!iconsToPlace.isEmpty()) {
-                        I.log(Level.WARNING, "Could not fit all components on one page!");
+                        GuiProvider.log(Level.WARNING, "Could not fit all components on one page!");
                     }
                 }
             }

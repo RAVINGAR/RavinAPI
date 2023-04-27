@@ -1,8 +1,8 @@
 package com.ravingarinc.api.gui.component.icon;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +22,7 @@ public class PageIcon extends BaseIcon {
             if (canDisplay(gui)) {
                 page.queueIconToPlace(this.item);
             }
-        }, () -> I.log(Level.SEVERE, "Parent of PageIcon was not of type Page!"));
+        }, () -> GuiProvider.log(Level.SEVERE, "Parent of PageIcon was not of type Page!"));
     }
 
     @Override

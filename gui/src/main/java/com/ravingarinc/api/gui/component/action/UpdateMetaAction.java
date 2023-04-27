@@ -1,9 +1,9 @@
 package com.ravingarinc.api.gui.component.action;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Interactive;
+import com.ravingarinc.api.gui.builder.GuiProvider;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -29,6 +29,6 @@ public class UpdateMetaAction<T, Z> extends Action {
         final Optional<Interactive> component = gui.findComponent(Component.MENU, menu)
                 .flatMap(m -> m.findComponent(Component.INTERACTIVE, pointer));
         component.ifPresentOrElse(c -> c.setMeta(type, key, value)
-                , () -> I.log(Level.WARNING, "Could not find dynamic child of component " + this.getPointer()));
+                , () -> GuiProvider.log(Level.WARNING, "Could not find dynamic child of component " + this.getPointer()));
     }
 }

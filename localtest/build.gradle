@@ -28,3 +28,7 @@ artifacts {
 }
 
 assemble.dependsOn shadowJar
+
+tasks.withType(PublishToMavenRepository).configureEach {
+    it.enabled = false
+}

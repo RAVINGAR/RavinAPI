@@ -1,7 +1,6 @@
 package com.ravingarinc.api.gui.builder;
 
 import com.ravingarinc.api.gui.BaseGui;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,17 +9,16 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * GuiProvider listens for important events and manages guis. It is registered automatically, otherwise when a gui
@@ -33,13 +31,13 @@ public class GuiProvider implements Listener {
     private final Map<UUID, Long> lastClicks;
 
     private final Set<BaseGui> registered;
+    private final Logger logger;
 
-    private final JavaPlugin plugin;
 
-    private GuiProvider(final JavaPlugin plugin) {
+    private GuiProvider(JavaPlugin plugin) {
         this.lastClicks = new ConcurrentHashMap<>();
         this.registered = ConcurrentHashMap.newKeySet();
-        this.plugin = plugin;
+        this.logger = plugin.getLogger();
     }
 
     /**
@@ -67,45 +65,30 @@ public class GuiProvider implements Listener {
         this.registered.remove(gui);
     }
 
-    public static boolean hasMeta(final @Nullable ItemStack item, final String key) {
-        if (item == null) {
-            return false;
-        }
-        final ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return false;
-        }
-        return meta.getPersistentDataContainer().has(getKey(key), PersistentDataType.STRING);
+    public static void log(final Level level, final String message, final Object... replacements) {
+        log(level, message, null, replacements);
     }
 
-    public static boolean getMetaByte(final @Nullable ItemStack item, final String key) {
-        if (item == null) {
-            return false;
+    public static void log(final Level level, final String message, @Nullable final Throwable throwable, final Object... replacements) {
+        if (instance == null) {
+            return;
         }
-        final ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return false;
+        String format = message;
+        for (final Object replacement : replacements) {
+            format = format.replaceFirst("%s", replacement.toString());
         }
-        final Byte b = meta.getPersistentDataContainer().get(getKey(key), PersistentDataType.BYTE);
-        if (b == null) {
-            return false;
+        if (throwable == null) {
+            instance.logger.log(level, format);
+        } else {
+            instance.logger.log(level, format, throwable);
         }
-        return b == 1;
     }
 
-    public static String getMetaString(final ItemStack item, final String key) {
-        if (item == null) {
-            return null;
+    public static void log(final Level level, final String message, final Throwable throwable) {
+        if (instance == null) {
+            return;
         }
-        final ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return null;
-        }
-        return meta.getPersistentDataContainer().get(getKey(key), PersistentDataType.STRING);
-    }
-
-    public static NamespacedKey getKey(final String key) {
-        return new NamespacedKey(instance.plugin, key);
+        instance.logger.log(level, message, throwable);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -1,6 +1,5 @@
 package com.ravingarinc.api.gui.builder;
 
-import com.ravingarinc.api.I;
 import com.ravingarinc.api.gui.api.*;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +63,7 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         if (actionBuilders.remove(builder)) {
             builder.build();
         } else {
-            I.log(Level.WARNING, "Attempted to handle action builder but it was not found in IconBuilder list!");
+            GuiProvider.log(Level.WARNING, "Attempted to handle action builder but it was not found in IconBuilder list!");
         }
     }
 
