@@ -108,8 +108,8 @@ public class GuiProvider implements Listener {
         event.setCancelled(true);
         UUID uuid = event.getWhoClicked().getUniqueId();
         long current = System.currentTimeMillis();
-        long lastClick = lastClicks.computeIfAbsent(uuid, (u) -> current);
-        if (current > lastClick + 100) {
+        Long lastClick = lastClicks.get(uuid);
+        if (lastClick == null || current > lastClick + 100) {
             lastClicks.put(uuid, current);
             gui.handleClickedItem(event);
         }
