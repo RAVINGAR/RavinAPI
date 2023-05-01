@@ -1,25 +1,3 @@
-plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-}
-
 dependencies {
-    implementation 'javax.vecmath:vecmath:1.5.2'
-}
 
-jar {
-    archiveFileName.set('common-original.jar')
-    archiveBaseName.set('common')
-    archiveVersion.set(null)
-    archiveClassifier.set('original')
 }
-
-shadowJar {
-    archiveClassifier.set(null)
-    relocate 'javax.vecmath', 'com.ravingarinc.libs.vecmath'
-}
-
-artifacts {
-    archives shadowJar
-}
-
-assemble.dependsOn shadowJar

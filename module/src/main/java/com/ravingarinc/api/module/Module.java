@@ -60,15 +60,10 @@ public abstract class Module implements Comparable<Module> {
     @Async.Execute
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public void initialise() throws ModuleLoadException {
-        boolean canLoad = true;
         for (final Class<? extends Module> clazz : dependsOn) {
             if (!plugin.getModule(clazz).isLoaded()) {
-                canLoad = false;
-                break;
+                throw new ModuleLoadException(this, ModuleLoadException.Reason.DEPENDENCY);
             }
-        }
-        if (!canLoad) {
-            throw new ModuleLoadException(this, ModuleLoadException.Reason.DEPENDENCY);
         }
         try {
             load();

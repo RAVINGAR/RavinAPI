@@ -5,11 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -102,10 +98,12 @@ public class CommandOption {
                 final String key = iterator.next();
                 if (!key.equals("?") && options.get(key).hasPermission(sender)) {
                     command.append(key);
-                    command.append(iterator.hasNext() ? "|" : ">");
+                    if (iterator.hasNext()) {
+                        command.append("|");
+                    }
                 }
-
             }
+            command.append(">");
         }
         if (!description.isEmpty()) {
             command.append(ChatColor.GRAY);

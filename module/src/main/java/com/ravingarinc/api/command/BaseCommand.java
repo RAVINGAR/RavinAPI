@@ -3,7 +3,6 @@ package com.ravingarinc.api.command;
 import com.ravingarinc.api.module.RavinPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -13,16 +12,6 @@ import java.util.function.BiFunction;
 public class BaseCommand extends CommandOption implements CommandExecutor {
     protected final RavinPlugin plugin;
 
-    @Deprecated
-    public BaseCommand(final String identifier, final String permission) {
-        this(null, identifier, permission, "", 1, (p, s) -> false);
-    }
-
-    @Deprecated
-    public BaseCommand(final String identifier, final String permission, final String description, final int requiredArgs, final BiFunction<CommandSender, String[], Boolean> function) {
-        this(null, identifier, permission, description, requiredArgs, function);
-    }
-
     public BaseCommand(final RavinPlugin plugin, final String identifier, final String permission) {
         this(plugin, identifier, permission, "", 1, (p, s) -> false);
     }
@@ -30,19 +19,6 @@ public class BaseCommand extends CommandOption implements CommandExecutor {
     public BaseCommand(final RavinPlugin plugin, final String identifier, final String permission, final String description, final int requiredArgs, final BiFunction<CommandSender, String[], Boolean> function) {
         super(identifier, null, permission, description, requiredArgs, function);
         this.plugin = plugin;
-    }
-
-    /**
-     * Use {@link #register()} and provide the plugin in the constructor of the command!
-     *
-     * @param plugin The plugin
-     */
-    @Deprecated
-    public void register(final JavaPlugin plugin) {
-        final PluginCommand command = plugin.getCommand(identifier);
-        Objects.requireNonNull(command, "Command /" + identifier + " was not registered correctly!");
-        command.setExecutor(this);
-        command.setTabCompleter(new CommandCompleter(this));
     }
 
     @Override
