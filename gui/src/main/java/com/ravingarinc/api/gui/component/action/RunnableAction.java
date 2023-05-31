@@ -15,6 +15,10 @@ public class RunnableAction extends Action {
         this((gui, p) -> consumer.accept(new ActionHolder(gui, p)));
     }
 
+    public RunnableAction(final Runnable runnable) {
+        this((g, p) -> runnable.run());
+    }
+
     public RunnableAction(final BiConsumer<BaseGui, Player> consumer) {
         super("Runnable_Action");
         this.consumer = consumer;

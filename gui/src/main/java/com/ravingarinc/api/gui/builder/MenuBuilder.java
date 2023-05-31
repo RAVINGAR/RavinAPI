@@ -3,6 +3,7 @@ package com.ravingarinc.api.gui.builder;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.api.Component;
+import com.ravingarinc.api.gui.api.TriConsumer;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.InputComponent;
 import com.ravingarinc.api.gui.component.Menu;
@@ -148,11 +149,11 @@ public class MenuBuilder implements Builder<Menu> {
         return this;
     }
 
-    public MenuBuilder addInputComponent(final String identifier, final String description, final Consumer<String> onResponse) {
-        return addInputComponent(identifier, description, (gui, str) -> onResponse.accept(str));
+    public MenuBuilder addInputComponent(final String identifier, final String description, final BiConsumer<Player, String> onResponse) {
+        return addInputComponent(identifier, description, (g, p, str) -> onResponse.accept(p, str));
     }
 
-    public MenuBuilder addInputComponent(final String identifier, final String description, final BiConsumer<BaseGui, String> onResponse) {
+    public MenuBuilder addInputComponent(final String identifier, final String description, final TriConsumer<BaseGui, Player, String> onResponse) {
         lastMenu.addChild(() -> new InputComponent(identifier, lastMenu.getIdentifier(), description, onResponse));
         return this;
     }

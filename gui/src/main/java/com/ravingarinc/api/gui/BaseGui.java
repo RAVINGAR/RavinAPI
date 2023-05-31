@@ -63,6 +63,11 @@ public class BaseGui extends Element implements InventoryHolder {
     }
 
     public void destroy() {
+        new ArrayList<>(players).forEach(player -> {
+            findFirstComponent(Component.QUEUEABLE).ifPresent(q -> q.fillElement(this, player));
+            player.closeInventory();
+            players.remove(player);
+        });
         getChildren().forEach(component -> {
             if (component instanceof Active active) {
                 active.shutdown(this);

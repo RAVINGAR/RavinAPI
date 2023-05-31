@@ -2,6 +2,7 @@ package com.ravingarinc.api.gui.component;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
+import com.ravingarinc.api.gui.api.TriConsumer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,21 +13,20 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 
 public class InputComponent implements Component {
     private final ChatListener listener;
     private final String identifier;
     private final String parent;
     private final String description;
-    private final BiConsumer<BaseGui, String> onResponse;
+    private final TriConsumer<BaseGui, Player, String> onResponse;
     private final AtomicReference<Player> listening;
 
     private final AtomicReference<String> response;
 
     private BaseGui lastGui;
 
-    public InputComponent(final String identifier, final String parent, final String description, final BiConsumer<BaseGui, String> onResponse) {
+    public InputComponent(final String identifier, final String parent, final String description, final TriConsumer<BaseGui, Player, String> onResponse) {
         this.identifier = identifier;
         this.listening = new AtomicReference<>(null);
         this.response = new AtomicReference<>(null);
@@ -54,7 +54,7 @@ public class InputComponent implements Component {
             listener.unregister();
             listening.setRelease(null);
             response.setRelease(null);
-            onResponse.accept(gui, message);
+            onResponse.accept(gui, player, message);
         }
     }
 

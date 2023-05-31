@@ -100,6 +100,11 @@ public abstract class BaseActionBuilder<P> implements ActionBuilder<P> {
         return this;
     }
 
+    public BaseActionBuilder<P> addRunnableAction(final Runnable runnable) {
+        actionsToAdd.add(new RunnableAction(runnable));
+        return this;
+    }
+
     public Actionable getActionable() {
         Collections.sort(actionsToAdd);
         actionsToAdd.forEach(reference::addAction);

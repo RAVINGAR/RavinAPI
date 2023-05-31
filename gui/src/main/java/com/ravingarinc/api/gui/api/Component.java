@@ -93,7 +93,7 @@ public interface Component {
     PageIcon PAGE_ICON = new PageIcon("PAGE_ICON", "", "", "", Material.STONE, (g, p) -> true, itemStack -> {
     });
 
-    InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, string) -> {
+    InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, player, string) -> {
     });
 
     PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, g -> new ArrayList<>());
