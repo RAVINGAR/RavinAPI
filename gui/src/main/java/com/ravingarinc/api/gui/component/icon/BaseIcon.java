@@ -17,16 +17,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public abstract class BaseIcon extends Element implements Interactive {
     protected List<Action> actions;
     protected ItemStack item;
-    protected Predicate<BaseGui> predicate;
+    protected BiPredicate<BaseGui, Player> predicate;
 
-    public BaseIcon(final String identifier, final String display, final String lore, final String parent, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
+    public BaseIcon(final String identifier, final String display, final String lore, final String parent, final Material material, final BiPredicate<BaseGui, Player> predicate, final Consumer<ItemStack> consumer) {
         super(identifier, parent, 3);
         if (material.isAir()) {
             throw new IllegalArgumentException("\nIcon material cannot be air!");
@@ -67,8 +67,8 @@ public abstract class BaseIcon extends Element implements Interactive {
         return true;
     }
 
-    public boolean canDisplay(final BaseGui gui) {
-        return predicate.test(gui);
+    public boolean canDisplay(final BaseGui gui, final Player player) {
+        return predicate.test(gui, player);
     }
 
     @Override
@@ -93,10 +93,10 @@ public abstract class BaseIcon extends Element implements Interactive {
     protected void fillIcon(final BaseGui gui, Player player) {
         final Optional<Menu> parent = gui.findComponent(Component.MENU, this.parent);
         parent.ifPresentOrElse(menu -> {
-            if (BaseIcon.this.canDisplay(gui)) {
+            if (BaseIcon.this.canDisplay(gui, player)) {
                 menu.queueIconToPlace(this.item);
             }
         }, () -> GuiProvider.log(Level.SEVERE, "Parent of icon was not menu!"));
-        //This could be replaced with getCurrentMenu, but this is safer as it should only fillElement based on the icon's parent
+        //This could be replaced with getCurrentMenu, but this is safer since it should only fillElement based on the icon's parent
     }
 }

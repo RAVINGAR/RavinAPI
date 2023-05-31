@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 
 public class Menu extends Element {
@@ -55,24 +55,24 @@ public class Menu extends Element {
         }
         addChild(() -> new Background(background));
         if (backIcon != -1) {
-            addChild(() -> new StaticIcon("BACK", ChatColor.RED + "Back", "", this.getIdentifier(), Material.BARRIER, new MenuAction(this.parent), p -> true, i -> {
+            addChild(() -> new StaticIcon("BACK", ChatColor.RED + "Back", "", this.getIdentifier(), Material.BARRIER, new MenuAction(this.parent), (g, p) -> true, i -> {
             }, backIcon));
         }
     }
 
-    public void addIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate) {
+    public void addIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final BiPredicate<BaseGui, Player> predicate) {
         addChild(() -> new Icon(identifier, display, lore, this.identifier, material, action, predicate, i -> {
         }));
     }
 
     public void addIcon(final String identifier, final String display, final String lore, final Material material, final Action action) {
-        addIcon(identifier, display, lore, material, action, t -> true);
+        addIcon(identifier, display, lore, material, action, (g, p) -> true);
     }
 
     /**
      * Adds an icon which points to a menu as specified by it's the icon's name itself
      */
-    public void addMenuIcon(final String display, final String lore, final Material material, final Predicate<BaseGui> predicate) {
+    public void addMenuIcon(final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate) {
         final String[] split = display.toUpperCase().replaceAll("\\[", "").replaceAll("]", "").split(" ");
         final String identifier = ChatColor.stripColor(split[split.length - 1]);
         addIcon(identifier, display, lore, material, new MenuAction(identifier), predicate);

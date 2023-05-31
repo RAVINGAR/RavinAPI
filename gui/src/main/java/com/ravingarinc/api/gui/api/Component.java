@@ -74,7 +74,7 @@ public interface Component {
     Closeable CLOSEABLE = new Closeable(null, null);
     Decoration DECORATION = new Decoration("DECORATION", null);
     Menu MENU = new Menu("MENU", null, Material.AIR, Material.AIR, -1);
-    Icon ICON = new Icon("ICON", "", "", "", Material.STONE, null, p -> true, (i) -> {
+    Icon ICON = new Icon("ICON", "", "", "", Material.STONE, null, (g, p) -> true, (i) -> {
     });
     Observer OBSERVER = new Observer(ICON) {
         @Override
@@ -83,14 +83,14 @@ public interface Component {
         }
     };
     PlaceableIcon PLACEABLE_ICON = new PlaceableIcon("PLACEABLE_ICON", null, 0, (t) -> true);
-    StaticIcon STATIC_ICON = new StaticIcon("STATIC_ICON", "", "", "", Material.STONE, null, p -> true, i -> {
+    StaticIcon STATIC_ICON = new StaticIcon("STATIC_ICON", "", "", "", Material.STONE, null, (g, p) -> true, i -> {
     }, 0);
-    StateIcon<?> STATE_ICON = new StateIcon<>("STATE_ICON", "", null, t -> true, 0, (g) -> 0);
+    StateIcon<?> STATE_ICON = new StateIcon<>("STATE_ICON", "", null, (g, p) -> true, 0, (g) -> 0);
     Queueable QUEUEABLE = new Queueable("", false);
 
     Page PAGE = new Page("PAGE", "");
 
-    PageIcon PAGE_ICON = new PageIcon("PAGE_ICON", "", "", "", Material.STONE, (i) -> true, itemStack -> {
+    PageIcon PAGE_ICON = new PageIcon("PAGE_ICON", "", "", "", Material.STONE, (g, p) -> true, itemStack -> {
     });
 
     InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, string) -> {

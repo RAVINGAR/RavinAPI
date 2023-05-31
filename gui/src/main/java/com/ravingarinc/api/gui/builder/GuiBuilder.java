@@ -5,7 +5,7 @@ import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Menu;
 import org.bukkit.Material;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
@@ -29,13 +29,13 @@ public class GuiBuilder<T extends BaseGui> {
     protected QueueableActionBuilder<T> queueableActionBuilder;
 
 
-    public GuiBuilder(final JavaPlugin plugin, final String guiName, final Class<T> type) {
+    public GuiBuilder(final Plugin plugin, final String guiName, final Class<T> type) {
         this(plugin, guiName, type, 45);
     }
 
-    public GuiBuilder(final JavaPlugin plugin, final String guiName, final Class<T> type, final Integer inventorySize) {
+    public GuiBuilder(final Plugin plugin, final String guiName, final Class<T> type, final Integer inventorySize) {
         try {
-            final Constructor<T> constructor = type.getConstructor(JavaPlugin.class, String.class, Integer.class);
+            final Constructor<T> constructor = type.getConstructor(Plugin.class, String.class, Integer.class);
             this.gui = constructor.newInstance(plugin, guiName, inventorySize);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             GuiProvider.log(Level.SEVERE, "Something went wrong finding constructor for BaseGui!" + e);

@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class GuiProvider implements Listener {
     private final Logger logger;
 
 
-    private GuiProvider(JavaPlugin plugin) {
+    private GuiProvider(Plugin plugin) {
         this.lastClicks = new ConcurrentHashMap<>();
         this.registered = ConcurrentHashMap.newKeySet();
         this.logger = plugin.getLogger();
@@ -43,7 +43,7 @@ public class GuiProvider implements Listener {
     /**
      * Tries to register this GuiProvider if it has not already been registered
      */
-    public static GuiProvider register(final JavaPlugin plugin) {
+    public static GuiProvider register(final Plugin plugin) {
         if (instance == null) {
             instance = new GuiProvider(plugin);
             plugin.getServer().getPluginManager().registerEvents(instance, plugin);

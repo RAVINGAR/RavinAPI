@@ -6,7 +6,7 @@ import com.ravingarinc.api.I
 import java.util.logging.Level
 
 abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
-    private val modules: MutableMap<Class<out Module>, Module> = HashMap()
+    private val modules: MutableMap<Class<out Module>, Module> = LinkedHashMap()
 
     override suspend fun onLoadAsync() {
         I.load(this, false)
@@ -25,7 +25,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
     override fun onDisable() {
         super.onDisable()
         server.scheduler.cancelTasks(this)
-        info("$name is now disabled")
+        info("$name is now disabled.")
     }
 
     suspend fun load() {
@@ -70,6 +70,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
                 } else {
                     module.cancel()
                 }
+                module.isLoaded = false
             } catch (exception: Exception) {
                 severe("Encountered exception cancelling module!", exception)
             }

@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -80,9 +80,9 @@ public class InputComponent implements Component {
 
     private class ChatListener implements Listener {
         private boolean isRegistered = false;
-        private JavaPlugin plugin;
+        private Plugin plugin;
 
-        public void register(final JavaPlugin plugin) {
+        public void register(final Plugin plugin) {
             if (!isRegistered) {
                 this.plugin = plugin;
                 plugin.getServer().getPluginManager().registerEvents(this, plugin);

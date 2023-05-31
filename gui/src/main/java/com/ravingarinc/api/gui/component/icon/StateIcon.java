@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class StateIcon<T> extends BaseIcon {
     private final List<State<T>> states;
@@ -21,7 +21,7 @@ public class StateIcon<T> extends BaseIcon {
     private final int index;
     private State<T> currentState;
 
-    public StateIcon(final String identifier, final String parent, final Action action, final Predicate<BaseGui> predicate, final int index, final Function<BaseGui, T> initial) {
+    public StateIcon(final String identifier, final String parent, final Action action, final BiPredicate<BaseGui, Player> predicate, final int index, final Function<BaseGui, T> initial) {
         super(identifier, identifier, "", parent, Material.BARRIER, predicate, i -> {
         });
         addAction(action);
@@ -82,7 +82,7 @@ public class StateIcon<T> extends BaseIcon {
         if (currentState == null || !currentState.equals(nextState)) {
             switchState(nextState, gui, player);
         }
-        if (this.canDisplay(gui)) {
+        if (this.canDisplay(gui, player)) {
             gui.getInventory().setItem(index, this.item);
         }
     }

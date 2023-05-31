@@ -11,6 +11,7 @@ import com.ravingarinc.api.gui.component.icon.PageIcon;
 import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +51,7 @@ public class PageBuilder implements Builder<Page> {
                 parentIdentifier,
                 material,
                 new NextPageAction(page.getIdentifier(), parentIdentifier),
-                (g) -> this.page.hasNextPage(), i -> {
+                (g, p) -> this.page.hasNextPage(), i -> {
         }, index));
         parent.addBuilder(newBuilder);
 
@@ -65,14 +66,14 @@ public class PageBuilder implements Builder<Page> {
                 parentIdentifier,
                 material,
                 new PreviousPageAction(page.getIdentifier(), parentIdentifier),
-                (g) -> this.page.hasPreviousPage(), i -> {
+                (g, p) -> this.page.hasPreviousPage(), i -> {
         }, index));
         parent.addBuilder(newBuilder);
 
         return newBuilder;
     }
 
-    public IconBuilder<PageIcon, PageBuilder> addPageIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate) {
+    public IconBuilder<PageIcon, PageBuilder> addPageIcon(final String identifier, final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate) {
         final IconBuilder<PageIcon, PageBuilder> builder = new IconBuilder<>(this, new PageIcon(identifier, display, lore, page.getIdentifier(), material, predicate, (t) -> {
         }));
         builders.add(builder);
@@ -106,7 +107,7 @@ public class PageBuilder implements Builder<Page> {
         private BiFunction<BaseGui, T, String> nameProvider = null;
         private BiFunction<BaseGui, T, String> loreProvider = null;
         private BiFunction<BaseGui, T, Material> materialProvider = null;
-        private BiFunction<BaseGui, T, Predicate<BaseGui>> predicateProvider = null;
+        private BiFunction<BaseGui, T, BiPredicate<BaseGui, Player>> predicateProvider = null;
         private BiFunction<BaseGui, T, Consumer<ItemStack>> consumerProvider = null;
 
         public PageFillerBuilder(final String identifier, final PageBuilder builder, final Supplier<Collection<T>> iterableSupplier) {
@@ -136,7 +137,7 @@ public class PageBuilder implements Builder<Page> {
             return setMaterialProvider((g, t) -> provider.apply(t));
         }
 
-        public PageFillerBuilder<T> setPredicateProvider(@NotNull final Function<T, Predicate<BaseGui>> provider) {
+        public PageFillerBuilder<T> setPredicateProvider(@NotNull final Function<T, BiPredicate<BaseGui, Player>> provider) {
             return setPredicateProvider((g, t) -> provider.apply(t));
         }
 
@@ -168,7 +169,7 @@ public class PageBuilder implements Builder<Page> {
             return this;
         }
 
-        public PageFillerBuilder<T> setPredicateProvider(@NotNull final BiFunction<BaseGui, T, Predicate<BaseGui>> provider) {
+        public PageFillerBuilder<T> setPredicateProvider(@NotNull final BiFunction<BaseGui, T, BiPredicate<BaseGui, Player>> provider) {
             this.predicateProvider = provider;
             return this;
         }
@@ -204,7 +205,7 @@ public class PageBuilder implements Builder<Page> {
                         loreProvider.apply(gui, val),
                         this.identifier,
                         materialProvider.apply(gui, val),
-                        predicateProvider == null ? (g) -> true : predicateProvider.apply(gui, val),
+                        predicateProvider == null ? (g, p) -> true : predicateProvider.apply(gui, val),
                         consumerProvider == null ? (i) -> {
                         } : consumerProvider.apply(gui, val));
                 actionsToAdd.forEach(fun -> icon.addAction(fun.apply(gui, val)));

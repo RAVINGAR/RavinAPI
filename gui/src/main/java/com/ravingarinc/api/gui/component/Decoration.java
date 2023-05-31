@@ -32,7 +32,7 @@ public class Decoration extends Element {
 
     public void addDecor(final Material material, final int index) {
         final String identifier = "DECOR_" + index;
-        addChild(() -> new StaticIcon(identifier, null, "", this.getIdentifier(), material, null, p -> true, i -> {
+        addChild(() -> new StaticIcon(identifier, null, "", this.getIdentifier(), material, null, (g, p) -> true, i -> {
         }, index));
     }
 

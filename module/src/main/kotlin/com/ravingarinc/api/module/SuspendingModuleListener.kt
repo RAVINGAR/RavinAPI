@@ -1,16 +1,15 @@
 package com.ravingarinc.api.module
 
-import com.github.shynixn.mccoroutine.bukkit.registerSuspendingEvents
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 
-class SuspendingModuleListener(
+open class SuspendingModuleListener(
     identifier: Class<out Module>,
-    plugin: RavinPluginKotlin,
+    plugin: RavinPlugin,
     vararg dependsOn: Class<out Module>
 ) : SuspendingModule(identifier, plugin, *dependsOn), Listener {
     override suspend fun suspendLoad() {
-        plugin.server.pluginManager.registerSuspendingEvents(this, plugin)
+        plugin.server.pluginManager.registerEvents(this, plugin)
     }
 
     override suspend fun suspendCancel() {

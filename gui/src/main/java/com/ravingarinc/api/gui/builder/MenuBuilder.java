@@ -12,6 +12,7 @@ import com.ravingarinc.api.gui.component.icon.PlaceableIcon;
 import com.ravingarinc.api.gui.component.icon.StateIcon;
 import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.LinkedList;
@@ -38,65 +39,65 @@ public class MenuBuilder implements Builder<Menu> {
      *
      * @return MenuBuilder to further modify the Menu
      */
-    public MenuBuilder addMenuIcon(final String display, final String lore, final Material material, final Predicate<BaseGui> predicate) {
+    public MenuBuilder addMenuIcon(final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate) {
         lastMenu.addMenuIcon(display, lore, material, predicate);
         return this;
     }
 
-    public MenuBuilder addMenuIcon(final String display, final Material material, final Predicate<BaseGui> predicate) {
+    public MenuBuilder addMenuIcon(final String display, final Material material, final BiPredicate<BaseGui, Player> predicate) {
         lastMenu.addMenuIcon(display, "", material, predicate);
         return this;
     }
 
     public MenuBuilder addMenuIcon(final String display, final String lore, final Material material) {
-        lastMenu.addMenuIcon(display, lore, material, t -> true);
+        lastMenu.addMenuIcon(display, lore, material, (g, p) -> true);
         return this;
     }
 
     public MenuBuilder addMenuIcon(final String display, final Material material) {
-        lastMenu.addMenuIcon(display, "", material, t -> true);
+        lastMenu.addMenuIcon(display, "", material, (g, p) -> true);
         return this;
     }
 
-    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate) {
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate) {
         return addIcon(identifier, display, lore, material, predicate, i -> {
         });
     }
 
-    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate, final Consumer<ItemStack> consumer) {
         return addIcon(identifier, display, lore, material, null, predicate, consumer);
     }
 
-    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer) {
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final BiPredicate<BaseGui, Player> predicate, final Consumer<ItemStack> consumer) {
         final IconBuilder<Icon, MenuBuilder> newBuilder = new IconBuilder<>(this, new Icon(identifier, display, lore, lastMenu.getIdentifier(), material, action, predicate, consumer));
         builders.add(newBuilder);
         return newBuilder;
     }
 
     public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final int index) {
-        return addStaticIcon(identifier, display, lore, material, p -> true, i -> {
+        return addStaticIcon(identifier, display, lore, material, (g, p) -> true, i -> {
         }, index);
     }
 
-    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final int index) {
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate, final int index) {
         return addStaticIcon(identifier, display, lore, material, predicate, i -> {
         }, index);
     }
 
     public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Consumer<ItemStack> consumer, final int index) {
-        return addStaticIcon(identifier, display, lore, material, p -> true, consumer, index);
+        return addStaticIcon(identifier, display, lore, material, (g, p) -> true, consumer, index);
     }
 
-    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate, final Consumer<ItemStack> consumer, final int index) {
         return addStaticIcon(identifier, display, lore, material, null, predicate, consumer, index);
     }
 
     public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final int index) {
-        return addStaticIcon(identifier, display, lore, material, action, g -> true, i -> {
+        return addStaticIcon(identifier, display, lore, material, action, (g, p) -> true, i -> {
         }, index);
     }
 
-    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final Predicate<BaseGui> predicate, final Consumer<ItemStack> consumer, final int index) {
+    public IconBuilder<StaticIcon, MenuBuilder> addStaticIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final BiPredicate<BaseGui, Player> predicate, final Consumer<ItemStack> consumer, final int index) {
         final IconBuilder<StaticIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(identifier, display, lore, lastMenu.getIdentifier(), material, action, predicate, consumer, index));
         builders.add(newBuilder);
         return newBuilder;
@@ -108,7 +109,7 @@ public class MenuBuilder implements Builder<Menu> {
     }
 
     public <T> StateIconBuilder<T> addStateIcon(final String identifier, final Action action, final int index, final Function<BaseGui, T> determiner) {
-        final StateIconBuilder<T> newBuilder = new StateIconBuilder<>(this, new StateIcon<>(identifier, lastMenu.getIdentifier(), action, t -> true, index, determiner));
+        final StateIconBuilder<T> newBuilder = new StateIconBuilder<>(this, new StateIcon<>(identifier, lastMenu.getIdentifier(), action, (g, p) -> true, index, determiner));
         builders.add(newBuilder);
         return newBuilder;
     }

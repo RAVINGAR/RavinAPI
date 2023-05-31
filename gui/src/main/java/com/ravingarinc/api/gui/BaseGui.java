@@ -16,6 +16,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +34,7 @@ public class BaseGui extends Element implements InventoryHolder {
     private final UUID internalId;
     private final Logger logger;
     protected final Inventory inventory;
-    protected final JavaPlugin plugin;
+    protected final Plugin plugin;
     @Deprecated
     protected Player player;
 
@@ -45,7 +46,7 @@ public class BaseGui extends Element implements InventoryHolder {
         this(plugin, name, inventory.getSize());
     }
 
-    public BaseGui(final JavaPlugin plugin, final String name, final Integer inventorySize) {
+    public BaseGui(final Plugin plugin, final String name, final Integer inventorySize) {
         super(name.toUpperCase(), null, -1);
         GuiProvider.register(plugin);
         this.logger = plugin.getLogger();
@@ -57,7 +58,7 @@ public class BaseGui extends Element implements InventoryHolder {
         children = new HashMap<>();
     }
 
-    public JavaPlugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
 
