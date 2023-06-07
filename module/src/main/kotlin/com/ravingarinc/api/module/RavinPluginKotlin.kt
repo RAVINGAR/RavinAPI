@@ -62,7 +62,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
         }
     }
 
-    suspend fun cancel() {
+    open suspend fun cancel() {
         modules.values.reversed().filter { it.isLoaded }.forEach { module ->
             try {
                 if (module is SuspendingModule) {
