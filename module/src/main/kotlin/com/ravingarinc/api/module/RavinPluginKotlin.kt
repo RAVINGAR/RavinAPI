@@ -14,8 +14,8 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
 
     override suspend fun onEnableAsync() {
         loadModules()
-        load()
         loadCommands()
+        load()
     }
 
     override suspend fun onDisableAsync() {
@@ -38,7 +38,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
                     module.initialise()
                 }
             } catch (exception: ModuleLoadException) {
-                I.log(Level.SEVERE, exception.message)
+                I.log(Level.SEVERE, exception.message, exception.cause)
             }
             if (module.isLoaded) loaded++
         }

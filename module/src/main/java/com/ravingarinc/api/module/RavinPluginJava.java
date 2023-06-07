@@ -19,8 +19,8 @@ public abstract class RavinPluginJava extends JavaPlugin implements RavinPlugin 
     @Override
     public void onEnable() {
         loadModules();
-        load();
         loadCommands();
+        load();
     }
 
     public void load() {
