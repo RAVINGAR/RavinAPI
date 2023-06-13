@@ -3,15 +3,18 @@ package com.ravingarinc.api.gui.builder;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.api.Component;
+import com.ravingarinc.api.gui.component.Closeable;
 import com.ravingarinc.api.gui.component.Menu;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -27,6 +30,8 @@ public class GuiBuilder<T extends BaseGui> {
     protected ComponentActionBuilder<T> lastActionBuilder;
 
     protected QueueableActionBuilder<T> queueableActionBuilder;
+
+    protected @Nullable Closeable onDestroy = null;
 
 
     public GuiBuilder(final Plugin plugin, final String guiName, final Class<T> type) {
@@ -119,6 +124,20 @@ public class GuiBuilder<T extends BaseGui> {
 
     public GuiBuilder<T> addMiscComponent(final Supplier<Component> component) {
         gui.addChild(component);
+        return this;
+    }
+
+    /**
+     * The provided consumer is added to a closeable component
+     * When this GUI is destroyed (via player logging out or plugin reload), all added consumers are executed in the
+     * order that they were added.
+     */
+    public GuiBuilder<T> runOnDestroy(final Consumer<BaseGui> consumer) {
+        if (onDestroy == null) {
+            onDestroy = new Closeable(gui.getIdentifier());
+            gui.addChild(() -> onDestroy);
+        }
+        onDestroy.addConsumer(consumer);
         return this;
     }
 

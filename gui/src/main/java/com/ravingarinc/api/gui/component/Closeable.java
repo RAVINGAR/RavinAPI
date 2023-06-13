@@ -3,31 +3,23 @@ package com.ravingarinc.api.gui.component;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Active;
 import com.ravingarinc.api.gui.api.Component;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Functionally how this works. A GUI is only built once per player. However it still can be cleared
- * What this component does in interact directly with the ItemBuilder component. When a player walks x
- * amount of blocks away from the crafting station, the items within the station are placed on the top of it
- * TODO
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 public class Closeable implements Component, Active {
     private final String parent;
-    private Location origin;
+    private List<Consumer<BaseGui>> consumers = new ArrayList<>();
 
-    public Closeable(final String parent, final Location origin) {
+    public Closeable(final String parent) {
         this.parent = parent;
-        this.origin = origin;
     }
 
-    public void updateOrigin(final Location location) {
-        this.origin = location;
-    }
-
-    public Location getOrigin() {
-        return origin;
+    public void addConsumer(Consumer<BaseGui> consumer) {
+        consumers.add(consumer);
     }
 
     @Override
@@ -47,7 +39,7 @@ public class Closeable implements Component, Active {
 
     @Override
     public Class<Closeable> getThisClass() {
-        return null;
+        return Closeable.class;
     }
 
     @NotNull
@@ -58,6 +50,6 @@ public class Closeable implements Component, Active {
 
     @Override
     public void shutdown(final BaseGui gui) {
-
+        consumers.forEach(consumer -> consumer.accept(gui));
     }
 }

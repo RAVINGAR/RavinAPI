@@ -71,7 +71,7 @@ public interface Component {
     };
     Background BACKGROUND = new Background();
     Border BORDER = new Border(Material.AIR, Material.AIR);
-    Closeable CLOSEABLE = new Closeable(null, null);
+    Closeable CLOSEABLE = new Closeable(null);
     Decoration DECORATION = new Decoration("DECORATION", null);
     Menu MENU = new Menu("MENU", null, Material.AIR, Material.AIR, -1);
     Icon ICON = new Icon("ICON", "", "", "", Material.STONE, null, (g, p) -> true, (i) -> {
