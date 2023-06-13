@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public class Closeable implements Component, Active {
     private final String parent;
-    private List<Consumer<BaseGui>> consumers = new ArrayList<>();
+    private final List<Consumer<BaseGui>> consumers = new ArrayList<>();
 
     public Closeable(final String parent) {
         this.parent = parent;
