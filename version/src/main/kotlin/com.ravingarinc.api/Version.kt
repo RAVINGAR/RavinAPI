@@ -977,3 +977,11 @@ object Versions {
         innerVersion = creator.create()
     }
 }
+
+fun MutableList<Triple<Int, WrappedDataWatcher.Serializer, Any>>.build(
+    index: Int,
+    serializer: WrappedDataWatcher.Serializer,
+    obj: Any
+) {
+    this.add(Triple(index, serializer, obj))
+}
