@@ -13,6 +13,9 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.joml.AxisAngle4f
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import java.util.*
 import java.util.function.Consumer
 import kotlin.experimental.ExperimentalTypeInference
@@ -802,7 +805,11 @@ sealed class Version(
         }
 
         //</editor-fold>
-        companion object : VersionCreator<V1_19_4>(::V1_19_4, 1, 19, 4..4)
+        companion object : VersionCreator<V1_19_4>(::V1_19_4, 1, 19, 4..4) {
+            val vectorSerializer by lazy { WrappedDataWatcher.Registry.get(Vector3f::class.java) }
+            val axisAngleSerializer by lazy { WrappedDataWatcher.Registry.get(AxisAngle4f::class.java) }
+            val quaternionSerializer by lazy { WrappedDataWatcher.Registry.get(Quaternionf::class.java) }
+        }
     }
 
     open class V1_20(
