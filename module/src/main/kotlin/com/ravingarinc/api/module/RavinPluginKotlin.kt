@@ -38,7 +38,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
                     module.initialise()
                 }
             } catch (exception: ModuleLoadException) {
-                I.log(Level.SEVERE, exception.message, exception.cause)
+                I.log(if (module.isRequired) Level.SEVERE else Level.INFO, exception.message, exception.cause)
             }
             if (module.isLoaded || !module.isRequired) loaded++
         }
@@ -46,7 +46,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
             if (loaded == modules.size) {
                 info("$name has been enabled successfully!")
             } else {
-                info("$name has been partially enabled successfully!")
+                info("$name has been partially enabled!")
                 warn("${modules.size - loaded} module/s have failed to load!")
             }
         } else {

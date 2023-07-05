@@ -24,11 +24,11 @@ public abstract class RavinPluginJava extends JavaPlugin implements RavinPlugin 
     }
 
     public void load() {
-        modules.values().forEach(manager -> {
+        modules.values().forEach(module -> {
             try {
-                manager.initialise();
+                module.initialise();
             } catch (final ModuleLoadException e) {
-                I.log(Level.SEVERE, e.getMessage(), e.getCause());
+                I.log(module.isRequired ? Level.SEVERE : Level.INFO, e.getMessage(), e.getCause());
             }
         });
 

@@ -68,6 +68,12 @@ public class ModuleLoadException extends Exception {
             public String getMessage(final Module module) {
                 return "Could not load " + module.getName() + " due to an unknown reason!";
             }
+        },
+        PLUGIN_DEPEND {
+            @Override
+            public String getMessage(Module module) {
+                return "Could not load " + module.getName() + "due to a missing plugin!";
+            }
         };
 
         public abstract String getMessage(Module module);
