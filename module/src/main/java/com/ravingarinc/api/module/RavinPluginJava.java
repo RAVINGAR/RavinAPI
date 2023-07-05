@@ -34,7 +34,7 @@ public abstract class RavinPluginJava extends JavaPlugin implements RavinPlugin 
 
         int loaded = 0;
         for (final Module module : modules.values()) {
-            if (module.isLoaded()) {
+            if (module.isLoaded() || !module.isRequired) {
                 loaded++;
             }
         }

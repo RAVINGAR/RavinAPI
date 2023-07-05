@@ -465,7 +465,7 @@ sealed class Version(
             packet.integers
                 .write(0, id)
                 .write(1, indexedEntities[entityType])
-                .write(2, data)
+                .writeSafely(2, data)
             packet.uuiDs.write(0, uuid)
             packet.doubles
                 .write(0, x)
@@ -474,11 +474,11 @@ sealed class Version(
             packet.bytes
                 .write(0, pitch)
                 .write(1, yaw)
-                .write(2, pitch)
+                .writeSafely(2, pitch)
             packet.shorts
-                .write(0, 0)
-                .write(1, 0)
-                .write(2, 0)
+                .writeSafely(0, 0)
+                .writeSafely(1, 0)
+                .writeSafely(2, 0)
             return packet
         }
     }
@@ -870,7 +870,7 @@ sealed class Version(
         z: Double,
         pitch: Byte = 0,
         yaw: Byte = 0,
-        data: Int
+        data: Int = -1
     ): PacketContainer {
         return if (entityType == EntityType.PLAYER) spawnPlayer(id, uuid, x, y, z, pitch, yaw) else spawnMob(
             id,
@@ -909,11 +909,6 @@ sealed class Version(
 
     abstract fun playerInfo(action: PlayerInfoAction, data: PlayerInfoData): PacketContainer
 
-    fun getEntityTypeId(type: EntityType): Int {
-        return indexedEntities[type]
-            ?: throw IllegalStateException("Cannot get entity id for entity type '${type.name}' as version ${getVersionName()} does not contain this entity!")
-    }
-
     fun getVersionName(): String {
         return names[names.size - 1]
     }
@@ -921,6 +916,7 @@ sealed class Version(
     companion object {
         val protocol: ProtocolManager = ProtocolLibrary.getProtocolManager()
         val byteSerializer = WrappedDataWatcher.Registry.get(java.lang.Byte::class.java)
+        val boolSerializer = WrappedDataWatcher.Registry.get(java.lang.Boolean::class.java)
         val integerSerializer = WrappedDataWatcher.Registry.get(java.lang.Integer::class.java)
         val floatSerializer = WrappedDataWatcher.Registry.get(java.lang.Float::class.java)
         val itemSerializer = WrappedDataWatcher.Registry.getItemStackSerializer(false)

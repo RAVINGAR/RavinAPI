@@ -40,7 +40,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
             } catch (exception: ModuleLoadException) {
                 I.log(Level.SEVERE, exception.message, exception.cause)
             }
-            if (module.isLoaded) loaded++
+            if (module.isLoaded || !module.isRequired) loaded++
         }
         if (loaded > 1) {
             if (loaded == modules.size) {

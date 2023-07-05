@@ -17,12 +17,20 @@ public abstract class Module implements Comparable<Module> {
     protected final Class<? extends Module> clazz;
 
     protected final List<Class<? extends Module>> dependsOn;
+    protected final boolean isRequired;
     private boolean isLoaded;
+
 
     @SafeVarargs
     public Module(final Class<? extends Module> identifier, final RavinPlugin plugin, final Class<? extends Module>... dependsOn) {
+        this(identifier, plugin, true, dependsOn);
+    }
+
+    @SafeVarargs
+    public Module(final Class<? extends Module> identifier, final RavinPlugin plugin, final boolean isRequired, final Class<? extends Module>... dependsOn) {
         this.plugin = plugin;
         this.clazz = identifier;
+        this.isRequired = isRequired;
         this.dependsOn = new ArrayList<>();
         for (final Class<? extends Module> module : dependsOn) {
             this.dependsOn.add(module);

@@ -5,9 +5,15 @@ import org.bukkit.event.Listener;
 
 public class ModuleListener extends Module implements Listener {
 
+
     @SafeVarargs
     public ModuleListener(final Class<? extends Module> identifier, final RavinPlugin plugin, final Class<? extends Module>... dependsOn) {
         super(identifier, plugin, dependsOn);
+    }
+
+    @SafeVarargs
+    public ModuleListener(final Class<? extends Module> identifier, final RavinPlugin plugin, final boolean isRequired, final Class<? extends Module>... dependsOn) {
+        super(identifier, plugin, isRequired, dependsOn);
     }
 
     @Override

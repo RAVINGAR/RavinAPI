@@ -5,8 +5,9 @@ import java.util.logging.Level
 abstract class SuspendingModule(
     identifier: Class<out Module>,
     plugin: RavinPlugin,
+    isRequired: Boolean = true,
     vararg dependsOn: Class<out Module>
-) : Module(identifier, plugin, *dependsOn) {
+) : Module(identifier, plugin, isRequired, *dependsOn) {
     suspend fun suspendInitialise() {
         for (depend in dependsOn) {
             if (!plugin.getModule(depend).isLoaded) {
