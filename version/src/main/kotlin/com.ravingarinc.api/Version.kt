@@ -18,6 +18,7 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.*
 import java.util.function.Consumer
+import java.util.logging.Level
 import kotlin.experimental.ExperimentalTypeInference
 
 
@@ -956,6 +957,9 @@ object Versions {
     private var companion: Version.VersionCreator<*>? = null
 
     fun initialise(validVersions: Array<Version.VersionCreator<out Version>>) {
+        if (validVersions.isEmpty()) {
+            throw IllegalStateException("Parameter 'validVersions' for method Versions.initialise() must contain at least 1 version!")
+        }
         val bukkitVersion = Bukkit.getServer().bukkitVersion // expecting Format of 1.18.2-R0.1-SNAPSHOT
         val parts = bukkitVersion.substring(0, bukkitVersion.indexOf('-')).split(".")
 
@@ -967,14 +971,23 @@ object Versions {
             ?: throw IllegalStateException("Could not parse version patch from version $bukkitVersion!")
 
         var creator: Version.VersionCreator<*>? = null
+        var latest = validVersions[0]
         for (it in validVersions) {
+            if (it.major > latest.major && it.minor > latest.minor && it.patch.first > latest.patch.last) {
+                latest = it
+            }
             if (it.major == major && it.minor == minor && it.patch.contains(patch)) {
                 creator = it
                 break
             }
         }
         if (creator == null) {
-            throw IllegalStateException("Could not get server version as this plugin does not support the version $bukkitVersion!")
+            I.log(
+                Level.SEVERE, "Could not find handler for version '$bukkitVersion'! Using the latest " +
+                        "available handler for version '${latest.major}.${latest.minor}.${latest.patch.last}' as a fallback! " +
+                        "There will most likely be issues so please update this plugin or use an older server version! Use at your own risk!"
+            )
+            creator = latest
         }
         companion = creator
         innerVersion = creator.create()
