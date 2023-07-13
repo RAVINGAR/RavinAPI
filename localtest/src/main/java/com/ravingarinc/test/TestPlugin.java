@@ -26,6 +26,9 @@ public class TestPlugin extends JavaPlugin {
     public void onEnable() {
         I.load(this, true);
         getCommand("test").setExecutor(new GuiCommand());
+
+
+        getServer().getPluginManager().registerEvents(new TestListener(this), this);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class TestPlugin extends JavaPlugin {
             set.add(new Pair<>(8, -42));
 
             var pair = new Pair<>(6, 4);
-            I.log(Level.WARNING, "This is a test! Does set contain pair? ", set.contains(pair));
+            I.log(Level.WARNING, "This is a test! Does set contain pair? %s", set.contains(pair));
 
             if (sender instanceof Player player) {
                 player.openInventory(gui.getInventory());

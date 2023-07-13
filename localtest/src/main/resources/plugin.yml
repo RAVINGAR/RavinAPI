@@ -7,6 +7,8 @@ api-version: 1.18
 
 main: com.ravingarinc.test.TestPlugin
 
+depend: [ ProtocolLib ]
+
 commands:
   test:
     description: Test command
