@@ -6,12 +6,14 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.PacketContainer
-import com.comphenix.protocol.wrappers.*
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction
+import com.comphenix.protocol.wrappers.PlayerInfoData
+import com.comphenix.protocol.wrappers.WrappedDataValue
+import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import org.bukkit.util.Vector
+import org.bukkit.entity.Player
 import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -88,11 +90,10 @@ sealed class Version(
             val packet =
                 if (entityType.isAlive) Version.protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING)
                 else Version.protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY)
-
             packet.integers
                 .write(0, id)
-                .write(1, indexedEntities[entityType])
-                .write(2, data)
+                .write(1, data)
+            packet.entityTypeModifier.write(0, entityType)
             packet.uuiDs.write(0, uuid)
             packet.doubles
                 .write(0, x)
@@ -131,19 +132,6 @@ sealed class Version(
             packet.bytes
                 .write(0, pitch)
                 .write(1, yaw)
-            return packet
-        }
-
-        override fun acknowledgeDigging(
-            location: Vector,
-            status: EnumWrappers.PlayerDigType,
-            stage: Int
-        ): PacketContainer {
-            val packet = Version.protocol.createPacket(PacketType.Play.Server.BLOCK_BREAK)
-            packet.blockPositionModifier.write(0, BlockPosition(location))
-            packet.integers.write(0, 0)
-            packet.playerDigTypes.write(0, status)
-            packet.booleans.write(0, status == EnumWrappers.PlayerDigType.STOP_DESTROY_BLOCK)
             return packet
         }
     }
@@ -477,8 +465,8 @@ sealed class Version(
             val packet = Version.protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY)
             packet.integers
                 .write(0, id)
-                .write(1, indexedEntities[entityType])
-                .writeSafely(2, data)
+                .writeSafely(1, data)
+            packet.entityTypeModifier.write(0, entityType)
             packet.uuiDs.write(0, uuid)
             packet.doubles
                 .write(0, x)
@@ -492,16 +480,6 @@ sealed class Version(
                 .writeSafely(0, 0)
                 .writeSafely(1, 0)
                 .writeSafely(2, 0)
-            return packet
-        }
-
-        override fun acknowledgeDigging(
-            location: Vector,
-            status: EnumWrappers.PlayerDigType,
-            stage: Int
-        ): PacketContainer {
-            val packet = Version.protocol.createPacket(PacketType.Play.Server.BLOCK_CHANGED_ACK)
-            packet.integers.write(0, stage) // should this be stage or player entity id?
             return packet
         }
     }
@@ -932,7 +910,15 @@ sealed class Version(
 
     abstract fun playerInfo(action: PlayerInfoAction, data: PlayerInfoData): PacketContainer
 
-    abstract fun acknowledgeDigging(location: Vector, status: EnumWrappers.PlayerDigType, stage: Int): PacketContainer
+    fun removeEntity(entityId: Int): PacketContainer {
+        return removeEntities(listOf(entityId))
+    }
+
+    fun removeEntities(entityIds: List<Int>): PacketContainer {
+        val packet = Version.protocol.createPacket(PacketType.Play.Server.ENTITY_DESTROY)
+        packet.intLists.write(0, entityIds)
+        return packet
+    }
 
     fun getVersionName(): String {
         return names[names.size - 1]
@@ -1024,4 +1010,10 @@ fun MutableList<Triple<Int, WrappedDataWatcher.Serializer, Any>>.build(
     obj: Any
 ) {
     this.add(Triple(index, serializer, obj))
+}
+
+fun Player.sendPacket(vararg packets: PacketContainer) {
+    for (packet in packets) {
+        Version.protocol.sendServerPacket(this, packet)
+    }
 }
