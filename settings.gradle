@@ -12,6 +12,9 @@ project(':gui').projectDir = "$rootDir/gui" as File
 include ':module'
 project(':module').projectDir = "$rootDir/module" as File
 
+include ':module-kotlin'
+project(':module-kotlin').projectDir = "$rootDir/module/module-kotlin" as File
+
 include ':version'
 project(':version').projectDir = "$rootDir/version" as File
 
