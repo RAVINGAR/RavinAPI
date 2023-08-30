@@ -182,8 +182,8 @@ public class BaseGui extends Element implements InventoryHolder {
             if (currentMenu == null) {
                 currentMenu = findComponent(Component.MENU, "MAIN").orElseThrow();
             }
-            currentMenu.fillElement(this, player); //Refresh gui
             players.add(player);
+            currentMenu.fillElement(this, player); //Refresh gui
         }
     }
 
