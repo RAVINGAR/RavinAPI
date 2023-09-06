@@ -50,6 +50,11 @@ public class GuiBuilder<T extends BaseGui> {
         init();
     }
 
+    public GuiBuilder(T gui) {
+        this.gui = gui;
+        init();
+    }
+
     private void init() {
         border1 = Material.AIR;
         border2 = Material.AIR;

@@ -29,6 +29,9 @@ import java.util.logging.Logger;
  * To open this inventory, simply call {@link Player#openInventory(Inventory)} with the parameter of
  * {@link BaseGui#getInventory()}.
  * A BaseGui is not destroyed until {@link #destroy()} is called.
+ * It is up to the discretion of the developer to determine whether a BaseGui would be suitable for multiple players to use
+ * at one time. Since a single BaseGui represents a single inventory, one player clicking on a GUI would update it for all
+ * viewers. General rule - If a BaseGui is shared, then icons and actions SHOULD NOT be different per player.
  */
 public class BaseGui extends Element implements InventoryHolder {
     private final UUID internalId;
