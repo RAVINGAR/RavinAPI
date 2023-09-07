@@ -2,6 +2,7 @@ package com.ravingarinc.api.gui.builder;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Builder;
+import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Page;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.action.NextPageAction;
@@ -115,6 +116,7 @@ public class PageBuilder implements Builder<Page> {
         private final String identifier;
         private final Function<BaseGui, Collection<T>> iterableSupplier;
         private final List<BiFunction<BaseGui, T, Action>> actionsToAdd;
+        private final List<BiFunction<BaseGui, T, Component>> componentsToAdd;
         private final PageBuilder parent;
         private BiFunction<BaseGui, T, String> identifierProvider = null;
         private BiFunction<BaseGui, T, String> nameProvider = null;
@@ -132,6 +134,7 @@ public class PageBuilder implements Builder<Page> {
             this.identifier = identifier;
             this.parent = builder;
             this.actionsToAdd = new ArrayList<>();
+            this.componentsToAdd = new ArrayList<>();
         }
 
         public PageFillerBuilder<T> setIdentifierProvider(@NotNull final Function<T, String> provider) {
@@ -197,6 +200,11 @@ public class PageBuilder implements Builder<Page> {
             return this;
         }
 
+        public PageFillerBuilder<T> addComponentProvider(@NotNull final BiFunction<BaseGui, T, Component> provider) {
+            this.componentsToAdd.add(provider);
+            return this;
+        }
+
         @Override
         @Deprecated
         public PageFiller<T> reference() {
@@ -222,6 +230,7 @@ public class PageBuilder implements Builder<Page> {
                         consumerProvider == null ? (i) -> {
                         } : consumerProvider.apply(gui, val));
                 actionsToAdd.forEach(fun -> icon.addAction(fun.apply(gui, val)));
+                componentsToAdd.forEach(com -> icon.addChild(() -> com.apply(gui, val)));
                 return icon;
             };
             return new PageFiller<>(identifier, page.getIdentifier(), function, iterableSupplier);
