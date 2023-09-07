@@ -153,6 +153,11 @@ public class GuiBuilder<T extends BaseGui> {
         }
     }
 
+    public T reference() {
+        return gui;
+    }
+
+    @Deprecated
     public T get() {
         return gui;
     }

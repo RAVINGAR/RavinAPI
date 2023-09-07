@@ -40,21 +40,25 @@ public class MenuBuilder implements Builder<Menu> {
      *
      * @return MenuBuilder to further modify the Menu
      */
+    @Deprecated
     public MenuBuilder addMenuIcon(final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate) {
         lastMenu.addMenuIcon(display, lore, material, predicate);
         return this;
     }
 
+    @Deprecated
     public MenuBuilder addMenuIcon(final String display, final Material material, final BiPredicate<BaseGui, Player> predicate) {
         lastMenu.addMenuIcon(display, "", material, predicate);
         return this;
     }
 
+    @Deprecated
     public MenuBuilder addMenuIcon(final String display, final String lore, final Material material) {
         lastMenu.addMenuIcon(display, lore, material, (g, p) -> true);
         return this;
     }
 
+    @Deprecated
     public MenuBuilder addMenuIcon(final String display, final Material material) {
         lastMenu.addMenuIcon(display, "", material, (g, p) -> true);
         return this;
@@ -65,8 +69,19 @@ public class MenuBuilder implements Builder<Menu> {
         });
     }
 
+
     public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final BiPredicate<BaseGui, Player> predicate, final Consumer<ItemStack> consumer) {
         return addIcon(identifier, display, lore, material, null, predicate, consumer);
+    }
+
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Action action) {
+        return addIcon(identifier, display, lore, material, action, (a, b) -> true, i -> {
+        });
+    }
+
+    public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material) {
+        return addIcon(identifier, display, lore, material, null, (a, b) -> true, i -> {
+        });
     }
 
     public IconBuilder<Icon, MenuBuilder> addIcon(final String identifier, final String display, final String lore, final Material material, final Action action, final BiPredicate<BaseGui, Player> predicate, final Consumer<ItemStack> consumer) {

@@ -105,6 +105,12 @@ public class PageBuilder implements Builder<Page> {
         return page;
     }
 
+    public MenuBuilder finalise() {
+        builders.forEach(builder -> page.addChild(builder::get));
+        builders.clear();
+        return parent;
+    }
+
     public class PageFillerBuilder<T> implements Builder<PageFiller<T>> {
         private final String identifier;
         private final Function<BaseGui, Collection<T>> iterableSupplier;
