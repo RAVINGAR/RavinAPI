@@ -4,7 +4,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Menu;
-import com.ravingarinc.api.gui.component.icon.GuiObserver;
+import com.ravingarinc.api.gui.component.observer.GuiObserver;
 
 import java.util.function.Predicate;
 

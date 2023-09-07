@@ -1,4 +1,4 @@
-package com.ravingarinc.api.gui.component.icon;
+package com.ravingarinc.api.gui.component.observer;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;

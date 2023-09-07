@@ -3,7 +3,7 @@ package com.ravingarinc.api.gui.builder;
 import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Interactive;
-import com.ravingarinc.api.gui.component.icon.ItemObserver;
+import com.ravingarinc.api.gui.component.observer.ItemObserver;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Predicate;
