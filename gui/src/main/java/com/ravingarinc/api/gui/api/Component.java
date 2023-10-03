@@ -4,6 +4,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.component.*;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.*;
+import com.ravingarinc.api.gui.component.observer.ItemUpdater;
 import com.ravingarinc.api.gui.component.observer.Observer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -98,6 +99,8 @@ public interface Component {
     });
 
     PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, g -> new ArrayList<>());
+
+    ItemUpdater ITEM_UPDATER = new ItemUpdater(null);
 
     String getIdentifier();
 

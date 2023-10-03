@@ -116,7 +116,7 @@ public class PageBuilder implements Builder<Page> {
         private final String identifier;
         private final Function<BaseGui, Collection<T>> iterableSupplier;
         private final List<BiFunction<BaseGui, T, Action>> actionsToAdd;
-        private final List<BiFunction<BaseGui, T, Component>> componentsToAdd;
+        private final List<BiFunction<PageIcon, T, Component>> componentsToAdd;
         private final PageBuilder parent;
         private BiFunction<BaseGui, T, String> identifierProvider = null;
         private BiFunction<BaseGui, T, String> nameProvider = null;
@@ -200,7 +200,7 @@ public class PageBuilder implements Builder<Page> {
             return this;
         }
 
-        public PageFillerBuilder<T> addComponentProvider(@NotNull final BiFunction<BaseGui, T, Component> provider) {
+        public PageFillerBuilder<T> addComponentProvider(@NotNull final BiFunction<PageIcon, T, Component> provider) {
             this.componentsToAdd.add(provider);
             return this;
         }
@@ -230,7 +230,11 @@ public class PageBuilder implements Builder<Page> {
                         consumerProvider == null ? (i) -> {
                         } : consumerProvider.apply(gui, val));
                 actionsToAdd.forEach(fun -> icon.addAction(fun.apply(gui, val)));
-                componentsToAdd.forEach(com -> icon.addChild(() -> com.apply(gui, val)));
+                componentsToAdd.forEach(com -> {
+                    Component component = com.apply(icon, val);
+                    icon.addChild(() -> component);
+                });
+
                 return icon;
             };
             return new PageFiller<>(identifier, page.getIdentifier(), function, iterableSupplier);

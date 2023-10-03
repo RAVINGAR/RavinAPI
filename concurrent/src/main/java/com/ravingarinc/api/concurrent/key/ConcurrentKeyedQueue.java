@@ -1,5 +1,6 @@
 package com.ravingarinc.api.concurrent.key;
 
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -58,7 +59,7 @@ public class ConcurrentKeyedQueue<K, T extends Keyed<K>> implements Queue<T> {
 
     @Override
     public boolean contains(final Object o) {
-        if (o instanceof Keyed k) {
+        if (o instanceof Keyed<?> k) {
             return map.containsKey(k.getKey());
         }
         return false;
@@ -179,5 +180,19 @@ public class ConcurrentKeyedQueue<K, T extends Keyed<K>> implements Queue<T> {
          * Ignore mode means that is a similarly named key value already exists, then do not update the value
          */
         IGNORE
+    }
+
+    /*
+    Creates a blocking runnable.
+     */
+    public BukkitRunnable createRunner() {
+
+        return new BukkitRunnable() {
+
+            @Override
+            public void run() {
+
+            }
+        };
     }
 }
