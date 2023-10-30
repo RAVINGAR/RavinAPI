@@ -102,14 +102,10 @@ public class BaseGui extends Element implements InventoryHolder {
         final Optional<Menu> nextMenu = findComponent(Component.MENU, pointer);
         if (nextMenu.isPresent()) {
             this.currentMenu = nextMenu.get();
-            refresh(player);
+            fillElement(this, player);
         } else {
             GuiProvider.log(Level.WARNING, "Could not update menu to " + pointer + " as it doesn't exist!");
         }
-    }
-
-    public void refresh(Player player) {
-        fillElement(this, player);
     }
 
     public void handleClickedItem(final InventoryClickEvent event) {
@@ -138,7 +134,10 @@ public class BaseGui extends Element implements InventoryHolder {
         } else {
             interactive = currentMenu.findComponent(Component.INTERACTIVE, meta);
         }
-        interactive.ifPresentOrElse(i -> i.handleClickedItem(this, event, player), () -> denySound(player));
+        interactive.ifPresentOrElse(i -> {
+            i.handleClickedItem(this, event, player);
+            // Todo, make it so if any gui actions happen that require a gui update they should do it automatically
+        }, () -> denySound(player));
     }
 
     public String getMetaString(final ItemStack item, final String key) {
