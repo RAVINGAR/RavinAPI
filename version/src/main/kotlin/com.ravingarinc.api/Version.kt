@@ -815,10 +815,31 @@ sealed class Version(
 
     open class V1_20(
         protocol: Int = 763,
-        packFormat: Int = 14,
+        packFormat: Int = 15,
         names: Array<String> = arrayOf("1.20", "1.20.1")
     ) : V1_19_4(protocol, packFormat, names) {
         companion object : VersionCreator<V1_20>(::V1_20, 1, 20, 0..1)
+    }
+
+    open class V1_20_2(
+        protocol: Int = 764,
+        packFormat: Int = 18,
+        names: Array<String> = arrayOf("1.20.2")
+    ) : V1_20(protocol, packFormat, names) {
+
+        override fun spawnPlayer(
+            id: Int,
+            uuid: UUID,
+            x: Double,
+            y: Double,
+            z: Double,
+            pitch: Byte,
+            yaw: Byte
+        ): PacketContainer {
+            return spawnMob(id, uuid, EntityType.PLAYER, x, y, z, pitch, yaw, -1)
+        }
+
+        companion object : VersionCreator<V1_20_2>(::V1_20_2, 1, 20, 2..2)
     }
 
     protected abstract val indexedEntities: Map<EntityType, Int>

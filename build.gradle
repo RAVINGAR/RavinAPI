@@ -5,7 +5,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     group 'com.ravingarinc.api'
-    version '1.4.2'
+    version '1.4.3'
 
     repositories {
         gradlePluginPortal()
@@ -26,6 +26,7 @@ allprojects {
     dependencies {
         compileOnly 'org.jetbrains:annotations:23.0.0'
         compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+        // Todo, if this is 1.18.2, whats the point of supporting older versions?
     }
 }
 
