@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -67,8 +68,14 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         }
     }
 
-    protected void addChild(final Supplier<Component> child) {
+    public IconBuilder<C, P> addChild(final Function<C, Supplier<Component>> child) {
+        icon.addChild(child.apply(icon));
+        return this;
+    }
+
+    public IconBuilder<C, P> addChild(final Supplier<Component> child) {
         icon.addChild(child);
+        return this;
     }
 
     public P finalise() {
