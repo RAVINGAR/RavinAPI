@@ -102,6 +102,7 @@ public class InputComponent implements Component {
             if (event.getPlayer().equals(listening.getAcquire())) {
                 response.setRelease(event.getMessage());
                 final Player player = event.getPlayer();
+                event.setCancelled(true);
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> player.openInventory(lastGui.getInventory()));
             }
         }
