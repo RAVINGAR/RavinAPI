@@ -68,6 +68,12 @@ public class InputComponent implements Component {
         listener.register(gui.getPlugin());
     }
 
+    public void cancelResponse(final BaseGui gui, final Player player) {
+        listening.setRelease(null);
+        response.setRelease(null);
+        listener.unregister();
+    }
+
     @Override
     public @NotNull Integer getPriority() {
         return 0;
