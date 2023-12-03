@@ -1,6 +1,7 @@
 package com.ravingarinc.api.gui.component;
 
 import com.ravingarinc.api.gui.BaseGui;
+import com.ravingarinc.api.gui.api.Active;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.TriConsumer;
 import org.bukkit.ChatColor;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class InputComponent implements Component {
+public class InputComponent implements Component, Active {
     private final ChatListener listener;
     private final String identifier;
     private final String parent;
@@ -82,6 +83,13 @@ public class InputComponent implements Component {
     @Override
     public Class<InputComponent> getThisClass() {
         return InputComponent.class;
+    }
+
+    @Override
+    public void shutdown(BaseGui gui) {
+        listener.unregister();
+        listening.setRelease(null);
+        response.setRelease(null);
     }
 
     private class ChatListener implements Listener {

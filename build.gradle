@@ -49,6 +49,7 @@ subprojects {
         ruleSetFiles = files("$rootDir/pmd-rules.xml")
     }
 
+
     javadoc {
         options.encoding 'UTF-8'
         options.charSet 'UTF-8'

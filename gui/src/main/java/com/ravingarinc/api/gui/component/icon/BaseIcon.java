@@ -32,7 +32,7 @@ public abstract class BaseIcon extends Element implements Interactive {
             throw new IllegalArgumentException("\nIcon material cannot be air!");
         }
         this.item = new ItemStack(material, 1);
-
+        consumer.accept(item);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(display == null ? String.valueOf(ChatColor.DARK_GRAY) : ChatColor.translateAlternateColorCodes('&', display));
@@ -43,7 +43,7 @@ public abstract class BaseIcon extends Element implements Interactive {
             item.setItemMeta(meta);
             setMeta(PersistentDataType.STRING, "identifier", this.getIdentifier());
         }
-        consumer.accept(item);
+
 
         this.actions = new LinkedList<>();
         this.predicate = predicate;
