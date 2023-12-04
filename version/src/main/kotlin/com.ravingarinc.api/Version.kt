@@ -692,10 +692,13 @@ sealed class Version(
 
         override fun sendPackets(player: Player, vararg packets: PacketContainer) {
             if (packets.isEmpty()) return
-            val packet = Version.protocol.createPacket(PacketType.Play.Server.BUNDLE)
-            packet.packetBundles.write(0, packets.asIterable())
-            Version.protocol.sendServerPacket(player, packet)
-
+            if (packets.size > 1) {
+                val packet = Version.protocol.createPacket(PacketType.Play.Server.BUNDLE)
+                packet.packetBundles.write(0, packets.asIterable())
+                Version.protocol.sendServerPacket(player, packet)
+            } else {
+                Version.protocol.sendServerPacket(player, packets[0])
+            }
         }
         //<editor-fold desc="Entity IDs" defaultstate="collapsed">
         override val indexedEntities: Map<EntityType, Int> = buildMap {
