@@ -6,6 +6,7 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.PacketContainer
+import com.comphenix.protocol.wrappers.Converters
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction
 import com.comphenix.protocol.wrappers.PlayerInfoData
 import com.comphenix.protocol.wrappers.WrappedDataValue
@@ -58,6 +59,7 @@ sealed class Version(
             entity: Entity,
             data: List<Triple<Int, WrappedDataWatcher.Serializer, Any>>
         ): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.16.5 Metadata Packet")
             val packet = Version.protocol.createPacket(PacketType.Play.Server.ENTITY_METADATA)
             packet.integers.write(0, entity.entityId)
             val watcher = WrappedDataWatcher()
@@ -70,6 +72,7 @@ sealed class Version(
         }
 
         override fun playerInfo(action: PlayerInfoAction, data: PlayerInfoData): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.16.5 Player Info Packet")
             val packet = Version.protocol.createPacket(PacketType.Play.Server.PLAYER_INFO)
             packet.playerInfoAction.write(0, action)
             packet.playerInfoDataLists.write(0, listOf(data))
@@ -87,6 +90,7 @@ sealed class Version(
             yaw: Byte,
             data: Int
         ): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.16.5 Spawn Mob Packet")
             val packet =
                 if (entityType.isAlive) Version.protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING)
                 else Version.protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY)
@@ -121,6 +125,7 @@ sealed class Version(
             pitch: Byte,
             yaw: Byte
         ): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.16.5 Spawn Player Packet")
             val packet = Version.protocol.createPacket(PacketType.Play.Server.NAMED_ENTITY_SPAWN)
             packet.integers
                 .write(0, id)
@@ -269,6 +274,7 @@ sealed class Version(
             entity: Entity,
             data: List<Triple<Int, WrappedDataWatcher.Serializer, Any>>
         ): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.17 Metadata Packet")
             val packet = Version.protocol.createPacket(PacketType.Play.Server.ENTITY_METADATA)
             packet.integers.write(0, entity.entityId)
             val watcher = WrappedDataWatcher()
@@ -462,10 +468,14 @@ sealed class Version(
             yaw: Byte,
             data: Int
         ): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.19 Spawn Mob Packet")
             val packet = Version.protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY)
             packet.integers
                 .write(0, id)
-                .writeSafely(1, data)
+            //.write(1, indexedEntities[entityType])
+            if (data != -1) {
+                packet.integers.write(1, data)
+            }
             packet.entityTypeModifier.write(0, entityType)
             packet.uuiDs.write(0, uuid)
             packet.doubles
@@ -633,12 +643,22 @@ sealed class Version(
         }
         //</editor-fold>
 
+        private val allPlayerInfoActions = setOf(
+            PlayerInfoAction.ADD_PLAYER,
+            PlayerInfoAction.UPDATE_LATENCY,
+            PlayerInfoAction.UPDATE_DISPLAY_NAME,
+            PlayerInfoAction.UPDATE_GAME_MODE,
+            PlayerInfoAction.UPDATE_LISTED,
+            PlayerInfoAction.INITIALIZE_CHAT
+        )
+
         companion object : VersionCreator<V1_19_3>(::V1_19_3, 1, 19, 3..3)
 
         override fun updateMetadata(
             entity: Entity,
             data: List<Triple<Int, WrappedDataWatcher.Serializer, Any>>
         ): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.19.3 Metadata Packet")
             val packet = Version.protocol.createPacket(PacketType.Play.Server.ENTITY_METADATA)
             packet.integers.write(0, entity.entityId)
             packet.dataValueCollectionModifier.write(0, data.map { WrappedDataValue(it.first, it.second, it.third) })
@@ -646,17 +666,17 @@ sealed class Version(
         }
 
         override fun playerInfo(action: PlayerInfoAction, data: PlayerInfoData): PacketContainer {
+            I.log(Level.WARNING, "Debug -> 1.19.3 Player Info Packet")
             when (action) {
                 PlayerInfoAction.ADD_PLAYER -> {
                     val packet = Version.protocol.createPacket(PacketType.Play.Server.PLAYER_INFO)
-                    packet.playerInfoActions.write(0, setOf(action))
-                    packet.playerInfoDataLists.write(0, listOf(data))
+                    packet.playerInfoActions.write(0, allPlayerInfoActions)
+                    packet.playerInfoDataLists.write(1, listOf(data))
                     return packet
                 }
-
                 PlayerInfoAction.REMOVE_PLAYER -> {
                     val packet = Version.protocol.createPacket(PacketType.Play.Server.PLAYER_INFO_REMOVE)
-                    packet.uuidLists.write(0, listOf(data.profileId))
+                    packet.getLists(Converters.passthrough(UUID::class.java)).write(0, listOf(data.profileId))
                     return packet
                 }
 
@@ -677,6 +697,14 @@ sealed class Version(
         packFormat: Int = 13,
         names: Array<String> = arrayOf("1.19.4")
     ) : V1_19_3(protocol, packFormat, names) {
+
+        override fun sendPackets(player: Player, vararg packets: PacketContainer) {
+            if (packets.isEmpty()) return
+            val packet = Version.protocol.createPacket(PacketType.Play.Server.BUNDLE)
+            packet.packetBundles.write(0, packets.asIterable())
+            Version.protocol.sendServerPacket(player, packet)
+
+        }
         //<editor-fold desc="Entity IDs" defaultstate="collapsed">
         override val indexedEntities: Map<EntityType, Int> = buildMap {
             this[EntityType.ALLAY] = 0
@@ -836,7 +864,21 @@ sealed class Version(
             pitch: Byte,
             yaw: Byte
         ): PacketContainer {
-            return spawnMob(id, uuid, EntityType.PLAYER, x, y, z, pitch, yaw, -1)
+            I.log(Level.WARNING, "Debug -> 1.20.2 Spawn Player Packet")
+            val packet = Version.protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY)
+            packet.integers
+                .write(0, id)
+            packet.entityTypeModifier.write(0, EntityType.PLAYER)
+            packet.uuiDs.write(0, uuid)
+            packet.doubles
+                .write(0, x)
+                .write(1, y)
+                .write(2, z)
+            packet.bytes
+                .write(0, pitch)
+                .write(1, yaw)
+            //.writeSafely(2, pitch)
+            return packet
         }
 
         companion object : VersionCreator<V1_20_2>(::V1_20_2, 1, 20, 2..2)
@@ -930,6 +972,12 @@ sealed class Version(
     ): PacketContainer
 
     abstract fun playerInfo(action: PlayerInfoAction, data: PlayerInfoData): PacketContainer
+
+    open fun sendPackets(player: Player, vararg packets: PacketContainer) {
+        for (packet in packets) {
+            Version.protocol.sendServerPacket(player, packet)
+        }
+    }
 
     fun removeEntity(entityId: Int): PacketContainer {
         return removeEntities(listOf(entityId))
@@ -1033,8 +1081,10 @@ fun MutableList<Triple<Int, WrappedDataWatcher.Serializer, Any>>.build(
     this.add(Triple(index, serializer, obj))
 }
 
+@Deprecated(
+    "Version is now reponsible for handling sending packets due to 1.19 changes.",
+    ReplaceWith("com.ravingarinc.api.Version.sendPackets(player,packets)")
+)
 fun Player.sendPacket(vararg packets: PacketContainer) {
-    for (packet in packets) {
-        Version.protocol.sendServerPacket(this, packet)
-    }
+    Versions.version.sendPackets(this, *packets)
 }
