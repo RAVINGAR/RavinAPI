@@ -14,8 +14,8 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
 
     override suspend fun onEnableAsync() {
         loadModules()
-        loadCommands()
         load()
+        loadCommands()
     }
 
     override suspend fun onDisableAsync() {
