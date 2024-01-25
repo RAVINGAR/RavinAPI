@@ -3,6 +3,7 @@ package com.ravingarinc.api.gui.builder;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.ActionBuilder;
 import com.ravingarinc.api.gui.api.Actionable;
+import com.ravingarinc.api.gui.api.TriConsumer;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.action.*;
 import org.bukkit.Material;
@@ -30,6 +31,11 @@ public abstract class BaseActionBuilder<P> implements ActionBuilder<P> {
     }
 
     public BaseActionBuilder<P> addChatInputAction(final String description, BiConsumer<Player, String> onResponse) {
+        actionsToAdd.add(new ChatInputAction(description, onResponse));
+        return this;
+    }
+
+    public BaseActionBuilder<P> addChatInputAction(final String description, TriConsumer<BaseGui, Player, String> onResponse) {
         actionsToAdd.add(new ChatInputAction(description, onResponse));
         return this;
     }

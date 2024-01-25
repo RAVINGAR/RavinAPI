@@ -2,6 +2,7 @@ package com.ravingarinc.api.gui.component;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Active;
+import com.ravingarinc.api.gui.api.TriConsumer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -11,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
 /**
  * Only one of these should ever exist at a time
@@ -19,16 +19,16 @@ import java.util.function.BiConsumer;
 public class ChatInputComponent implements Active {
     private final ChatListener listener;
 
-    private final Map<Player, BiConsumer<Player, String>> listening;
+    private final Map<Player, InputEntry> listening;
 
     public ChatInputComponent() {
         this.listening = new ConcurrentHashMap<>();
         this.listener = new ChatListener();
     }
 
-    public void addListener(final BaseGui gui, final Player player, final BiConsumer<Player, String> consumer) {
+    public void addListener(final BaseGui gui, final Player player, final TriConsumer<BaseGui, Player, String> consumer) {
         this.listener.register(gui.getPlugin());
-        this.listening.put(player, consumer);
+        this.listening.put(player, new InputEntry(gui, consumer));
     }
 
     @Override
@@ -58,14 +58,24 @@ public class ChatInputComponent implements Active {
         @EventHandler
         public void onChatEvent(final AsyncPlayerChatEvent event) {
             final var player = event.getPlayer();
-            final var consumer = listening.remove(player);
-            if (consumer == null) {
+            final var entry = listening.remove(player);
+            if (entry == null) {
                 return;
             }
             event.setCancelled(true);
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                consumer.accept(player, event.getMessage());
+                entry.consumer.accept(entry.gui, player, event.getMessage());
             });
+        }
+    }
+
+    private class InputEntry {
+        private final BaseGui gui;
+        private final TriConsumer<BaseGui, Player, String> consumer;
+
+        public InputEntry(final BaseGui gui, final TriConsumer<BaseGui, Player, String> consumer) {
+            this.gui = gui;
+            this.consumer = consumer;
         }
     }
 }
