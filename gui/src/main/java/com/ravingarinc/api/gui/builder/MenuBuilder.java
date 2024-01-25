@@ -171,6 +171,7 @@ public class MenuBuilder implements Builder<Menu> {
      *                    is the text entered by the player. When this is executed, it is assumed that the GUI has been
      *                    re-opened. As such performing GUI actions in this consumer is more than suitable
      */
+    @Deprecated
     public MenuBuilder addInputComponent(final String identifier, final String description, final BiConsumer<Player, String> onResponse) {
         return addInputComponent(identifier, description, (g, p, str) -> onResponse.accept(p, str));
     }
@@ -182,6 +183,7 @@ public class MenuBuilder implements Builder<Menu> {
      *                    is the text entered by the player. When this is executed, it is assumed that the GUI has been
      *                    re-opened. As such performing GUI actions in this consumer is more than suitable
      */
+    @Deprecated
     public MenuBuilder addInputComponent(final String identifier, final String description, final TriConsumer<BaseGui, Player, String> onResponse) {
         lastMenu.addChild(() -> new InputComponent(identifier, lastMenu.getIdentifier(), description, onResponse));
         return this;

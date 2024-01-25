@@ -6,6 +6,7 @@ import com.ravingarinc.api.gui.api.Element;
 import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.Menu;
+import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.PlaceableIcon;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -38,6 +39,7 @@ public class BaseGui extends Element implements InventoryHolder {
     private final Logger logger;
     protected final Inventory inventory;
     protected final Plugin plugin;
+
     @Deprecated
     protected Player player;
 
@@ -106,6 +108,19 @@ public class BaseGui extends Element implements InventoryHolder {
         } else {
             GuiProvider.log(Level.WARNING, "Could not update menu to " + pointer + " as it doesn't exist!");
         }
+    }
+
+    /**
+     * Play an action for all current viewers of this gui
+     *
+     * @param action The action.
+     */
+    public void playAction(Action action) {
+        new ArrayList<>(players).forEach(player -> {
+            if (this.equals(player.getOpenInventory().getTopInventory().getHolder())) {
+                action.performAction(this, player);
+            }
+        });
     }
 
     public void handleClickedItem(final InventoryClickEvent event) {

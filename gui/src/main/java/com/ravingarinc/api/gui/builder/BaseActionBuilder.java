@@ -29,6 +29,11 @@ public abstract class BaseActionBuilder<P> implements ActionBuilder<P> {
         this.lastMenu = lastMenu;
     }
 
+    public BaseActionBuilder<P> addChatInputAction(final String description, BiConsumer<Player, String> onResponse) {
+        actionsToAdd.add(new ChatInputAction(description, onResponse));
+        return this;
+    }
+
     public BaseActionBuilder<P> addActivateDecorationAction(final String pointer, final Decoration.Pattern pattern, final Material updateMaterial, final Supplier<Long> duration) {
         actionsToAdd.add(new ActivateDecorationAction(pointer, lastMenu, pattern, updateMaterial, duration));
         return this;

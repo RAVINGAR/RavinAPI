@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+@Deprecated
 public class InputComponent implements Component, Active {
     private final ChatListener listener;
     private final String identifier;

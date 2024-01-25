@@ -95,8 +95,11 @@ public interface Component {
     PageIcon PAGE_ICON = new PageIcon("PAGE_ICON", "", "", "", Material.STONE, (g, p) -> true, itemStack -> {
     });
 
+    @Deprecated
     InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, player, string) -> {
     });
+
+    ChatInputComponent CHAT_INPUT_COMPONENT = new ChatInputComponent();
 
     PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, g -> new ArrayList<>());
 
