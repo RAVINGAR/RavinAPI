@@ -28,7 +28,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
         info("$name is now disabled.")
     }
 
-    suspend fun load() {
+    open suspend fun load() {
         var loaded = 0
         modules.values.forEach { module ->
             try {
