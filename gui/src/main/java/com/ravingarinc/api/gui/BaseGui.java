@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * BaseGui represents an InventoryHolder that exists at some given place and can be viewed by multiple players.
@@ -36,7 +35,6 @@ import java.util.logging.Logger;
  */
 public class BaseGui extends Element implements InventoryHolder {
     private final UUID internalId;
-    private final Logger logger;
     protected final Inventory inventory;
     protected final Plugin plugin;
 
@@ -54,7 +52,6 @@ public class BaseGui extends Element implements InventoryHolder {
     public BaseGui(final Plugin plugin, final String name, final Integer inventorySize) {
         super(name.toUpperCase(), null, -1);
         GuiProvider.register(plugin);
-        this.logger = plugin.getLogger();
         this.internalId = UUID.randomUUID();
         this.inventory = plugin.getServer().createInventory(this, inventorySize, formatString(name));
         this.players = new LinkedList<>();
