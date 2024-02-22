@@ -3,7 +3,6 @@ package com.ravingarinc.api.gui.builder;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.api.Component;
-import com.ravingarinc.api.gui.api.TriConsumer;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
@@ -160,31 +159,6 @@ public class MenuBuilder implements Builder<Menu> {
 
     public MenuBuilder addDecoration(final String identifier, final Material material, final int[] slots) {
         lastMenu.addChild(() -> new Decoration(identifier, lastMenu.getIdentifier(), material, slots));
-        return this;
-    }
-
-    /**
-     * @param description The description sent to the player after the GUI is closed. Generally should ask the player
-     *                    to type in chat.
-     * @param onResponse  This consumer is executed after a player has entered something in chat, where the String value
-     *                    is the text entered by the player. When this is executed, it is assumed that the GUI has been
-     *                    re-opened. As such performing GUI actions in this consumer is more than suitable
-     */
-    @Deprecated
-    public MenuBuilder addInputComponent(final String identifier, final String description, final BiConsumer<Player, String> onResponse) {
-        return addInputComponent(identifier, description, (g, p, str) -> onResponse.accept(p, str));
-    }
-
-    /**
-     * @param description The description sent to the player after the GUI is closed. Generally should ask the player
-     *                    to type in chat.
-     * @param onResponse  This consumer is executed after a player has entered something in chat, where the String value
-     *                    is the text entered by the player. When this is executed, it is assumed that the GUI has been
-     *                    re-opened. As such performing GUI actions in this consumer is more than suitable
-     */
-    @Deprecated
-    public MenuBuilder addInputComponent(final String identifier, final String description, final TriConsumer<BaseGui, Player, String> onResponse) {
-        lastMenu.addChild(() -> new InputComponent(identifier, lastMenu.getIdentifier(), description, onResponse));
         return this;
     }
 
