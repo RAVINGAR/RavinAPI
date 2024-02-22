@@ -8,13 +8,13 @@ public class QueueableActionBuilder<T extends BaseGui> extends BaseActionBuilder
     private final GuiBuilder<T> builder;
 
     public QueueableActionBuilder(final GuiBuilder<T> builder, final boolean persistent, final String lastMenu) {
-        super(new Queueable(builder.get().getIdentifier(), persistent), lastMenu);
+        super(new Queueable(builder.reference().getIdentifier(), persistent), lastMenu);
         this.builder = builder;
     }
 
     @Override
     public void build() {
-        builder.get().addChild(() -> (Component) getActionable());
+        builder.reference().addChild(() -> (Component) getActionable());
     }
 
     @Override

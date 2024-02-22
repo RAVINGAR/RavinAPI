@@ -2,7 +2,6 @@ package com.ravingarinc.api.gui.component;
 
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -17,7 +16,7 @@ public class Background implements Component {
         this.background = new ItemStack(background, 1);
         final ItemMeta meta = this.background.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.DARK_GRAY + "");
+            meta.displayName(formatString(null));
             this.background.setItemMeta(meta);
         }
     }

@@ -1,7 +1,6 @@
 package com.ravingarinc.api.gui.api;
 
 import com.ravingarinc.api.gui.BaseGui;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,10 +9,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public interface Interactive extends Actionable, Component {
 
@@ -63,10 +62,10 @@ public interface Interactive extends Actionable, Component {
             return;
         }
         if (name != null) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+            meta.displayName(formatString(name));
         }
         if (lore != null) {
-            meta.setLore(new ArrayList<>(Arrays.asList((ChatColor.translateAlternateColorCodes('&', lore)).split("\n"))));
+            meta.lore(Arrays.stream(lore.split("\n")).map(this::formatString).collect(Collectors.toList()));
         }
         item.setItemMeta(meta);
     }

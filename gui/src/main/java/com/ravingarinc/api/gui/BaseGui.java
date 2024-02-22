@@ -56,7 +56,7 @@ public class BaseGui extends Element implements InventoryHolder {
         GuiProvider.register(plugin);
         this.logger = plugin.getLogger();
         this.internalId = UUID.randomUUID();
-        this.inventory = plugin.getServer().createInventory(this, inventorySize, name);
+        this.inventory = plugin.getServer().createInventory(this, inventorySize, formatString(name));
         this.players = new LinkedList<>();
         this.plugin = plugin;
         currentMenu = null;

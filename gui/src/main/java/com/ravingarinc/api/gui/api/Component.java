@@ -6,6 +6,9 @@ import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.*;
 import com.ravingarinc.api.gui.component.observer.ItemUpdater;
 import com.ravingarinc.api.gui.component.observer.Observer;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -13,11 +16,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public interface Component {
+
     Interactive INTERACTIVE = new Interactive() {
         @Override
         public String getIdentifier() {
@@ -95,10 +100,6 @@ public interface Component {
     PageIcon PAGE_ICON = new PageIcon("PAGE_ICON", "", "", "", Material.STONE, (g, p) -> true, itemStack -> {
     });
 
-    @Deprecated
-    InputComponent INPUT_COMPONENT = new InputComponent("INPUT_COMPONENT", null, "", (gui, player, string) -> {
-    });
-
     ChatInputComponent CHAT_INPUT_COMPONENT = new ChatInputComponent();
 
     PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, g -> new ArrayList<>());
@@ -131,5 +132,24 @@ public interface Component {
     @SuppressWarnings("deprecated")
     default NamespacedKey getKey(final String key) {
         return new NamespacedKey("ravinapi_gui", key);
+    }
+
+    static net.kyori.adventure.text.Component format(@Nullable final String input) {
+        if (input == null) {
+            return net.kyori.adventure.text.Component.text("").color(NamedTextColor.DARK_GRAY);
+        }
+        if (input.contains("&")) {
+            final var builder = net.kyori.adventure.text.Component.text();
+            for (String part : ChatColor.translateAlternateColorCodes('&', input).split("\n")) {
+                builder.append(net.kyori.adventure.text.Component.text(part));
+            }
+            return builder.build();
+        } else {
+            return MiniMessage.miniMessage().deserialize(input);
+        }
+    }
+
+    default net.kyori.adventure.text.Component formatString(@Nullable final String input) {
+        return Component.format(input);
     }
 }

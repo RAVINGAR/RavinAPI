@@ -5,10 +5,11 @@ allprojects {
     apply plugin: 'maven-publish'
 
     group 'com.ravingarinc.api'
-    version '1.4.5'
+    version '1.5.0'
 
     repositories {
         gradlePluginPortal()
+        mavenLocal()
         mavenCentral()
 
         maven {
@@ -25,7 +26,10 @@ allprojects {
     }
     dependencies {
         compileOnly 'org.jetbrains:annotations:23.0.0'
-        compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+        //compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+        compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+        compileOnly("net.kyori:adventure-text-minimessage:4.15.0")
+        compileOnly("net.kyori:text-adapter-bukkit:3.0.6")
         // Todo, if this is 1.18.2, whats the point of supporting older versions?
     }
 }

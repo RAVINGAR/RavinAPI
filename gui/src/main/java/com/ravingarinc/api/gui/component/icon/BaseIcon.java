@@ -7,7 +7,6 @@ import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.builder.GuiProvider;
 import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,10 +15,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public abstract class BaseIcon extends Element implements Interactive {
     protected List<Action> actions;
@@ -35,9 +38,9 @@ public abstract class BaseIcon extends Element implements Interactive {
         consumer.accept(item);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(display == null ? String.valueOf(ChatColor.DARK_GRAY) : ChatColor.translateAlternateColorCodes('&', display));
-            if (lore != null && !lore.equals("")) {
-                meta.setLore(new ArrayList<>(Arrays.asList(ChatColor.translateAlternateColorCodes('&', lore).split("\n"))));
+            meta.displayName(formatString(display));
+            if (lore != null && !lore.isEmpty()) {
+                meta.lore(Arrays.stream(lore.split("\n")).map(this::formatString).collect(Collectors.toList()));
             }
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             item.setItemMeta(meta);

@@ -14,7 +14,7 @@ public class ComponentActionBuilder<T extends BaseGui> extends BaseActionBuilder
 
     @Override
     public void build() {
-        builder.get().addChild(() -> (Component) getActionable());
+        builder.reference().addChild(() -> (Component) getActionable());
     }
 
     @Override

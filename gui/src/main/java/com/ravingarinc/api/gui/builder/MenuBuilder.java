@@ -5,7 +5,6 @@ import com.ravingarinc.api.gui.api.Builder;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.TriConsumer;
 import com.ravingarinc.api.gui.component.Decoration;
-import com.ravingarinc.api.gui.component.InputComponent;
 import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
 import com.ravingarinc.api.gui.component.icon.Icon;
