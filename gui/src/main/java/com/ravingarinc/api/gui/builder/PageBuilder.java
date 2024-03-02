@@ -37,14 +37,29 @@ public class PageBuilder implements Builder<Page> {
     }
 
     public IconBuilder<StaticIcon, PageBuilder> addNextPageIcon(final int index) {
-        return addNextPageIcon("&eNext Page", "&7Navigate to the\n&7next page.", Material.ARROW, index);
+        return addNextPageIcon(Material.ARROW, index, i -> {
+        });
+    }
+
+    public IconBuilder<StaticIcon, PageBuilder> addNextPageIcon(final Material material, final int index, final Consumer<ItemStack> consumer) {
+        return addNextPageIcon("&eNext Page", "&7Navigate to the\n&7next page.", material, index, consumer);
     }
 
     public IconBuilder<StaticIcon, PageBuilder> addPreviousPageIcon(final int index) {
-        return addPreviousPageIcon("&ePrevious Page", "&7Navigate to the\n&7previous page.", Material.ARROW, index);
+        return addPreviousPageIcon(Material.ARROW, index, i -> {
+        });
+    }
+
+    public IconBuilder<StaticIcon, PageBuilder> addPreviousPageIcon(final Material material, final int index, final Consumer<ItemStack> consumer) {
+        return addPreviousPageIcon("&ePrevious Page", "&7Navigate to the\n&7previous page.", material, index, consumer);
     }
 
     public IconBuilder<StaticIcon, PageBuilder> addNextPageIcon(final String display, final String lore, final Material material, final int index) {
+        return addNextPageIcon(display, lore, material, index, i -> {
+        });
+    }
+
+    public IconBuilder<StaticIcon, PageBuilder> addNextPageIcon(final String display, final String lore, final Material material, final int index, final Consumer<ItemStack> consumer) {
         final IconBuilder<StaticIcon, PageBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(
                 page.getIdentifier() + "_NEXT_ICON",
                 display,
@@ -52,14 +67,19 @@ public class PageBuilder implements Builder<Page> {
                 parentIdentifier,
                 material,
                 new NextPageAction(page.getIdentifier(), parentIdentifier),
-                (g, p) -> this.page.hasNextPage(), i -> {
-        }, index));
+                (g, p) -> this.page.hasNextPage(), consumer, index));
         parent.addBuilder(newBuilder);
 
         return newBuilder;
     }
 
     public IconBuilder<StaticIcon, PageBuilder> addPreviousPageIcon(final String display, final String lore, final Material material, final int index) {
+        return addPreviousPageIcon(display, lore, material, index, i -> {
+        });
+
+    }
+
+    public IconBuilder<StaticIcon, PageBuilder> addPreviousPageIcon(final String display, final String lore, final Material material, final int index, final Consumer<ItemStack> consumer) {
         final IconBuilder<StaticIcon, PageBuilder> newBuilder = new IconBuilder<>(this, new StaticIcon(
                 page.getIdentifier() + "_PREVIOUS_ICON",
                 display,
@@ -67,8 +87,7 @@ public class PageBuilder implements Builder<Page> {
                 parentIdentifier,
                 material,
                 new PreviousPageAction(page.getIdentifier(), parentIdentifier),
-                (g, p) -> this.page.hasPreviousPage(), i -> {
-        }, index));
+                (g, p) -> this.page.hasPreviousPage(), consumer, index));
         parent.addBuilder(newBuilder);
 
         return newBuilder;

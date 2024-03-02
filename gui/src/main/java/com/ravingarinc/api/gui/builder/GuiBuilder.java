@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -25,7 +25,7 @@ public class GuiBuilder<T extends BaseGui> {
     protected Material border2;
 
     protected int defaultBackIdx;
-    protected List<MenuBuilder> menusToAdd;
+    protected Map<String, MenuBuilder> menusToAdd;
 
     protected ComponentActionBuilder<T> lastActionBuilder;
 
@@ -59,7 +59,7 @@ public class GuiBuilder<T extends BaseGui> {
         border1 = Material.AIR;
         border2 = Material.AIR;
         defaultBackIdx = -1;
-        menusToAdd = new LinkedList<>();
+        menusToAdd = new LinkedHashMap<>();
 
         if (gui == null) {
             throw new IllegalArgumentException("Could not create GuiBuilder due to gui being null!");
@@ -123,8 +123,13 @@ public class GuiBuilder<T extends BaseGui> {
             parent = gui.getIdentifier(); //Main menu
         }
         final MenuBuilder builder = new MenuBuilder(this, identifier, parent, backIdx);
-        menusToAdd.add(builder);
+        menusToAdd.put(identifier, builder);
         return builder;
+    }
+
+    @Nullable
+    public MenuBuilder getMenuBuilder(final String identifier) {
+        return menusToAdd.get(identifier);
     }
 
     public GuiBuilder<T> addMiscComponent(final Supplier<Component> component) {
@@ -167,7 +172,7 @@ public class GuiBuilder<T extends BaseGui> {
         handleLastQueueable();
 
         boolean mainExists = false;
-        for (final MenuBuilder builder : menusToAdd) {
+        for (final MenuBuilder builder : menusToAdd.values()) {
             final Menu menu = builder.get();
             gui.addChild(() -> menu);
             if (menu.getIdentifier().equalsIgnoreCase("MAIN")) {
