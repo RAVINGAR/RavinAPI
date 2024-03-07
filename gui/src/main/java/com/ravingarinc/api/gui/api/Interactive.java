@@ -79,5 +79,7 @@ public interface Interactive extends Actionable, Component {
 
     void addAmount(int delta);
 
+    void setAmount(int amount);
+
     void addChild(Supplier<Component> component);
 }

@@ -45,6 +45,11 @@ public interface Component {
         }
 
         @Override
+        public void setAmount(int amount) {
+
+        }
+
+        @Override
         public void addChild(final Supplier<Component> component) {
         }
 

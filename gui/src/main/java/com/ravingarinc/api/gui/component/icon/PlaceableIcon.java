@@ -194,4 +194,21 @@ public class PlaceableIcon extends Element implements Interactive {
             currentItem = null;
         }
     }
+
+    @Override
+    public void setAmount(int amount) {
+        if (currentItem == null) {
+            GuiProvider.log(Level.WARNING, "Attempted to update PlaceableIcon when it was null! This shouldn't have occurred!");
+            return;
+        }
+        if (amount == 0) {
+            if (!placeholder.isSimilar(currentItem)) {
+                currentItem = null;
+            }
+        } else {
+            if (amount < 65) {
+                currentItem.setAmount(amount);
+            }
+        }
+    }
 }

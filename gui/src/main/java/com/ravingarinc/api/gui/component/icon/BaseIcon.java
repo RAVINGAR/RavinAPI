@@ -88,6 +88,13 @@ public abstract class BaseIcon extends Element implements Interactive {
     }
 
     @Override
+    public void setAmount(int amount) {
+        if (amount > 0 && amount < 65) {
+            item.setAmount(amount);
+        }
+    }
+
+    @Override
     public void fillElement(final BaseGui gui, Player player) {
         super.fillElement(gui, player);
         fillIcon(gui, player);

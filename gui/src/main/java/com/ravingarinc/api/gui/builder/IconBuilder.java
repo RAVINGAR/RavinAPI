@@ -1,14 +1,16 @@
 package com.ravingarinc.api.gui.builder;
 
 import com.ravingarinc.api.gui.api.*;
+import com.ravingarinc.api.gui.component.observer.ItemUpdater;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.logging.Level;
 
 /**
@@ -35,6 +37,22 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         final ItemObserverActionBuilder<C, P> observerActionBuilder = new ItemObserverActionBuilder<>(icon, predicate, this);
         actionBuilders.add(observerActionBuilder);
         return observerActionBuilder;
+    }
+
+    public IconBuilder<C, P> addItemUpdater(final BiFunction<Interactive, Player, String> displayNameProvider, final BiFunction<Interactive, Player, String> loreProvider, final BiFunction<Interactive, Player, Material> materialProvider) {
+        return addItemUpdater(displayNameProvider, loreProvider, materialProvider, null);
+    }
+
+    public IconBuilder<C, P> addItemUpdater(final BiFunction<Interactive, Player, String> displayNameProvider, final BiFunction<Interactive, Player, String> loreProvider, final BiFunction<Interactive, Player, Material> materialProvider, final BiFunction<Interactive, Player, Consumer<ItemMeta>> metaProvider) {
+        addChild(i -> () -> {
+            final ItemUpdater updater = new ItemUpdater(this.reference());
+            updater.setDisplayNameProvider(displayNameProvider);
+            updater.setLoreProvider(loreProvider);
+            updater.setMaterialProvider(materialProvider);
+            updater.setMetaProvider(metaProvider);
+            return updater;
+        });
+        return this;
     }
 
     public IconActionBuilder<C, P> getActionBuilder() {
