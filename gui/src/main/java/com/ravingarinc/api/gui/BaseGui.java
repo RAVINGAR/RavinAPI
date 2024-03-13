@@ -80,6 +80,10 @@ public class BaseGui extends Element implements InventoryHolder {
 
     @Override
     public void fillElement(final BaseGui gui, Player player) {
+        fillElement(player);
+    }
+
+    public void fillElement(final Player player) {
         this.currentMenu.fillElement(this, player);
     }
 
