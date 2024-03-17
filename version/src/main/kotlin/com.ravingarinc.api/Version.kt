@@ -878,6 +878,14 @@ sealed class Version(
         companion object : VersionCreator<V1_20_2>(::V1_20_2, 1, 20, 2..2)
     }
 
+    open class V1_20_3(
+        protocol: Int = 765,
+        packFormat: Int = 22,
+        names: Array<String> = arrayOf("1.20.3", "1.20.4")
+    ) : V1_20_2(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_20_3>(::V1_20_3, 1, 20, 3..4)
+    }
+
     protected abstract val indexedEntities: Map<EntityType, Int>
 
     /**
@@ -1046,7 +1054,7 @@ object Versions {
         var creator: Version.VersionCreator<*>? = null
         var latest = validVersions[0]
         for (it in validVersions) {
-            if (it.major > latest.major && it.minor > latest.minor && it.patch.first > latest.patch.last) {
+            if (it.major > latest.major || it.minor > latest.minor || it.patch.first > latest.patch.last) {
                 latest = it
             }
             if (it.major == major && it.minor == minor && it.patch.contains(patch)) {

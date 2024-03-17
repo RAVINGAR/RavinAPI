@@ -44,6 +44,8 @@ public class BaseGui extends Element implements InventoryHolder {
     protected List<Player> players;
     protected Menu currentMenu;
 
+    private boolean requiresRefresh = false;
+
     @Deprecated
     public BaseGui(final JavaPlugin plugin, final String name, final Inventory inventory) {
         this(plugin, name, inventory.getSize());
@@ -78,13 +80,19 @@ public class BaseGui extends Element implements InventoryHolder {
         GuiProvider.register(plugin).unregister(this);
     }
 
+    public void queueRefresh() {
+        requiresRefresh = true;
+    }
+
     @Override
     public void fillElement(final BaseGui gui, Player player) {
         fillElement(player);
     }
 
     public void fillElement(final Player player) {
-        this.currentMenu.fillElement(this, player);
+        if (players.contains(player)) {
+            this.currentMenu.fillElement(this, player);
+        }
     }
 
     @Override
@@ -153,6 +161,9 @@ public class BaseGui extends Element implements InventoryHolder {
         interactive.ifPresentOrElse(i -> {
             i.handleClickedItem(this, event, player);
             // Todo, make it so if any gui actions happen that require a gui update they should do it automatically
+            if (requiresRefresh) {
+                fillElement(player);
+            }
         }, () -> denySound(player));
     }
 

@@ -55,7 +55,7 @@ public class Menu extends Element {
         }
         addChild(() -> new Background(background));
         if (backIcon != -1) {
-            addChild(() -> new StaticIcon("BACK", ChatColor.RED + "Back", "", this.getIdentifier(), Material.BARRIER, new MenuAction(this.parent), (g, p) -> true, i -> {
+            addChild(() -> new StaticIcon("BACK", "<red>Back</red>", "", this.getIdentifier(), Material.BARRIER, new MenuAction(this.parent), (g, p) -> true, i -> {
             }, backIcon));
         }
     }

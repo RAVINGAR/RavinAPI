@@ -45,7 +45,7 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
 
     public IconBuilder<C, P> addItemUpdater(final BiFunction<Interactive, Player, String> displayNameProvider, final BiFunction<Interactive, Player, String> loreProvider, final BiFunction<Interactive, Player, Material> materialProvider, final BiFunction<Interactive, Player, Consumer<ItemMeta>> metaProvider) {
         addChild(i -> () -> {
-            final ItemUpdater updater = new ItemUpdater(this.reference());
+            final ItemUpdater updater = new ItemUpdater(i);
             updater.setDisplayNameProvider(displayNameProvider);
             updater.setLoreProvider(loreProvider);
             updater.setMaterialProvider(materialProvider);

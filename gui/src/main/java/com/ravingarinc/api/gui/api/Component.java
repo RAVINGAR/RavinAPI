@@ -7,6 +7,7 @@ import com.ravingarinc.api.gui.component.icon.*;
 import com.ravingarinc.api.gui.component.observer.ItemUpdater;
 import com.ravingarinc.api.gui.component.observer.Observer;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -143,14 +144,14 @@ public interface Component {
         if (input == null) {
             return net.kyori.adventure.text.Component.text("").color(NamedTextColor.DARK_GRAY);
         }
-        if (input.contains("&")) {
+        if (input.contains("&") || input.contains("§")) {
             final var builder = net.kyori.adventure.text.Component.text();
-            for (String part : ChatColor.translateAlternateColorCodes('&', input).split("\n")) {
+            for (String part : ChatColor.translateAlternateColorCodes('&', input.replaceAll("§", "&")).split("\n")) {
                 builder.append(net.kyori.adventure.text.Component.text(part));
             }
             return builder.build();
         } else {
-            return MiniMessage.miniMessage().deserialize(input);
+            return MiniMessage.miniMessage().deserialize(input).decoration(TextDecoration.ITALIC, false);
         }
     }
 
