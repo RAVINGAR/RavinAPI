@@ -147,6 +147,18 @@ public class MenuBuilder implements Builder<Menu> {
         return newBuilder;
     }
 
+    public IconBuilder<PlaceableIcon, MenuBuilder> addPlaceableIcon(final String identifier, final int index, final ItemStack placeholder, final Predicate<ItemStack> validator, final Consumer<ItemStack> onPlaceItem) {
+        return addPlaceableIcon(identifier, index, placeholder, validator, (i, p) -> {
+            onPlaceItem.accept(i);
+        });
+    }
+
+    public IconBuilder<PlaceableIcon, MenuBuilder> addPlaceableIcon(final String identifier, final int index, final ItemStack placeholder, final Predicate<ItemStack> validator, final BiConsumer<ItemStack, Player> onPlaceItem) {
+        final IconBuilder<PlaceableIcon, MenuBuilder> newBuilder = new IconBuilder<>(this, new PlaceableIcon(identifier, lastMenu.getIdentifier(), index, placeholder, validator, onPlaceItem));
+        builders.add(newBuilder);
+        return newBuilder;
+    }
+
     public PageBuilder addPage(final String identifier, final int... slots) {
         final PageBuilder newBuilder = new PageBuilder(identifier, this, slots);
         builders.add(newBuilder);

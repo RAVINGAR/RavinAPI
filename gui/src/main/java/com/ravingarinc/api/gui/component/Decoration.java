@@ -119,7 +119,7 @@ public class Decoration extends Element {
             this.gui = gui;
             this.player = player;
             this.material = material;
-            if (duration <= 0 || interval <= 0) {
+            if (duration < 0 || interval <= 0) {
                 throw new IllegalArgumentException("Cannot assign duration or interval of 0 or less!");
             }
             this.interval = interval;
@@ -128,7 +128,7 @@ public class Decoration extends Element {
 
         @Override
         public void run() {
-            if (duration > 0) {
+            if (duration >= 0) {
                 duration -= interval;
                 list.forEach(item -> {
                     ((Interactive) item).updateItem(null, null, material);

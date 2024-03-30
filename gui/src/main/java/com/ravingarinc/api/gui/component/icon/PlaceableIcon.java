@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 
@@ -31,13 +32,20 @@ public class PlaceableIcon extends Element implements Interactive {
     private boolean locked;
     private @Nullable ItemStack currentItem;
 
+    private final BiConsumer<@Nullable ItemStack, Player> onPlaceItem;
+
     public PlaceableIcon(final String identifier, final String parent, final int index, final Predicate<ItemStack> validator) {
         this(identifier, parent, index, validator, null);
     }
 
-    @SuppressWarnings("PMD.UnusedAssignment")
     public PlaceableIcon(final String identifier, final String parent, final int index, final Predicate<ItemStack> validator, final ItemStack placeholder) {
+        this(identifier, parent, index, placeholder, validator, (i, p) -> {
+        });
+    }
+
+    public PlaceableIcon(final String identifier, final String parent, final int index, final ItemStack placeholder, final Predicate<ItemStack> validator, final BiConsumer<@Nullable ItemStack, Player> onPlace) {
         super(identifier, parent, 3);
+        this.onPlaceItem = onPlace;
         this.index = index;
         this.actions = new LinkedList<>();
         this.locked = false;
@@ -50,6 +58,10 @@ public class PlaceableIcon extends Element implements Interactive {
         //Give the identifier to the placeholder
         this.placeholder = placeholder;
         this.currentItem = null;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public void setLocked(final boolean locked) {
@@ -70,6 +82,11 @@ public class PlaceableIcon extends Element implements Interactive {
 
     public boolean isPlaceholder() {
         return currentItem == null || hasMeta(PersistentDataType.STRING, "identifier");
+    }
+
+    public boolean isValid(ItemStack item) {
+        if (item == null) return false;
+        return validator.test(item);
     }
 
     @Override
@@ -105,43 +122,39 @@ public class PlaceableIcon extends Element implements Interactive {
             gui.denySound(player);
             return false;
         } else {
-            boolean handled = true;
-            final boolean isPlaceholder = isPlaceholder();
             final ItemStack cursor = event.getCursor();
-            if (cursor != null && !cursor.getType().isAir()) {
-                if (validator.test(cursor)) {
-                    handled = handlePlacingItem(event, isPlaceholder);
-                    performAllActions(gui, player);
-                }
-            } else if (!isPlaceholder) { //If is not placeholder and has empty hand
-                handled = handlePlacingItem(event, false);
-                performAllActions(gui, player);
+            if (cursor != null && !cursor.getType().isAir() && !validator.test(cursor)) {
+                return true;
             }
-            if (handled) {
-                gui.playSound(player, Sound.ITEM_ARMOR_EQUIP_LEATHER, 0.5F);
-            }
-            return handled;
+            handlePlacingItem(event);
+            placeItem(gui, player, currentItem);
+            return true;
         }
     }
 
-    private boolean handlePlacingItem(final InventoryClickEvent event, final boolean isPlaceholder) {
+    public boolean isLocked() {
+        return locked;
+    }
+
+    private void handlePlacingItem(final InventoryClickEvent event) {
         final ItemStack cursor = event.getCursor(); //todo fix the spaghetti!
-        if (isPlaceholder) {
-            currentItem = cursor;
+        if (isPlaceholder()) {
+            this.currentItem = cursor;
             event.getWhoClicked().setItemOnCursor(null);
         } else {
             if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
                 if (cursor != null && cursor.isSimilar(currentItem)) {
+                    assert currentItem != null; // Current Item is not null if isSimilar is true
                     cursor.setAmount(cursor.getAmount() + currentItem.getAmount());
                     event.getWhoClicked().setItemOnCursor(cursor);
-                    currentItem = null;
+                    this.currentItem = null;
                 }
             } else if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
                 final PlayerInventory inventory = event.getWhoClicked().getInventory();
                 final int empty = inventory.firstEmpty();
-                if (empty != -1) {
+                if (empty != -1 && currentItem != null) {
                     inventory.addItem(currentItem);
-                    currentItem = null;
+                    this.currentItem = null;
                 }
             } else {
                 if (cursor == null) {
@@ -149,6 +162,7 @@ public class PlaceableIcon extends Element implements Interactive {
                     currentItem = null;
                 } else {
                     if (cursor.isSimilar(currentItem)) {
+                        assert currentItem != null; // Current Item is not null if isSimilar is true
                         currentItem.setAmount(currentItem.getAmount() + cursor.getAmount());
                         event.getWhoClicked().setItemOnCursor(null);
                     } else { //Swapping items
@@ -159,7 +173,14 @@ public class PlaceableIcon extends Element implements Interactive {
             }
         }
         event.setCurrentItem(null);
-        return true;
+    }
+
+    public void placeItem(final BaseGui gui, final Player player, ItemStack item) {
+        gui.playSound(player, Sound.ITEM_ARMOR_EQUIP_LEATHER, 0.5F);
+        currentItem = item;
+        onPlaceItem.accept(currentItem, player);
+        fillElement(gui, player);
+        performAllActions(gui, player);
     }
 
     @Nullable
@@ -177,6 +198,16 @@ public class PlaceableIcon extends Element implements Interactive {
         if (currentItem.isSimilar(placeholder)) {
             Interactive.super.updateItem(name, lore, material);
         }
+    }
+
+    /**
+     * Sets the current item to the given argument. If null resets the current item to the placeholder. This does
+     * not check if an item is valid to be put in this slot nor does it fill this element to reflect the changes.
+     *
+     * @param item
+     */
+    public void setItem(@Nullable final ItemStack item) {
+        currentItem = item;
     }
 
     @Override

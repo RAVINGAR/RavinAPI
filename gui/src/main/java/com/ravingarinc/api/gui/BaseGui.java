@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * BaseGui represents an InventoryHolder that exists at some given place and can be viewed by multiple players.
@@ -132,6 +133,71 @@ public class BaseGui extends Element implements InventoryHolder {
         });
     }
 
+    /**
+     * Handle the case where the player clicks their own inventory whilst having a gui open.
+     * <p>
+     * Returns whether to cancel the corresponding event or not.
+     */
+    public boolean handlePlayerInventoryClick(final InventoryClickEvent event) {
+        final Player player = (Player) event.getWhoClicked();
+        if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+            final ItemStack cursor = event.getCursor();
+            if (cursor == null) return false;
+            final var icons = currentMenu.getChildren()
+                    .stream()
+                    .filter(c -> c instanceof PlaceableIcon)
+                    .map(c -> (PlaceableIcon) c)
+                    .collect(Collectors.toSet());
+            for (PlaceableIcon icon : icons) {
+                if (icon.isPlaceholder()) continue;
+                final ItemStack placedItem = icon.getItem();
+                if (cursor.isSimilar(placedItem)) {
+                    if (icon.isLocked()) return true;
+                    icon.placeItem(this, player, null);
+                    cursor.setAmount(cursor.getAmount() + placedItem.getAmount());
+                    event.getView().setCursor(cursor);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if (event.isShiftClick()) {
+            final ItemStack item = event.getCurrentItem();
+            if (item == null) return false;
+            final var icons = currentMenu.getChildren()
+                    .stream()
+                    .filter(c -> c instanceof PlaceableIcon)
+                    .map(c -> (PlaceableIcon) c)
+                    .sorted(Comparator.comparingInt(PlaceableIcon::getIndex))
+                    .toList();
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                for (PlaceableIcon icon : icons) {
+                    final ItemStack placedItem = icon.getItem();
+                    if (placedItem == null) continue;
+                    if (placedItem.isSimilar(item)) {
+                        if (icon.isLocked()) return true;
+                        placedItem.setAmount(item.getAmount() + placedItem.getAmount());
+                        icon.placeItem(this, player, placedItem);
+                        event.setCurrentItem(null);
+                        return true;
+                    }
+                }
+            }
+            // This will only execute if the item was not placed anywhere
+            for (PlaceableIcon icon : icons) {
+                if (icon.isLocked()) continue;
+                if (icon.isPlaceholder() && icon.isValid(item)) {
+                    icon.placeItem(this, player, item);
+                    event.setCurrentItem(null);
+                    break;
+                }
+            }
+            return true; // This must return here in the case that placeable icons are locked.
+        }
+        return false;
+    }
+
     public void handleClickedItem(final InventoryClickEvent event) {
         final ItemStack item = event.getCurrentItem();
         final Player player = (Player) event.getWhoClicked();
@@ -139,7 +205,6 @@ public class BaseGui extends Element implements InventoryHolder {
         Optional<Interactive> interactive = Optional.empty();
         if (meta == null) {
             //If clicked item does not have identifier, (Either item is null, or it's a placeable item)
-            //todo maybe figure out how shift clicks from the inventory can auto place in placeable icons?
             final List<PlaceableIcon> placeables = currentMenu.findAllComponents(Component.PLACEABLE_ICON);
             for (final PlaceableIcon placed : placeables) {
                 if (placed.getInventoryLocation() == event.getSlot()) {

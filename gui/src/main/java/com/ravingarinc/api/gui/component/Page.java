@@ -15,7 +15,7 @@ public class Page extends Element {
     private int currentPage;
 
     public Page(final String identifier, final String parent, final int... slots) {
-        super(identifier, parent, 2);
+        super(identifier, parent, 4);
         this.currentPage = 0;
         this.slots = slots;
         this.iconsToPlace = new LinkedList<>();

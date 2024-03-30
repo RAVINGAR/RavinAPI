@@ -7,8 +7,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,18 +102,45 @@ public class GuiProvider implements Listener {
     }
 
     @EventHandler
-    public void onGuiClick(final InventoryClickEvent event) {
-        final Inventory inventory = event.getClickedInventory();
-        if (inventory == null || !(inventory.getHolder() instanceof BaseGui gui)) {
+    public void onGuiWideClick(final InventoryDragEvent event) {
+        final InventoryView view = event.getView();
+        final Inventory topInventory = view.getTopInventory();
+        if (!(topInventory.getHolder() instanceof BaseGui gui)) {
             return;
         }
-        event.setCancelled(true);
-        UUID uuid = event.getWhoClicked().getUniqueId();
-        long current = System.currentTimeMillis();
-        Long lastClick = lastClicks.get(uuid);
-        if (lastClick == null || current > lastClick + 100) {
-            lastClicks.put(uuid, current);
-            gui.handleClickedItem(event);
+        if (event.getRawSlots().stream().anyMatch(i -> {
+            final Inventory found = view.getInventory(i);
+            if (found != null) {
+                return found.equals(topInventory);
+            }
+            return false;
+        })) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onGuiClick(final InventoryClickEvent event) {
+        final InventoryView view = event.getView();
+        final Inventory clicked = event.getClickedInventory();
+        if (view.getTopInventory().equals(clicked)) {
+            if (!(clicked.getHolder() instanceof BaseGui gui)) {
+                return;
+            }
+            event.setCancelled(true);
+            UUID uuid = event.getWhoClicked().getUniqueId();
+            long current = System.currentTimeMillis();
+            Long lastClick = lastClicks.get(uuid);
+            if (lastClick == null || current > lastClick + 100) {
+                lastClicks.put(uuid, current);
+                gui.handleClickedItem(event);
+            }
+        } else if (view.getBottomInventory().equals(clicked)) {
+            if (!(view.getTopInventory().getHolder() instanceof BaseGui gui)) {
+                return;
+            }
+            // when player clicks the bottom inventory with main inventory open
+            event.setCancelled(gui.handlePlayerInventoryClick(event));
         }
     }
 
