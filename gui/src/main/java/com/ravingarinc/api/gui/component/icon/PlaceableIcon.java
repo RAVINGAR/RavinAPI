@@ -9,10 +9,8 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +30,7 @@ public class PlaceableIcon extends Element implements Interactive {
     private boolean locked;
     private @Nullable ItemStack currentItem;
 
-    private final BiConsumer<@Nullable ItemStack, Player> onPlaceItem;
+    private final BiConsumer<@Nullable ItemStack, Player> onChangeItem;
 
     public PlaceableIcon(final String identifier, final String parent, final int index, final Predicate<ItemStack> validator) {
         this(identifier, parent, index, validator, null);
@@ -45,7 +43,7 @@ public class PlaceableIcon extends Element implements Interactive {
 
     public PlaceableIcon(final String identifier, final String parent, final int index, final ItemStack placeholder, final Predicate<ItemStack> validator, final BiConsumer<@Nullable ItemStack, Player> onPlace) {
         super(identifier, parent, 3);
-        this.onPlaceItem = onPlace;
+        this.onChangeItem = onPlace;
         this.index = index;
         this.actions = new LinkedList<>();
         this.locked = false;
@@ -123,11 +121,9 @@ public class PlaceableIcon extends Element implements Interactive {
             return false;
         } else {
             final ItemStack cursor = event.getCursor();
-            if (cursor != null && !cursor.getType().isAir() && !validator.test(cursor)) {
-                return true;
+            if (cursor == null || validator.test(cursor)) {
+                onValidClick(gui, event);
             }
-            handlePlacingItem(event);
-            placeItem(gui, player, currentItem);
             return true;
         }
     }
@@ -136,49 +132,70 @@ public class PlaceableIcon extends Element implements Interactive {
         return locked;
     }
 
-    private void handlePlacingItem(final InventoryClickEvent event) {
-        final ItemStack cursor = event.getCursor(); //todo fix the spaghetti!
+    private void onValidClick(final BaseGui gui, final InventoryClickEvent event) {
+        if (event.getClick().isShiftClick()) {
+            onShiftClick(gui, event);
+        } else if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.RIGHT) {
+            onItemClick(gui, event);
+        }
+    }
+
+    protected void onItemClick(final BaseGui gui, final InventoryClickEvent event) {
+        final var cursor = event.getCursor();
+        final var player = (Player) event.getWhoClicked();
+
         if (isPlaceholder()) {
-            this.currentItem = cursor;
-            event.getWhoClicked().setItemOnCursor(null);
+            if (cursor == null) return; // dont change anything if player's hand is empty
+            placeItem(gui, player, cursor);
+            player.setItemOnCursor(null);
         } else {
-            if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-                if (cursor != null && cursor.isSimilar(currentItem)) {
-                    assert currentItem != null; // Current Item is not null if isSimilar is true
-                    cursor.setAmount(cursor.getAmount() + currentItem.getAmount());
-                    event.getWhoClicked().setItemOnCursor(cursor);
-                    this.currentItem = null;
-                }
-            } else if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
-                final PlayerInventory inventory = event.getWhoClicked().getInventory();
-                final int empty = inventory.firstEmpty();
-                if (empty != -1 && currentItem != null) {
-                    inventory.addItem(currentItem);
-                    this.currentItem = null;
-                }
+            final var clickedItem = event.getCurrentItem();
+            if (cursor == null) {
+                // then we pickup the clicked item
+                player.setItemOnCursor(clickedItem);
+                removeItem(gui, player);
             } else {
-                if (cursor == null) {
-                    event.getWhoClicked().setItemOnCursor(currentItem);
-                    currentItem = null;
-                } else {
-                    if (cursor.isSimilar(currentItem)) {
-                        assert currentItem != null; // Current Item is not null if isSimilar is true
-                        currentItem.setAmount(currentItem.getAmount() + cursor.getAmount());
-                        event.getWhoClicked().setItemOnCursor(null);
-                    } else { //Swapping items
-                        event.getWhoClicked().setItemOnCursor(currentItem);
-                        currentItem = cursor;
-                    }
+                // then we either add to the item
+                if (cursor.isSimilar(clickedItem)) {
+                    //add
+                    assert currentItem != null;
+                    currentItem.setAmount(currentItem.getAmount() + cursor.getAmount());
+                    player.setItemOnCursor(null);
+                    placeItem(gui, player, currentItem);
+                } else { // swap
+                    player.setItemOnCursor(clickedItem);
+                    placeItem(gui, player, cursor);
                 }
             }
         }
-        event.setCurrentItem(null);
+        //event.setCurrentItem(null);
+    }
+
+    protected void onShiftClick(final BaseGui gui, final InventoryClickEvent event) {
+        /*
+        Shift clicking an item, means they shift clicked the item in the inventory which must be put into
+        the players inventory
+        * */
+        final var player = (Player) event.getWhoClicked();
+        final var inventory = event.getView().getBottomInventory();
+        final var item = event.getCurrentItem();
+        if (item == null) return;
+        final var leftovers = inventory.addItem(item);
+        if (!leftovers.isEmpty()) return;
+        removeItem(gui, player);
     }
 
     public void placeItem(final BaseGui gui, final Player player, ItemStack item) {
         gui.playSound(player, Sound.ITEM_ARMOR_EQUIP_LEATHER, 0.5F);
         currentItem = item;
-        onPlaceItem.accept(currentItem, player);
+        onChangeItem.accept(currentItem, player);
+        fillElement(gui, player);
+        performAllActions(gui, player);
+    }
+
+    public void removeItem(final BaseGui gui, final Player player) {
+        currentItem = null;
+        onChangeItem.accept(null, player);
         fillElement(gui, player);
         performAllActions(gui, player);
     }
