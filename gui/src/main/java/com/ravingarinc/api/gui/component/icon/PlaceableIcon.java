@@ -30,6 +30,8 @@ public class PlaceableIcon extends Element implements Interactive {
     private boolean locked;
     private @Nullable ItemStack currentItem;
 
+    private final boolean removeItemOnPickup;
+
     private final BiConsumer<@Nullable ItemStack, Player> onChangeItem;
 
     public PlaceableIcon(final String identifier, final String parent, final int index, final Predicate<ItemStack> validator) {
@@ -42,8 +44,15 @@ public class PlaceableIcon extends Element implements Interactive {
     }
 
     public PlaceableIcon(final String identifier, final String parent, final int index, final ItemStack placeholder, final Predicate<ItemStack> validator, final BiConsumer<@Nullable ItemStack, Player> onPlace) {
+        this(identifier, parent, index, placeholder, false, validator, onPlace);
+    }
+
+    public PlaceableIcon(final String identifier, final String parent, final int index, final ItemStack placeholder,
+                         final boolean removeItemOnPickup, final Predicate<ItemStack> validator,
+                         final BiConsumer<@Nullable ItemStack, Player> onPlace) {
         super(identifier, parent, 3);
         this.onChangeItem = onPlace;
+        this.removeItemOnPickup = removeItemOnPickup;
         this.index = index;
         this.actions = new LinkedList<>();
         this.locked = false;
@@ -79,7 +88,7 @@ public class PlaceableIcon extends Element implements Interactive {
     }
 
     public boolean isPlaceholder() {
-        return currentItem == null || hasMeta(PersistentDataType.STRING, "identifier");
+        return currentItem == null || currentItem.isSimilar(placeholder);
     }
 
     public boolean isValid(ItemStack item) {
@@ -113,15 +122,13 @@ public class PlaceableIcon extends Element implements Interactive {
         actions.forEach(action -> action.performAction(gui, player));
     }
 
-    @SuppressWarnings("PMD.ConfusingTernary")
     @Override
     public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event, Player player) {
         if (locked) {
             gui.denySound(player);
             return false;
         } else {
-            final ItemStack cursor = event.getCursor();
-            if (cursor == null || validator.test(cursor)) {
+            if (isValid(event.getCursor())) {
                 onValidClick(gui, event);
             }
             return true;
@@ -145,14 +152,14 @@ public class PlaceableIcon extends Element implements Interactive {
         final var player = (Player) event.getWhoClicked();
 
         if (isPlaceholder()) {
-            if (cursor == null) return; // dont change anything if player's hand is empty
+            if (cursor == null || cursor.getType().isEmpty()) return; // dont change anything if player's hand is empty
             placeItem(gui, player, cursor);
             player.setItemOnCursor(null);
         } else {
             final var clickedItem = event.getCurrentItem();
-            if (cursor == null) {
+            if (cursor == null || cursor.getType().isEmpty()) {
                 // then we pickup the clicked item
-                player.setItemOnCursor(clickedItem);
+                player.setItemOnCursor(removeItemOnPickup ? null : clickedItem);
                 removeItem(gui, player);
             } else {
                 // then we either add to the item
@@ -163,7 +170,7 @@ public class PlaceableIcon extends Element implements Interactive {
                     player.setItemOnCursor(null);
                     placeItem(gui, player, currentItem);
                 } else { // swap
-                    player.setItemOnCursor(clickedItem);
+                    player.setItemOnCursor(removeItemOnPickup ? null : clickedItem);
                     placeItem(gui, player, cursor);
                 }
             }
@@ -177,10 +184,12 @@ public class PlaceableIcon extends Element implements Interactive {
         the players inventory
         * */
         final var player = (Player) event.getWhoClicked();
-        final var inventory = event.getView().getBottomInventory();
         final var item = event.getCurrentItem();
         if (item == null) return;
-        final var leftovers = inventory.addItem(item);
+        if (isPlaceholder()) return;
+        if (removeItemOnPickup) return;
+
+        final var leftovers = event.getView().getBottomInventory().addItem(item);
         if (!leftovers.isEmpty()) return;
         removeItem(gui, player);
     }

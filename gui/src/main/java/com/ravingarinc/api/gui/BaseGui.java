@@ -176,7 +176,7 @@ public class BaseGui extends Element implements InventoryHolder {
                     final ItemStack placedItem = icon.getItem();
                     if (placedItem == null) continue;
                     if (placedItem.isSimilar(item)) {
-                        if (icon.isLocked()) return true;
+                        if (icon.isLocked() || icon.isPlaceholder()) return true;
                         placedItem.setAmount(item.getAmount() + placedItem.getAmount());
                         icon.placeItem(this, player, placedItem);
                         event.setCurrentItem(null);

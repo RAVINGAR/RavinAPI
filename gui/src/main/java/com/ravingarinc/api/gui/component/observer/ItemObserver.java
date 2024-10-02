@@ -19,6 +19,7 @@ public class ItemObserver extends Observer {
     public void fillElement(final BaseGui gui, Player player) {
         if (predicate.test(((Interactive) this.parent).getItem())) {
             performAllActions(gui, player);
+            gui.queueRefresh();
         }
     }
 }
