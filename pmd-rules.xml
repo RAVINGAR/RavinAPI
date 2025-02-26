@@ -119,7 +119,6 @@
     <!--<rule ref="category/java/bestpractices.xml/SwitchStmtsShouldHaveDefault" /> Commented out because my switch statements ARE exhaustive ):< -->
     <rule ref="category/java/bestpractices.xml/WhileLoopWithLiteralBoolean"/>
     <rule ref="category/java/codestyle.xml/ConfusingTernary"/>
-    <rule ref="category/java/codestyle.xml/ControlStatementBraces"/>
     <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop"/>
     <rule ref="category/java/codestyle.xml/UnnecessaryReturn"/>
 

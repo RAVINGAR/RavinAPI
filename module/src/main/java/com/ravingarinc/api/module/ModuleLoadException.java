@@ -72,7 +72,7 @@ public class ModuleLoadException extends Exception {
         PLUGIN_DEPEND {
             @Override
             public String getMessage(Module module) {
-                return "Could not load " + module.getName() + "due to a missing plugin!";
+                return "Could not load " + module.getName() + " due to a missing plugin!";
             }
         };
 

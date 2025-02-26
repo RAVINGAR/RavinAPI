@@ -1,6 +1,7 @@
+/*
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-}
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}*/
 
 repositories {
     maven {
@@ -15,8 +16,8 @@ dependencies {
     implementation project(':common')
     implementation project(':gui')
 
-    shadow project(':common')
-    shadow project(':gui')
+    //shadow project(':common')
+    //shadow project(':gui') does not work with java 21?
 
     compileOnly "com.comphenix.protocol:ProtocolLib:5.0.0"
 }
@@ -28,6 +29,7 @@ jar {
     archiveClassifier.set('original')
 }
 
+/*
 shadowJar {
     archiveClassifier.set(null)
     relocate 'javax.vecmath', 'com.ravingarinc.libs.vecmath'
@@ -38,4 +40,4 @@ artifacts {
     archives shadowJar
 }
 
-assemble.dependsOn shadowJar
+assemble.dependsOn shadowJar*/

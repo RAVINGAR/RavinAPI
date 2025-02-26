@@ -27,7 +27,8 @@ public class DelayedFutureTask<V> extends FutureTask<V> implements Delayed {
 
     @Override
     public int compareTo(@NotNull final Delayed other) {
-        if (other instanceof DelayedFutureTask that) {
+        if (other instanceof DelayedFutureTask) {
+            final var that = (DelayedFutureTask<?>) other;
             return (int) ((this.isCancelled() ? System.currentTimeMillis() : this.readyTime) - (that.isCancelled() ? System.currentTimeMillis() : that.readyTime));
         }
         throw new IllegalArgumentException("Cannot compare DelayedEvent to generic Delayed object!");

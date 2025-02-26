@@ -25,7 +25,8 @@ public class Pair<L, R> {
         if (obj == null) {
             return false;
         }
-        if (obj instanceof Pair<?, ?> pair) {
+        if (obj instanceof Pair<?, ?>) {
+            final var pair = (Pair<?, ?>) obj;
             final var left = pair.getLeft();
             final var right = pair.getRight();
             if (this.left.getClass().isInstance(left) && this.right.getClass().isInstance(right)) {
