@@ -1035,6 +1035,14 @@ sealed class Version(
         val integerSerializer = WrappedDataWatcher.Registry.get(java.lang.Integer::class.java)
         val floatSerializer = WrappedDataWatcher.Registry.get(java.lang.Float::class.java)
         val itemSerializer = WrappedDataWatcher.Registry.getItemStackSerializer(false)
+
+        fun sendPackets(player: Player, vararg packets: PacketContainer) {
+            Versions.version.sendPackets(player, *packets)
+        }
+
+        fun sendPacket(player: Player, packet: PacketContainer) {
+            Versions.version.sendPackets(player, packet)
+        }
     }
 
     sealed class VersionCreator<T : Version>(
@@ -1116,10 +1124,18 @@ fun MutableList<Triple<Int, WrappedDataWatcher.Serializer, Any>>.build(
     this.add(Triple(index, serializer, obj))
 }
 
-@Deprecated(
-    "Version is now reponsible for handling sending packets due to 1.19 changes.",
-    ReplaceWith("com.ravingarinc.api.Version.sendPackets(player,packets)")
-)
-fun Player.sendPacket(vararg packets: PacketContainer) {
+/**
+ * Convenience method for short for sending an array of packets as a bundle. This ensures that the client will receive
+ * all the packets and process them on the same tick. This is the same as @see {Versions.version.sendPackets}
+ */
+fun Player.sendPacket(packets: PacketContainer) {
+    Versions.version.sendPackets(this, packets)
+}
+
+/**
+ * Convenience method for short for sending an array of packets as a bundle. This ensures that the client will receive
+ * all the packets and process them on the same tick. This is the same as @see {Versions.version.sendPackets}
+ */
+fun Player.sendPackets(vararg packets: PacketContainer) {
     Versions.version.sendPackets(this, *packets)
 }
