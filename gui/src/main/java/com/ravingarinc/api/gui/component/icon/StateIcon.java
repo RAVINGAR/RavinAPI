@@ -36,7 +36,7 @@ public class StateIcon<T> extends BaseIcon {
     }
 
     public void nextState(final BaseGui gui, final Player player) {
-        int nextState = currentState.getIndex() + 1;
+        int nextState = currentState == null ? 0 : currentState.getIndex() + 1;
         if (nextState > states.size() - 1) {
             nextState = 0;
         }

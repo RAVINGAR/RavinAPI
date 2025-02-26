@@ -39,7 +39,7 @@ sealed class Version(
      * See protocol - https://wiki.vg/index.php?title=Protocol&oldid=16681
      * See metadata - https://wiki.vg/index.php?title=Entity_metadata&oldid=16539
      */
-    open class V1_16_5(
+    sealed class V1_16_5(
         protocol: Int = 754,
         packFormat: Int = 6,
         names: Array<String> = arrayOf("1.16.4", "1.16.5")
@@ -141,7 +141,7 @@ sealed class Version(
      * See Protocol - https://wiki.vg/index.php?title=Protocol&oldid=16866#
      * See Metadata -
      */
-    open class V1_17(
+    sealed class V1_17(
         protocol: Int = 755,
         packFormat: Int = 7,
         names: Array<String> = arrayOf("1.17")
@@ -284,7 +284,7 @@ sealed class Version(
         companion object : VersionCreator<V1_17>(::V1_17, 1, 17, 0..0)
     }
 
-    open class V1_17_1(
+    sealed class V1_17_1(
         protocol: Int = 756,
         packFormat: Int = 7,
         names: Array<String> = arrayOf("1.17.1")
@@ -297,7 +297,7 @@ sealed class Version(
     /**
      * https://wiki.vg/index.php?title=Protocol&oldid=17341
      */
-    open class V1_18(
+    sealed class V1_18(
         protocol: Int = 757,
         packFormat: Int = 8,
         names: Array<String> = arrayOf("1.18", "1.18.1")
@@ -307,7 +307,7 @@ sealed class Version(
         companion object : VersionCreator<V1_18>(::V1_18, 1, 18, 0..1)
     }
 
-    open class V1_18_2(
+    sealed class V1_18_2(
         protocol: Int = 758,
         packFormat: Int = 8,
         names: Array<String> = arrayOf("1.18.2")
@@ -320,7 +320,7 @@ sealed class Version(
     /**
      * https://wiki.vg/index.php?title=Entity_metadata&direction=next&oldid=17521
      */
-    open class V1_19(
+    sealed class V1_19(
         protocol: Int = 759,
         packFormat: Int = 9,
         names: Array<String> = arrayOf("1.19")
@@ -479,7 +479,7 @@ sealed class Version(
             packet.bytes
                 .write(0, pitch)
                 .write(1, yaw)
-                .writeSafely(2, pitch)
+                .writeSafely(2, yaw)
             packet.shorts
                 .writeSafely(0, 0)
                 .writeSafely(1, 0)
@@ -491,7 +491,7 @@ sealed class Version(
     /**
      * Protocol - https://wiki.vg/index.php?title=Protocol&oldid=17873
      */
-    open class V1_19_2(
+    sealed class V1_19_2(
         protocol: Int = 760,
         packFormat: Int = 9,
         names: Array<String> = arrayOf("1.19.1", "1.19.2")
@@ -507,7 +507,7 @@ sealed class Version(
      * https://wiki.vg/index.php?title=Protocol&oldid=18067
      * Changes here, Player Info Update, was separated in terms of its functionality
      */
-    open class V1_19_3(
+    sealed class V1_19_3(
         protocol: Int = 761,
         packFormat: Int = 12,
         names: Array<String> = arrayOf("1.19.3")
@@ -684,7 +684,7 @@ sealed class Version(
      *
      * https://wiki.vg/index.php?title=Entity_metadata&oldid=18191
      */
-    open class V1_19_4(
+    sealed class V1_19_4(
         protocol: Int = 762,
         packFormat: Int = 13,
         names: Array<String> = arrayOf("1.19.4")
@@ -836,7 +836,7 @@ sealed class Version(
         }
     }
 
-    open class V1_20(
+    sealed class V1_20(
         protocol: Int = 763,
         packFormat: Int = 15,
         names: Array<String> = arrayOf("1.20", "1.20.1")
@@ -844,7 +844,7 @@ sealed class Version(
         companion object : VersionCreator<V1_20>(::V1_20, 1, 20, 0..1)
     }
 
-    open class V1_20_2(
+    sealed class V1_20_2(
         protocol: Int = 764,
         packFormat: Int = 18,
         names: Array<String> = arrayOf("1.20.2")
@@ -878,7 +878,7 @@ sealed class Version(
         companion object : VersionCreator<V1_20_2>(::V1_20_2, 1, 20, 2..2)
     }
 
-    open class V1_20_3(
+    sealed class V1_20_3(
         protocol: Int = 765,
         packFormat: Int = 22,
         names: Array<String> = arrayOf("1.20.3", "1.20.4")
@@ -886,6 +886,39 @@ sealed class Version(
         companion object : VersionCreator<V1_20_3>(::V1_20_3, 1, 20, 3..4)
     }
 
+    sealed class V1_20_5(
+        protocol: Int = 766,
+        packFormat: Int = 23,
+        names: Array<String> = arrayOf("1.20.5", "1.20.6")
+    ) : V1_20_3(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_20_5>(::V1_20_5, 1, 20, 5..6)
+    }
+
+    sealed class V1_21(
+        protocol: Int = 767,
+        packFormat: Int = 24,
+        names: Array<String> = arrayOf("1.21", "1.21.1")
+    ) : V1_20_5(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_21>(::V1_21, 1, 21, 0..1)
+    }
+
+    sealed class V1_21_2(
+        protocol: Int = 768,
+        packFormat: Int = 24,
+        names: Array<String> = arrayOf("1.21.2", "1.21.3")
+    ) : V1_21(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_21_2>(::V1_21_2, 1, 21, 2..3)
+    }
+
+    sealed class V1_21_4(
+        protocol: Int = 768,
+        packFormat: Int = 24,
+        names: Array<String> = arrayOf("1.21.4")
+    ) : V1_21_2(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_21_4>(::V1_21_4, 1, 21, 4..4)
+    }
+
+    @Deprecated("No longer used as ProtocolLib should provide a converter for this.")
     protected abstract val indexedEntities: Map<EntityType, Int>
 
     /**
@@ -1004,7 +1037,7 @@ sealed class Version(
         val itemSerializer = WrappedDataWatcher.Registry.getItemStackSerializer(false)
     }
 
-    open class VersionCreator<T : Version>(
+    sealed class VersionCreator<T : Version>(
         private var creator: () -> T,
         val major: Int,
         val minor: Int,

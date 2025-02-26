@@ -108,7 +108,7 @@ public interface Component {
 
     ChatInputComponent CHAT_INPUT_COMPONENT = new ChatInputComponent();
 
-    PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, g -> new ArrayList<>());
+    PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, (g, p) -> new ArrayList<>());
 
     ItemUpdater ITEM_UPDATER = new ItemUpdater(null);
 

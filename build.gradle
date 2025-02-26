@@ -5,7 +5,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     group 'com.ravingarinc.api'
-    version '1.5.5'
+    version '1.5.7'
 
     repositories {
         gradlePluginPortal()
@@ -25,7 +25,9 @@ allprojects {
         }
     }
     dependencies {
-        compileOnly 'org.jetbrains:annotations:23.0.0'
+        compileOnly('org.jetbrains:annotations:23.0.0') {
+            transitive(false)
+        }
         //compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
         compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
         compileOnly("net.kyori:adventure-text-minimessage:4.15.0")
@@ -59,9 +61,6 @@ subprojects {
         options.charSet 'UTF-8'
         options.jFlags('-Xms256m', '-Xmx512m')
         options.addStringOption('Xdoclint:none', '-quiet')
-        options.links(
-                'https://hub.spigotmc.org/javadocs/spigot/'
-        )
     }
 
     java {

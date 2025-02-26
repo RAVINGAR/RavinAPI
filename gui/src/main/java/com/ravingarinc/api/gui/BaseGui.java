@@ -20,6 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -47,6 +48,8 @@ public class BaseGui extends Element implements InventoryHolder {
 
     private boolean requiresRefresh = false;
 
+    private final Map<String, Object> memoryObjects;
+
     @Deprecated
     public BaseGui(final JavaPlugin plugin, final String name, final Inventory inventory) {
         this(plugin, name, inventory.getSize());
@@ -61,6 +64,21 @@ public class BaseGui extends Element implements InventoryHolder {
         this.plugin = plugin;
         currentMenu = null;
         children = new HashMap<>();
+        this.memoryObjects = new HashMap<>();
+    }
+
+    public void setMemoryObject(String key, Object object) {
+        memoryObjects.put(key, object);
+    }
+
+    @Nullable
+    public Object getMemoryObject(String key) {
+        return memoryObjects.get(key);
+    }
+
+    @Nullable
+    public Object removeMemoryObject(String key) {
+        return memoryObjects.remove(key);
     }
 
     public Plugin getPlugin() {
