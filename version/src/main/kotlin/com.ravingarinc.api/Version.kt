@@ -266,11 +266,11 @@ sealed class Version(
 
         private val allPlayerInfoActions = setOf(
             PlayerInfoAction.ADD_PLAYER,
-            PlayerInfoAction.UPDATE_LATENCY,
-            PlayerInfoAction.UPDATE_DISPLAY_NAME,
-            PlayerInfoAction.UPDATE_GAME_MODE,
-            PlayerInfoAction.UPDATE_LISTED,
-            PlayerInfoAction.INITIALIZE_CHAT
+            //PlayerInfoAction.UPDATE_LATENCY,
+            //PlayerInfoAction.UPDATE_DISPLAY_NAME,
+            //PlayerInfoAction.UPDATE_GAME_MODE,
+            //PlayerInfoAction.UPDATE_LISTED,
+            //PlayerInfoAction.INITIALIZE_CHAT
         )
 
         companion object : VersionCreator<V1_19_3>(::V1_19_3, 1, 19, 3..3)
