@@ -8,6 +8,8 @@ import java.util.logging.Level
 abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
     private val modules: MutableMap<Class<out Module>, Module> = LinkedHashMap()
 
+    val pubModules: Map<Class<out Module>, Module> get() = modules
+
     override suspend fun onLoadAsync() {
         I.load(this, false)
     }
@@ -86,7 +88,14 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
     @Suppress("unchecked")
     override fun <T : Module> getModule(type: Class<T>): T {
         val m = modules[type]
-            ?: throw IllegalArgumentException("Could not find module of type ${type.name}. Contact developer! Most likely, #.getModule() has been called from a modules constructor!")
+            ?: throw IllegalArgumentException("Could not find module of type ${type.name}. Contact developer! Most likely, #.getModule() has been called from a module's constructor! Please use a lazy intialisation!")
+        return m as T
+    }
+
+    inline fun <reified T : Module> getModule(): T {
+        val type = T::class.java
+        val m = pubModules[type]
+            ?: throw IllegalArgumentException("Could not find module of type ${type}. Contact developer! Most likely, #.getModule() has been called from a module's constructor! Please use a lazy intialisation!")
         return m as T
     }
 }
