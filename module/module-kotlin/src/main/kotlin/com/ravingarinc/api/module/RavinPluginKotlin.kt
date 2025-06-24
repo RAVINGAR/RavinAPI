@@ -92,12 +92,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
         return m as T
     }
 
-    inline fun <reified T : Module> getModule(): T {
-        val type = T::class.java
-        val m = pubModules[type]
-            ?: throw IllegalArgumentException("Could not find module of type ${type}. Contact developer! Most likely, #.getModule() has been called from a module's constructor! Please use a lazy intialisation!")
-        return m as T
-    }
+
 }
 
 fun log(level: Level, message: String, throwable: Throwable? = null) {
@@ -114,4 +109,11 @@ fun warn(message: String, throwable: Throwable? = null) {
 
 fun severe(message: String, throwable: Throwable? = null) {
     log(Level.SEVERE, message, throwable)
+}
+
+inline fun <reified T : Module> RavinPlugin.getModule(): T {
+    val type = T::class.java
+    val m = (this as RavinPluginKotlin).pubModules[type]
+        ?: throw IllegalArgumentException("Could not find module of type ${type}. Contact developer! Most likely, #.getModule() has been called from a module's constructor! Please use a lazy intialisation!")
+    return m as T
 }
