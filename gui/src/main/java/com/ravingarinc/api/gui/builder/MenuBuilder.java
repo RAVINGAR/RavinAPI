@@ -27,6 +27,10 @@ public class MenuBuilder implements Builder<Menu> {
         builders = new LinkedList<>();
     }
 
+    public void with(final Consumer<MenuBuilder> builder) {
+        builder.accept(this);
+    }
+
     public MenuBuilder setBackground(final Material material) {
         lastMenu.setBackground(material);
         return this;

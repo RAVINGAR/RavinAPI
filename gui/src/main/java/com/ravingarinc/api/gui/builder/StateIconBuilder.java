@@ -6,6 +6,7 @@ import com.ravingarinc.api.gui.component.icon.StateIcon;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class StateIconBuilder<T> extends IconBuilder<StateIcon<T>, MenuBuilder> {
     private final List<StateActionBuilder> builders;
@@ -13,6 +14,16 @@ public class StateIconBuilder<T> extends IconBuilder<StateIcon<T>, MenuBuilder> 
     protected StateIconBuilder(final MenuBuilder owner, final StateIcon<T> icon) {
         super(owner, icon);
         builders = new ArrayList<>();
+    }
+
+    public void withInstead(final Consumer<StateIconBuilder<T>> builder) {
+        builder.accept(this);
+    }
+
+    @Override
+    @Deprecated
+    public void with(final Consumer<IconBuilder<StateIcon<T>, MenuBuilder>> builder) {
+        builder.accept(this);
     }
 
     public StateActionBuilder addState(final T state) {

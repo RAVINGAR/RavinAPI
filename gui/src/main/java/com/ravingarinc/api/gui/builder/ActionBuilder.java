@@ -30,6 +30,10 @@ public abstract class ActionBuilder<P> {
         this.lastMenu = lastMenu;
     }
 
+    public void with(Consumer<ActionBuilder<P>> builder) {
+        builder.accept(this);
+    }
+
     public ActionBuilder<P> addChatInputAction(final String description, BiConsumer<Player, String> onResponse) {
         actionsToAdd.add(new ChatInputAction(description, onResponse));
         return this;

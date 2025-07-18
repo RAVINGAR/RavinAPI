@@ -36,6 +36,10 @@ public class PageBuilder implements Builder<Page> {
         builders = new ArrayList<>();
     }
 
+    public void with(final Consumer<PageBuilder> builder) {
+        builder.accept(this);
+    }
+
     public IconBuilder<StaticIcon, PageBuilder> addNextPageIcon(final int index) {
         return addNextPageIcon(Material.ARROW, index, i -> {
         });

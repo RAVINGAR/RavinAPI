@@ -30,6 +30,10 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         actionBuilders = new LinkedList<>();
     }
 
+    public void with(final Consumer<IconBuilder<C, P>> builder) {
+        builder.accept(this);
+    }
+
     @Deprecated
     public IconBuilder<C, P> setDynamic() {
         return this;
