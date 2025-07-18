@@ -1,6 +1,9 @@
 package com.ravingarinc.api.gui.builder;
 
-import com.ravingarinc.api.gui.api.*;
+import com.ravingarinc.api.gui.api.Builder;
+import com.ravingarinc.api.gui.api.Component;
+import com.ravingarinc.api.gui.api.Interactive;
+import com.ravingarinc.api.gui.api.ParentBuilder;
 import com.ravingarinc.api.gui.component.observer.ItemUpdater;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.*;
-import java.util.logging.Level;
 
 /**
  * @param <C> The Interactive type this IconBuilder represents
@@ -65,6 +67,15 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         return iconActionBuilder;
     }
 
+    public IconShiftActionBuilder<C, P> getShiftClickActionBuilder() {
+        IconShiftActionBuilder<C, P> iconActionBuilder = getExistingIconShiftActionBuilder();
+        if (iconActionBuilder == null) {
+            iconActionBuilder = new IconShiftActionBuilder<>(icon, icon.getParent(), this);
+            actionBuilders.add(iconActionBuilder);
+        }
+        return iconActionBuilder;
+    }
+
     @Nullable
     private IconActionBuilder<C, P> getExistingIconActionBuilder() {
         IconActionBuilder<C, P> found = null;
@@ -77,13 +88,16 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         return found;
     }
 
-    @Override
-    public void handleActionBuilder(final ActionBuilder<? extends ParentBuilder> builder) {
-        if (actionBuilders.remove(builder)) {
-            builder.build();
-        } else {
-            GuiProvider.log(Level.WARNING, "Attempted to handle action builder but it was not found in IconBuilder list!");
+    @Nullable
+    private IconShiftActionBuilder<C, P> getExistingIconShiftActionBuilder() {
+        IconShiftActionBuilder<C, P> found = null;
+        for (final ActionBuilder<IconBuilder<C, P>> builder : actionBuilders) {
+            if (builder instanceof IconShiftActionBuilder<C, P> f) {
+                found = f;
+                break;
+            }
         }
+        return found;
     }
 
     public IconBuilder<C, P> addChild(final Function<C, Supplier<Component>> child) {
@@ -97,6 +111,8 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
     }
 
     public P finalise() {
+        actionBuilders.forEach(ActionBuilder::build);
+        actionBuilders.clear();
         return owner;
     }
 

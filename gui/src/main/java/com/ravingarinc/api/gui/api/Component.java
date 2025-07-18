@@ -81,6 +81,16 @@ public interface Component {
         public Integer getPriority() {
             return 0;
         }
+
+        @Override
+        public void addShiftAction(Action action) {
+
+        }
+
+        @Override
+        public void performAllShiftActions(BaseGui gui, Player player) {
+
+        }
     };
     Background BACKGROUND = new Background();
     Border BORDER = new Border(Material.AIR, Material.AIR);

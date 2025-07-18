@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Predicate;
 
-public class ItemObserverActionBuilder<C extends Interactive, P extends Builder<? extends Component>> extends BaseActionBuilder<IconBuilder<C, P>> {
+public class ItemObserverActionBuilder<C extends Interactive, P extends Builder<? extends Component>> extends ActionBuilder<IconBuilder<C, P>> {
     private final IconBuilder<C, P> parent;
 
     public ItemObserverActionBuilder(final Interactive icon, final Predicate<ItemStack> predicate, final IconBuilder<C, P> parent) {
@@ -18,12 +18,13 @@ public class ItemObserverActionBuilder<C extends Interactive, P extends Builder<
 
     @Override
     public IconBuilder<C, P> finalise() {
-        parent.handleActionBuilder(this);
+        build();
         return parent;
     }
 
     @Override
     public void build() {
-        parent.addChild(() -> (Component) getActionable());
+        super.build();
+        parent.addChild(() -> (Component) reference);
     }
 }

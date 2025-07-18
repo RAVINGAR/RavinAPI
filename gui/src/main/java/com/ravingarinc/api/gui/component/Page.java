@@ -49,6 +49,26 @@ public class Page extends Element {
         }
     }
 
+    public void setPage(final int page) {
+        if (page > 0 && page < getMaxPage()) {
+            currentPage = page;
+        }
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public int getMaxPage() {
+        final int roundedDown = (int) Math.floor(iconsToPlace.size() / (double) slots.length);
+        return iconsToPlace.size() % slots.length == 0 ? roundedDown : roundedDown + 1;
+    }
+
+    public int findPageIndex(final int itemIndex) {
+        final int maxPage = getMaxPage();
+        return (int) Math.floor(itemIndex / (double) iconsToPlace.size() * (double) maxPage);
+    }
+
     public boolean hasNextPage() {
         return (currentPage + 1) * slots.length < iconsToPlace.size();
     }

@@ -1,6 +1,7 @@
 package com.ravingarinc.api.gui.api;
 
 import com.ravingarinc.api.gui.BaseGui;
+import com.ravingarinc.api.gui.component.action.Action;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -76,6 +77,10 @@ public interface Interactive extends Actionable, Component {
         consumer.accept(meta);
         item.setItemMeta(meta);
     }
+
+    void addShiftAction(Action action);
+
+    void performAllShiftActions(BaseGui gui, Player player);
 
     void addAmount(int delta);
 

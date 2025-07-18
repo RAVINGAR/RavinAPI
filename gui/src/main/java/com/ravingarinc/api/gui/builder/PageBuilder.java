@@ -107,6 +107,14 @@ public class PageBuilder implements Builder<Page> {
         return builder;
     }
 
+    public IconBuilder<PageIcon, PageBuilder> addPageIcon(final String identifier, final String display, final String lore, final Material material, final Action action) {
+        final IconBuilder<PageIcon, PageBuilder> builder = new IconBuilder<>(this, new PageIcon(identifier, display, lore, page.getIdentifier(), material, (g, p) -> true, (t) -> {
+        }));
+        builders.add(builder);
+        builder.getActionBuilder().addMiscAction(action);
+        return builder;
+    }
+
     public <T> PageFillerBuilder<T> addPageFiller(final String identifier,
                                                   final BiFunction<BaseGui, Player, Collection<T>> iterableSupplier) {
         final PageFillerBuilder<T> builder = new PageFillerBuilder<>(identifier, this, iterableSupplier);

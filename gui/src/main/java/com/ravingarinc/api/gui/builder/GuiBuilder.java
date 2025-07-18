@@ -81,17 +81,17 @@ public class GuiBuilder<T extends BaseGui> {
         return this;
     }
 
-    public QueueableActionBuilder<T> addQueueableOnClose(final boolean persistent) {
-        handleLastQueueable();
-        queueableActionBuilder = new QueueableActionBuilder<>(this, persistent, "MAIN");
-        return queueableActionBuilder;
+    public boolean hasMenu(String menuName) {
+        return menusToAdd.containsKey(menuName);
     }
 
-    public void handleLastQueueable() {
+    public QueueableActionBuilder<T> addQueueableOnClose(final boolean persistent) {
         if (queueableActionBuilder != null) {
             queueableActionBuilder.build();
             queueableActionBuilder = null;
         }
+        queueableActionBuilder = new QueueableActionBuilder<>(this, persistent, "MAIN");
+        return queueableActionBuilder;
     }
 
     public void setBackIconIndex(final int idx) {
@@ -109,7 +109,10 @@ public class GuiBuilder<T extends BaseGui> {
     }
 
     public ComponentActionBuilder<T> addActionableComponent(final Actionable actionable) {
-        handleLastActionBuilder();
+        if (lastActionBuilder != null) {
+            lastActionBuilder.build();
+            lastActionBuilder = null;
+        }
         lastActionBuilder = new ComponentActionBuilder<>(this, actionable, "MAIN");
         return lastActionBuilder;
     }
@@ -168,8 +171,14 @@ public class GuiBuilder<T extends BaseGui> {
     }
 
     public T build() {
-        handleLastActionBuilder();
-        handleLastQueueable();
+        if (lastActionBuilder != null) {
+            lastActionBuilder.build();
+            lastActionBuilder = null;
+        }
+        if (queueableActionBuilder != null) {
+            queueableActionBuilder.build();
+            queueableActionBuilder = null;
+        }
 
         boolean mainExists = false;
         for (final MenuBuilder builder : menusToAdd.values()) {

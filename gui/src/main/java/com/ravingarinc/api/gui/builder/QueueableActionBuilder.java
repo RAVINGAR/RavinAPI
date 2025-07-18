@@ -4,7 +4,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.component.Queueable;
 
-public class QueueableActionBuilder<T extends BaseGui> extends BaseActionBuilder<GuiBuilder<T>> {
+public class QueueableActionBuilder<T extends BaseGui> extends ActionBuilder<GuiBuilder<T>> {
     private final GuiBuilder<T> builder;
 
     public QueueableActionBuilder(final GuiBuilder<T> builder, final boolean persistent, final String lastMenu) {
@@ -14,12 +14,12 @@ public class QueueableActionBuilder<T extends BaseGui> extends BaseActionBuilder
 
     @Override
     public void build() {
-        builder.reference().addChild(() -> (Component) getActionable());
+        super.build();
+        builder.reference().addChild(() -> (Component) reference);
     }
 
     @Override
     public GuiBuilder<T> finalise() {
-        builder.handleLastQueueable();
         return builder;
     }
 }

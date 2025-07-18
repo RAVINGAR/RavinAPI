@@ -24,6 +24,7 @@ import java.util.logging.Level;
 //Placeholders will only allow name and lore changes via Dynamic, if the current item is the placeholder.
 public class PlaceableIcon extends Element implements Interactive {
     private final List<Action> actions;
+    private final List<Action> shiftActions;
     private final int index;
     private final ItemStack placeholder;
     private final Predicate<ItemStack> validator;
@@ -97,6 +98,16 @@ public class PlaceableIcon extends Element implements Interactive {
     }
 
     @Override
+    public void addShiftAction(Action action) {
+        shiftActions.add(action);
+    }
+
+    @Override
+    public void performAllShiftActions(BaseGui gui, Player player) {
+        shiftActions.forEach(action -> action.performAction(gui, player));
+    }
+
+    @Override
     public void addAction(final Action action) {
         if (action != null) {
             actions.add(action);
@@ -129,7 +140,11 @@ public class PlaceableIcon extends Element implements Interactive {
             return false;
         } else {
             if (isValid(event.getCursor())) {
-                onValidClick(gui, event);
+                if (event.getClick().isShiftClick()) {
+                    onShiftClick(gui, event);
+                } else if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.RIGHT) {
+                    onItemClick(gui, event);
+                }
             }
             return true;
         }
@@ -137,14 +152,6 @@ public class PlaceableIcon extends Element implements Interactive {
 
     public boolean isLocked() {
         return locked;
-    }
-
-    private void onValidClick(final BaseGui gui, final InventoryClickEvent event) {
-        if (event.getClick().isShiftClick()) {
-            onShiftClick(gui, event);
-        } else if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.RIGHT) {
-            onItemClick(gui, event);
-        }
     }
 
     protected void onItemClick(final BaseGui gui, final InventoryClickEvent event) {
@@ -175,6 +182,8 @@ public class PlaceableIcon extends Element implements Interactive {
                 }
             }
         }
+        fillElement(gui, player);
+        performAllActions(gui, player);
         //event.setCurrentItem(null);
     }
 
@@ -192,21 +201,20 @@ public class PlaceableIcon extends Element implements Interactive {
         final var leftovers = event.getView().getBottomInventory().addItem(item);
         if (!leftovers.isEmpty()) return;
         removeItem(gui, player);
+        fillElement(gui, player);
+        performAllShiftActions(gui, player);
     }
 
     public void placeItem(final BaseGui gui, final Player player, ItemStack item) {
         gui.playSound(player, Sound.ITEM_ARMOR_EQUIP_LEATHER, 0.5F);
         currentItem = item;
         onChangeItem.accept(currentItem, player);
-        fillElement(gui, player);
-        performAllActions(gui, player);
+
     }
 
     public void removeItem(final BaseGui gui, final Player player) {
         currentItem = null;
         onChangeItem.accept(null, player);
-        fillElement(gui, player);
-        performAllActions(gui, player);
     }
 
     @Nullable

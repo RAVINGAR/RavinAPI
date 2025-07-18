@@ -8,7 +8,7 @@ import com.ravingarinc.api.gui.component.observer.GuiObserver;
 
 import java.util.function.Predicate;
 
-public class GuiObserverActionBuilder<C extends Component, P extends Builder<C>> extends BaseActionBuilder<P> implements Builder<GuiObserver> {
+public class GuiObserverActionBuilder<C extends Component, P extends Builder<C>> extends ActionBuilder<P> implements Builder<GuiObserver> {
     private final P parent;
 
     public GuiObserverActionBuilder(final C component, final Predicate<BaseGui> predicate, final P builder) {
@@ -18,12 +18,8 @@ public class GuiObserverActionBuilder<C extends Component, P extends Builder<C>>
 
     @Override
     public P finalise() {
+        build();
         return parent;
-    }
-
-    @Override
-    public void build() {
-        getActionable();
     }
 
     @Override
@@ -33,6 +29,7 @@ public class GuiObserverActionBuilder<C extends Component, P extends Builder<C>>
 
     @Override
     public GuiObserver get() {
-        return (GuiObserver) getActionable();
+        build();
+        return reference();
     }
 }

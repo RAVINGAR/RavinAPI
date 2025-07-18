@@ -37,7 +37,7 @@ public class StateIconBuilder<T> extends IconBuilder<StateIcon<T>, MenuBuilder> 
         return super.get();
     }
 
-    public class StateActionBuilder extends BaseActionBuilder<StateIconBuilder<T>> {
+    public class StateActionBuilder extends ActionBuilder<StateIconBuilder<T>> {
 
         private final StateIconBuilder<T> parent;
 
@@ -49,11 +49,6 @@ public class StateIconBuilder<T> extends IconBuilder<StateIcon<T>, MenuBuilder> 
         @Override
         public StateIconBuilder<T> finalise() {
             return parent;
-        }
-
-        @Override
-        public void build() {
-            getActionable();
         }
     }
 }

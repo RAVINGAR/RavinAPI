@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 public abstract class BaseIcon extends Element implements Interactive {
     protected List<Action> actions;
+    protected List<Action> shiftActions;
     protected ItemStack item;
     protected BiPredicate<BaseGui, Player> predicate;
 
@@ -47,9 +48,19 @@ public abstract class BaseIcon extends Element implements Interactive {
             setMeta(PersistentDataType.STRING, "identifier", this.getIdentifier());
         }
 
-
+        this.shiftActions = new LinkedList<>();
         this.actions = new LinkedList<>();
         this.predicate = predicate;
+    }
+
+    @Override
+    public void addShiftAction(Action action) {
+        if (action != null) actions.add(action);
+    }
+
+    @Override
+    public void performAllShiftActions(BaseGui gui, Player player) {
+        shiftActions.forEach(action -> action.performAction(gui, player));
     }
 
     @Override
@@ -66,7 +77,11 @@ public abstract class BaseIcon extends Element implements Interactive {
 
     @Override
     public boolean handleClickedItem(final BaseGui gui, final InventoryClickEvent event, Player player) {
-        performAllActions(gui, player);
+        if (event.isShiftClick()) {
+            performAllShiftActions(gui, player);
+        } else {
+            performAllActions(gui, player);
+        }
         return true;
     }
 

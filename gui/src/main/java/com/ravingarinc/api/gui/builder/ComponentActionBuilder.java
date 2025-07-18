@@ -4,7 +4,7 @@ import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Actionable;
 import com.ravingarinc.api.gui.api.Component;
 
-public class ComponentActionBuilder<T extends BaseGui> extends BaseActionBuilder<GuiBuilder<T>> {
+public class ComponentActionBuilder<T extends BaseGui> extends ActionBuilder<GuiBuilder<T>> {
     private final GuiBuilder<T> builder;
 
     public ComponentActionBuilder(final GuiBuilder<T> builder, final Actionable reference, final String menu) {
@@ -14,12 +14,13 @@ public class ComponentActionBuilder<T extends BaseGui> extends BaseActionBuilder
 
     @Override
     public void build() {
-        builder.reference().addChild(() -> (Component) getActionable());
+        super.build();
+        builder.reference().addChild(() -> (Component) reference);
     }
 
     @Override
     public GuiBuilder<T> finalise() {
-        builder.handleLastActionBuilder();
+        build();
         return builder;
     }
 }
