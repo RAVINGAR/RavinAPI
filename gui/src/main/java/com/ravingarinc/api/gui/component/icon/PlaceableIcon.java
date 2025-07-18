@@ -56,6 +56,7 @@ public class PlaceableIcon extends Element implements Interactive {
         this.removeItemOnPickup = removeItemOnPickup;
         this.index = index;
         this.actions = new LinkedList<>();
+        this.shiftActions = new LinkedList<>();
         this.locked = false;
         this.validator = validator;
         if (placeholder != null) {
