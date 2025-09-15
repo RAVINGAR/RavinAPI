@@ -35,11 +35,14 @@ public class PageFiller<P> extends Element {
         super.fillElement(gui, player);
         gui.findComponent(Component.PAGE, parent).ifPresentOrElse(page -> {
             lastIcons.clear();
-            iterableSupplier.apply(gui, player).stream().map(t -> forEach.apply(gui, t)).filter(i -> i.canDisplay(gui,
-                    player)).forEachOrdered(icon -> {
-                page.queueIconToPlace(icon.getItem());
-                lastIcons.put(icon.getIdentifier(), icon);
-            });
+            Collection<P> result = iterableSupplier.apply(gui, player);
+            if (result != null) {
+                result.stream().map(t -> forEach.apply(gui, t)).filter(i -> i.canDisplay(gui,
+                        player)).forEachOrdered(icon -> {
+                    page.queueIconToPlace(icon.getItem());
+                    lastIcons.put(icon.getIdentifier(), icon);
+                });
+            }
         }, () -> GuiProvider.log(Level.WARNING, "Could not find page component for identifier " + parent));
     }
 

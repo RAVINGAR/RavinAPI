@@ -18,6 +18,7 @@ import org.bukkit.entity.Player
 import org.joml.AxisAngle4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import java.lang.reflect.Type
 import java.util.*
 import java.util.function.Consumer
 import java.util.logging.Level
@@ -330,9 +331,9 @@ sealed class Version(
 
         //</editor-fold>
         companion object : VersionCreator<V1_19_4>(::V1_19_4, 1, 19, 4..4) {
-            val vectorSerializer by lazy { WrappedDataWatcher.Registry.get(Vector3f::class.java) }
-            val axisAngleSerializer by lazy { WrappedDataWatcher.Registry.get(AxisAngle4f::class.java) }
-            val quaternionSerializer by lazy { WrappedDataWatcher.Registry.get(Quaternionf::class.java) }
+            val vectorSerializer by lazy { WrappedDataWatcher.Registry.get(Vector3f::class.java as Type) }
+            val axisAngleSerializer by lazy { WrappedDataWatcher.Registry.get(AxisAngle4f::class.java as Type) }
+            val quaternionSerializer by lazy { WrappedDataWatcher.Registry.get(Quaternionf::class.java as Type) }
         }
     }
 
@@ -388,7 +389,7 @@ sealed class Version(
 
     open class V1_20_5(
         protocol: Int = 766,
-        packFormat: Int = 23,
+        packFormat: Int = 32,
         names: Array<String> = arrayOf("1.20.5", "1.20.6")
     ) : V1_20_3(protocol, packFormat, names) {
         companion object : VersionCreator<V1_20_5>(::V1_20_5, 1, 20, 5..6)
@@ -396,7 +397,7 @@ sealed class Version(
 
     open class V1_21(
         protocol: Int = 767,
-        packFormat: Int = 24,
+        packFormat: Int = 34,
         names: Array<String> = arrayOf("1.21", "1.21.1")
     ) : V1_20_5(protocol, packFormat, names) {
         companion object : VersionCreator<V1_21>(::V1_21, 1, 21, 0..1)
@@ -404,7 +405,7 @@ sealed class Version(
 
     open class V1_21_2(
         protocol: Int = 768,
-        packFormat: Int = 24,
+        packFormat: Int = 42,
         names: Array<String> = arrayOf("1.21.2", "1.21.3")
     ) : V1_21(protocol, packFormat, names) {
         companion object : VersionCreator<V1_21_2>(::V1_21_2, 1, 21, 2..3)
@@ -412,10 +413,34 @@ sealed class Version(
 
     open class V1_21_4(
         protocol: Int = 769,
-        packFormat: Int = 24,
+        packFormat: Int = 46,
         names: Array<String> = arrayOf("1.21.4")
     ) : V1_21_2(protocol, packFormat, names) {
         companion object : VersionCreator<V1_21_4>(::V1_21_4, 1, 21, 4..4)
+    }
+
+    open class V1_21_5(
+        protocol: Int = 770,
+        packFormat: Int = 55,
+        names: Array<String> = arrayOf("1.21.5")
+    ) : V1_21_4(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_21_5>(::V1_21_5, 1, 21, 5..5)
+    }
+
+    open class V1_21_6(
+        protocol: Int = 771,
+        packFormat: Int = 63,
+        names: Array<String> = arrayOf("1.21.6")
+    ) : V1_21_5(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_21_6>(::V1_21_6, 1, 21, 6..6)
+    }
+
+    open class V1_21_8(
+        protocol: Int = 772,
+        packFormat: Int = 64,
+        names: Array<String> = arrayOf("1.21.7", "1.21.8")
+    ) : V1_21_6(protocol, packFormat, names) {
+        companion object : VersionCreator<V1_21_8>(::V1_21_8, 1, 21, 7..8)
     }
 
     /**
@@ -527,10 +552,10 @@ sealed class Version(
 
     companion object {
         val protocol: ProtocolManager = ProtocolLibrary.getProtocolManager()
-        val byteSerializer = WrappedDataWatcher.Registry.get(java.lang.Byte::class.java)
-        val boolSerializer = WrappedDataWatcher.Registry.get(java.lang.Boolean::class.java)
-        val integerSerializer = WrappedDataWatcher.Registry.get(java.lang.Integer::class.java)
-        val floatSerializer = WrappedDataWatcher.Registry.get(java.lang.Float::class.java)
+        val byteSerializer = WrappedDataWatcher.Registry.get(java.lang.Byte::class.java as Type)
+        val boolSerializer = WrappedDataWatcher.Registry.get(java.lang.Boolean::class.java as Type)
+        val integerSerializer = WrappedDataWatcher.Registry.get(java.lang.Integer::class.java as Type)
+        val floatSerializer = WrappedDataWatcher.Registry.get(java.lang.Float::class.java as Type)
         val itemSerializer = WrappedDataWatcher.Registry.getItemStackSerializer(false)
 
         fun sendPackets(player: Player, vararg packets: PacketContainer) {
