@@ -15,14 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public abstract class BaseIcon extends Element implements Interactive {
     protected List<Action> actions;
@@ -41,7 +39,7 @@ public abstract class BaseIcon extends Element implements Interactive {
         if (meta != null) {
             meta.displayName(formatString(display));
             if (lore != null && !lore.isEmpty()) {
-                meta.lore(Arrays.stream(lore.split("\n")).map(this::formatString).collect(Collectors.toList()));
+                meta.lore(formatLore(lore));
             }
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             item.setItemMeta(meta);

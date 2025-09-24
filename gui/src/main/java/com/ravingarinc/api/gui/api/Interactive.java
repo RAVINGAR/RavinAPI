@@ -10,10 +10,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public interface Interactive extends Actionable, Component {
 
@@ -66,7 +64,7 @@ public interface Interactive extends Actionable, Component {
             meta.displayName(formatString(name));
         }
         if (lore != null) {
-            meta.lore(Arrays.stream(lore.split("\n")).map(this::formatString).collect(Collectors.toList()));
+            meta.lore(formatLore(lore));
         }
         item.setItemMeta(meta);
     }

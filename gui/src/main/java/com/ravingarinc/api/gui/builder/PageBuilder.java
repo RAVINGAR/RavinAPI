@@ -260,16 +260,17 @@ public class PageBuilder implements Builder<Page> {
         @Override
         public PageFiller<T> get() {
             if (nameProvider == null || loreProvider == null || materialProvider == null) {
-                throw new IllegalArgumentException("Cannot get() sizeable page icon when name, lore or material provider is null!");
+                throw new IllegalArgumentException("Cannot get() sizeable page icon when name, lore or material provider is null for page filler " + identifier);
             }
             final BiFunction<BaseGui, T, PageIcon> function = (gui, val) -> {
                 final String name = nameProvider.apply(gui, val);
+                final String lore = loreProvider.apply(gui, val);
                 final String identifier = identifierProvider == null
                         ? ChatColor.stripColor(name).toUpperCase().replaceAll(" ", "_")
                         : identifierProvider.apply(gui, val);
                 final PageIcon icon = new PageIcon(identifier,
                         name,
-                        loreProvider.apply(gui, val),
+                        lore,
                         this.identifier,
                         materialProvider.apply(gui, val),
                         predicateProvider == null ? (g, p) -> true : predicateProvider.apply(gui, val),
