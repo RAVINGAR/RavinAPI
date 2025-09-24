@@ -31,6 +31,10 @@ public class ChatInputComponent implements Active {
         this.listening.put(player, new InputEntry(gui, consumer));
     }
 
+    public void removeListener(final Player player) {
+        this.listening.remove(player);
+    }
+
     @Override
     public void shutdown(BaseGui gui) {
         listener.unregister();
