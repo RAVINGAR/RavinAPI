@@ -32,6 +32,10 @@ allprojects {
         compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
         compileOnly("net.kyori:adventure-text-minimessage:4.15.0")
         compileOnly("net.kyori:text-adapter-bukkit:3.0.6")
+
+        testImplementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+        testImplementation("net.kyori:adventure-text-minimessage:4.15.0")
+        testImplementation("net.kyori:text-adapter-bukkit:3.0.6")
         // Todo, if this is 1.18.2, whats the point of supporting older versions?
     }
 }

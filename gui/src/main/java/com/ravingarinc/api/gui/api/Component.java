@@ -9,7 +9,7 @@ import com.ravingarinc.api.gui.component.observer.Observer;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -19,8 +19,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public interface Component {
 
@@ -150,22 +153,117 @@ public interface Component {
         return new NamespacedKey("ravinapi_gui", key);
     }
 
+    int MAX_LINE_LENGTH = 32;
+
+    default net.kyori.adventure.text.Component formatString(@Nullable final String input) {
+        return Component.format(input);
+    }
+    MiniMessage miniMessage = MiniMessage.miniMessage();
+
     static net.kyori.adventure.text.Component format(@Nullable final String input) {
         if (input == null) {
             return net.kyori.adventure.text.Component.text("").color(NamedTextColor.DARK_GRAY);
         }
-        if (input.contains("&") || input.contains("§")) {
-            final var builder = net.kyori.adventure.text.Component.text();
-            for (String part : ChatColor.translateAlternateColorCodes('&', input.replaceAll("§", "&")).split("\n")) {
-                builder.append(net.kyori.adventure.text.Component.text(part));
-            }
-            return builder.build();
-        } else {
-            return MiniMessage.miniMessage().deserialize(input).decoration(TextDecoration.ITALIC, false);
-        }
+        return MiniMessage.miniMessage().deserialize(convertToMiniMessage(input)).decoration(TextDecoration.ITALIC,
+                false);
     }
 
-    default net.kyori.adventure.text.Component formatString(@Nullable final String input) {
-        return Component.format(input);
+    /**
+     * Converts legacy bukkit chat colour codes to minimessage format.
+     */
+    static String convertToMiniMessage(String message) {
+        if (message == null) {
+            return "";
+        }
+        // This pattern will find all bukkit colour codes, including the ampersand.
+        Pattern pattern = Pattern.compile("[§&]([0-9a-fk-or])");
+        Matcher matcher = pattern.matcher(message);
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
+            char code = matcher.group(1).charAt(0);
+            String replacement = getMiniMessageTag(code);
+            if (replacement != null) {
+                matcher.appendReplacement(sb, replacement);
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static String getMiniMessageTag(char code) {
+        return switch (Character.toLowerCase(code)) {
+            case '0' -> "<black>";
+            case '1' -> "<dark_blue>";
+            case '2' -> "<dark_green>";
+            case '3' -> "<dark_aqua>";
+            case '4' -> "<dark_red>";
+            case '5' -> "<dark_purple>";
+            case '6' -> "<gold>";
+            case '7' -> "<gray>";
+            case '8' -> "<dark_gray>";
+            case '9' -> "<blue>";
+            case 'a' -> "<green>";
+            case 'b' -> "<aqua>";
+            case 'c' -> "<red>";
+            case 'd' -> "<light_purple>";
+            case 'e' -> "<yellow>";
+            case 'f' -> "<white>";
+            case 'k' -> "<obfuscated>";
+            case 'l' -> "<bold>";
+            case 'm' -> "<strikethrough>";
+            case 'n' -> "<underline>";
+            case 'o' -> "<italic>";
+            case 'r' -> "<reset>";
+            default -> null;
+        };
+    }
+
+    static List<net.kyori.adventure.text.Component> formatList(@Nullable final String input) {
+        if (input == null || input.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 1. Convert legacy codes to MiniMessage format first.
+        String message = convertToMiniMessage(input.replaceAll("\n", "<newline>"));
+
+        // 2. Strip all tags to get plain text for line wrapping logic
+        String plainText = PlainTextComponentSerializer.plainText().serialize(miniMessage.deserialize(message));
+
+        List<net.kyori.adventure.text.Component> result = new ArrayList<>();
+        StringBuilder currentLine = new StringBuilder();
+        String[] words = plainText.split(" ");
+        String activeTags = ""; // To track currently open tags
+
+        // Find initial tags if the message starts with them
+        Pattern tagPattern = Pattern.compile("^(<[^>]+>)+");
+        Matcher tagMatcher = tagPattern.matcher(message);
+        if (tagMatcher.find()) {
+            activeTags = tagMatcher.group(0);
+        }
+
+        for (String word : words) {
+            if (currentLine.length() + word.length() + (!currentLine.isEmpty() ? 1 : 0) > MAX_LINE_LENGTH) {
+                if (!currentLine.isEmpty()) {
+                    String lineToParse = activeTags + currentLine.toString();
+                    result.add(miniMessage.deserialize(lineToParse).decoration(TextDecoration.ITALIC, false));
+                    currentLine.setLength(0);
+                }
+            }
+            if (!currentLine.isEmpty()) {
+                currentLine.append(" ");
+            }
+            currentLine.append(word);
+        }
+
+        if (!currentLine.isEmpty()) {
+            String lineToParse = activeTags + currentLine.toString();
+            result.add(miniMessage.deserialize(lineToParse).decoration(TextDecoration.ITALIC, false));
+        }
+
+        return result;
+    }
+
+    default List<net.kyori.adventure.text.Component> formatLore(@Nullable final String input) {
+        return formatList(input);
     }
 }
