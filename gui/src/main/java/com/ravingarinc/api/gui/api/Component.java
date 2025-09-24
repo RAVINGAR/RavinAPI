@@ -9,7 +9,6 @@ import com.ravingarinc.api.gui.component.observer.Observer;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -171,14 +170,14 @@ public interface Component {
     /**
      * Converts legacy bukkit chat colour codes to minimessage format.
      */
-    static String convertToMiniMessage(String message) {
+    public static String convertToMiniMessage(String message) {
         if (message == null) {
             return "";
         }
         // This pattern will find all bukkit colour codes, including the ampersand.
-        Pattern pattern = Pattern.compile("[§&]([0-9a-fk-or])");
+        Pattern pattern = Pattern.compile("&([0-9a-fk-or])");
         Matcher matcher = pattern.matcher(message);
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
             char code = matcher.group(1).charAt(0);
             String replacement = getMiniMessageTag(code);
@@ -223,41 +222,73 @@ public interface Component {
             return new ArrayList<>();
         }
 
-        // 1. Convert legacy codes to MiniMessage format first.
-        String message = convertToMiniMessage(input.replaceAll("\n", "<newline>"));
+        final String message = convertToMiniMessage(input).replace("<newline>", "\n");
+        final List<net.kyori.adventure.text.Component> result = new ArrayList<>();
+        // Split by the newline character. The -1 limit preserves trailing empty strings,
+        // which is important for inputs ending in one or more newlines.
+        final String[] manualLines = message.split("\n", -1);
 
-        // 2. Strip all tags to get plain text for line wrapping logic
-        String plainText = PlainTextComponentSerializer.plainText().serialize(miniMessage.deserialize(message));
+        String activeTagsPrefix = "";
+        final Pattern tagPattern = Pattern.compile("<(/?[a-zA-Z0-9_]+)>");
 
-        List<net.kyori.adventure.text.Component> result = new ArrayList<>();
-        StringBuilder currentLine = new StringBuilder();
-        String[] words = plainText.split(" ");
-        String activeTags = ""; // To track currently open tags
+        for (String manualLine : manualLines) {
+            // If a line is empty (from a double newline, e.g., "...\n\n..."),
+            // add a blank component and move to the next line.
+            if (manualLine.isEmpty()) {
+                result.add(net.kyori.adventure.text.Component.text(""));
+                continue;
+            }
 
-        // Find initial tags if the message starts with them
-        Pattern tagPattern = Pattern.compile("^(<[^>]+>)+");
-        Matcher tagMatcher = tagPattern.matcher(message);
-        if (tagMatcher.find()) {
-            activeTags = tagMatcher.group(0);
-        }
+            final String[] words = manualLine.split(" ");
+            StringBuilder currentLineBuilder = new StringBuilder(activeTagsPrefix);
 
-        for (String word : words) {
-            if (currentLine.length() + word.length() + (!currentLine.isEmpty() ? 1 : 0) > MAX_LINE_LENGTH) {
-                if (!currentLine.isEmpty()) {
-                    String lineToParse = activeTags + currentLine.toString();
-                    result.add(miniMessage.deserialize(lineToParse).decoration(TextDecoration.ITALIC, false));
-                    currentLine.setLength(0);
+            for (String word : words) {
+                String plainWord = word.replaceAll("<[^>]+>", "");
+                String plainCurrentLine = currentLineBuilder.toString().replaceAll("<[^>]+>", "");
+
+                // Check if adding the new word would make the line too long.
+                // An extra check ensures we don't break on the very first word of a line.
+                if (!plainCurrentLine.isEmpty() && plainCurrentLine.length() + plainWord.length() + 1 > MAX_LINE_LENGTH) {
+                    result.add(miniMessage.deserialize(currentLineBuilder.toString())
+                            .decoration(TextDecoration.ITALIC, false));
+                    currentLineBuilder.setLength(0);
+                    currentLineBuilder.append(activeTagsPrefix);
                 }
-            }
-            if (!currentLine.isEmpty()) {
-                currentLine.append(" ");
-            }
-            currentLine.append(word);
-        }
 
-        if (!currentLine.isEmpty()) {
-            String lineToParse = activeTags + currentLine.toString();
-            result.add(miniMessage.deserialize(lineToParse).decoration(TextDecoration.ITALIC, false));
+                // Append the word, with a leading space if the line isn't empty.
+                if (!currentLineBuilder.toString().replaceAll("<[^>]+>", "").isEmpty()) {
+                    currentLineBuilder.append(" ");
+                }
+                currentLineBuilder.append(word);
+
+                // After adding the word, recalculate the active tags prefix for the *next* line.
+                List<String> tagStack = new ArrayList<>();
+                Matcher matcher = tagPattern.matcher(currentLineBuilder.toString());
+                while (matcher.find()) {
+                    String tagContent = matcher.group(1);
+                    if (tagContent.startsWith("/")) {
+                        String tagName = tagContent.substring(1);
+                        int lastIndex = tagStack.lastIndexOf(tagName);
+                        if (lastIndex != -1) {
+                            tagStack.remove(lastIndex);
+                        }
+                    } else {
+                        tagStack.add(tagContent);
+                    }
+                }
+
+                StringBuilder prefixBuilder = new StringBuilder();
+                for (String tagName : tagStack) {
+                    prefixBuilder.append("<").append(tagName).append(">");
+                }
+                activeTagsPrefix = prefixBuilder.toString();
+            }
+
+            // Add the final line to the result list if it has content.
+            if (!currentLineBuilder.toString().replaceAll("<[^>]+>", "").isEmpty()) {
+                result.add(miniMessage.deserialize(currentLineBuilder.toString())
+                        .decoration(TextDecoration.ITALIC, false));
+            }
         }
 
         return result;
