@@ -138,7 +138,7 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
     }
 
     /**
-     * Add any appropriate actions.
+     * Using the action builder for this icon, add any actions which will be executed when this icon is clicked.
      */
     public IconBuilder<C, P> actions(Consumer<IconActionBuilder<C, P>> builder) {
         final var actions = getActionBuilder();
@@ -146,6 +146,9 @@ public class IconBuilder<C extends Interactive, P extends Builder<? extends Comp
         return this;
     }
 
+    /**
+     * Using the action builder for this icon, add any actions which will be executed when this icon is shift-clicked.
+     */
     public IconBuilder<C, P> actionsOnShiftClick(Consumer<IconShiftActionBuilder<C, P>> builder) {
         final var actions = getShiftClickActionBuilder();
         builder.accept(actions);

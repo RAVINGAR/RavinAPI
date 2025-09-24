@@ -7,6 +7,7 @@ import com.ravingarinc.api.gui.api.Interactive;
 import com.ravingarinc.api.gui.component.Decoration;
 import com.ravingarinc.api.gui.component.Menu;
 import com.ravingarinc.api.gui.component.action.Action;
+import com.ravingarinc.api.gui.component.action.RunnableAction;
 import com.ravingarinc.api.gui.component.icon.Icon;
 import com.ravingarinc.api.gui.component.icon.PlaceableIcon;
 import com.ravingarinc.api.gui.component.icon.StateIcon;
@@ -129,6 +130,16 @@ public class MenuBuilder implements Builder<Menu> {
                                   Consumer<IconBuilder<StaticIcon, MenuBuilder>> builder) {
         final var icon = addStaticIcon("static_icon_" + lastId++, display, lore, material, index);
         builder.accept(icon);
+        return this;
+    }
+
+    public MenuBuilder staticIcon(final String display, final String lore, final Material material, final Action action, final int index) {
+        addStaticIcon("static_icon_" + lastId++, display, lore, material, action, index);
+        return this;
+    }
+
+    public MenuBuilder staticIcon(final String display, final String lore, final Material material, final BiConsumer<BaseGui, Player> action, final int index) {
+        addStaticIcon("static_icon_" + lastId++, display, lore, material, new RunnableAction(action), index);
         return this;
     }
 

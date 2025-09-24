@@ -52,11 +52,7 @@ public class PageBuilder implements Builder<Page> {
         return addNextPageIcon("&eNext Page", "&7Navigate to the\n&7next page.", material, index, consumer);
     }
 
-    public PageBuilder nextPageIcon(final int index, Consumer<IconBuilder<StaticIcon, PageBuilder>> builder) {
-        final var icon = addNextPageIcon(index);
-        builder.accept(icon);
-        return this;
-    }
+
 
     public IconBuilder<StaticIcon, PageBuilder> addPreviousPageIcon(final int index) {
         return addPreviousPageIcon(Material.ARROW, index, i -> {
@@ -71,6 +67,22 @@ public class PageBuilder implements Builder<Page> {
         final var icon = addPreviousPageIcon(index);
         builder.accept(icon);
         return this;
+    }
+
+    public PageBuilder nextPageIcon(final int index, Consumer<IconBuilder<StaticIcon, PageBuilder>> builder) {
+        final var icon = addNextPageIcon(index);
+        builder.accept(icon);
+        return this;
+    }
+
+    public PageBuilder previousPageIcon(final int index) {
+        return previousPageIcon(index, icon -> {
+        });
+    }
+
+    public PageBuilder nextPageIcon(final int index) {
+        return nextPageIcon(index, i -> {
+        });
     }
 
     public IconBuilder<StaticIcon, PageBuilder> addNextPageIcon(final String display, final String lore, final Material material, final int index) {
