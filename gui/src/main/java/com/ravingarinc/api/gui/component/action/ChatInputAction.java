@@ -12,13 +12,17 @@ public class ChatInputAction extends Action {
     private final net.kyori.adventure.text.Component description;
 
     public ChatInputAction(String description, BiConsumer<Player, String> onResponse) {
-        this(description, (gui, player, str) -> onResponse.accept(player, str));
+        this(Component.format(description), (gui, player, str) -> onResponse.accept(player, str));
     }
 
     public ChatInputAction(String description, TriConsumer<BaseGui, Player, String> onResponse) {
+        this(Component.format(description), onResponse);
+    }
+
+    public ChatInputAction(net.kyori.adventure.text.Component description, TriConsumer<BaseGui, Player, String> onResponse) {
         super("CHAT_INPUT_ACTION");
         this.onResponse = onResponse;
-        this.description = Component.format(description);
+        this.description = description;
     }
 
     @Override
