@@ -29,6 +29,8 @@ public class PageBuilder implements Builder<Page> {
 
     private final List<Builder<?>> builders;
 
+    private int lastId = 0;
+
     public PageBuilder(final String identifier, final MenuBuilder parent, final int... slots) {
         parentIdentifier = parent.reference().getIdentifier();
         page = new Page(identifier, parentIdentifier, slots);
@@ -36,6 +38,7 @@ public class PageBuilder implements Builder<Page> {
         builders = new ArrayList<>();
     }
 
+    @Deprecated
     public void with(final Consumer<PageBuilder> builder) {
         builder.accept(this);
     }
@@ -49,6 +52,12 @@ public class PageBuilder implements Builder<Page> {
         return addNextPageIcon("&eNext Page", "&7Navigate to the\n&7next page.", material, index, consumer);
     }
 
+    public PageBuilder nextPageIcon(final int index, Consumer<IconBuilder<StaticIcon, PageBuilder>> builder) {
+        final var icon = addNextPageIcon(index);
+        builder.accept(icon);
+        return this;
+    }
+
     public IconBuilder<StaticIcon, PageBuilder> addPreviousPageIcon(final int index) {
         return addPreviousPageIcon(Material.ARROW, index, i -> {
         });
@@ -56,6 +65,12 @@ public class PageBuilder implements Builder<Page> {
 
     public IconBuilder<StaticIcon, PageBuilder> addPreviousPageIcon(final Material material, final int index, final Consumer<ItemStack> consumer) {
         return addPreviousPageIcon("&ePrevious Page", "&7Navigate to the\n&7previous page.", material, index, consumer);
+    }
+
+    public PageBuilder previousPageIcon(final int index, Consumer<IconBuilder<StaticIcon, PageBuilder>> builder) {
+        final var icon = addPreviousPageIcon(index);
+        builder.accept(icon);
+        return this;
     }
 
     public IconBuilder<StaticIcon, PageBuilder> addNextPageIcon(final String display, final String lore, final Material material, final int index) {
@@ -119,6 +134,13 @@ public class PageBuilder implements Builder<Page> {
         return builder;
     }
 
+    public PageBuilder pageIcon(final String display, final String lore, final Material material,
+                                final Consumer<IconBuilder<PageIcon, PageBuilder>> builder) {
+        final var icon = addPageIcon("page_icon_" + lastId++, display, lore, material);
+        builder.accept(icon);
+        return this;
+    }
+
     public <T> PageFillerBuilder<T> addPageFiller(final String identifier,
                                                   final BiFunction<BaseGui, Player, Collection<T>> iterableSupplier) {
         final PageFillerBuilder<T> builder = new PageFillerBuilder<>(identifier, this, iterableSupplier);
@@ -127,16 +149,28 @@ public class PageBuilder implements Builder<Page> {
     }
 
     public <T> PageFillerBuilder<T> addPageFiller(final String identifier, final Function<BaseGui, Collection<T>> iterableSupplier) {
-        final PageFillerBuilder<T> builder = new PageFillerBuilder<>(identifier, this,
-                (gui, player) -> iterableSupplier.apply(gui));
-        builders.add(builder);
-        return builder;
+        return addPageFiller(identifier, (gui, player) -> iterableSupplier.apply(gui));
     }
 
     public <T> PageFillerBuilder<T> addPageFiller(final String identifier, final Supplier<Collection<T>> iterableSupplier) {
-        final PageFillerBuilder<T> builder = new PageFillerBuilder<>(identifier, this, iterableSupplier);
-        builders.add(builder);
-        return builder;
+        return addPageFiller(identifier, (gui) -> iterableSupplier.get());
+    }
+
+    public <T> PageBuilder pageFiller(final BiFunction<BaseGui, Player, Collection<T>> iterableSupplier,
+                                      final Consumer<PageFillerBuilder<T>> builder) {
+        final var filler = addPageFiller("page_filler_" + lastId++, iterableSupplier);
+        builder.accept(filler);
+        return this;
+    }
+
+    public <T> PageBuilder pageFiller(final Function<BaseGui, Collection<T>> iterableSupplier,
+                                      final Consumer<PageFillerBuilder<T>> builder) {
+        return pageFiller((gui, player) -> iterableSupplier.apply(gui), builder);
+    }
+
+    public <T> PageBuilder pageFiller(final Supplier<Collection<T>> iterableSupplier,
+                                      final Consumer<PageFillerBuilder<T>> builder) {
+        return pageFiller((gui, player) -> iterableSupplier.get(), builder);
     }
 
     @Override
