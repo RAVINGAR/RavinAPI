@@ -74,71 +74,73 @@ public class TestClass {
             return new ArrayList<>();
         }
 
-        final String message = convertToMiniMessage(input).replaceAll("\n", "<newline>");
+        final String message = convertToMiniMessage(input).replace("<newline>", "\n");
         final List<Component> result = new ArrayList<>();
-        // Split by space, this will keep tags attached to words.
-        final String[] words = message.split(" ");
+        // Split by the newline character. The -1 limit preserves trailing empty strings,
+        // which is important for inputs ending in one or more newlines.
+        final String[] manualLines = message.split("\n", -1);
 
-        StringBuilder currentLineBuilder = new StringBuilder();
-        // This will hold the sequence of open tags for the next line, like "<red><bold>"
         String activeTagsPrefix = "";
-
-        // This pattern finds simple, attribute-less tags.
         final Pattern tagPattern = Pattern.compile("<(/?[a-zA-Z0-9_]+)>");
 
-        for (String word : words) {
-            // Get the plain text of the word itself to check its length against the line limit.
-            String plainWord = word.replaceAll("<[^>]+>", "");
-            // Get the plain text of the current line so far.
-            String plainCurrentLine = currentLineBuilder.toString().replaceAll("<[^>]+>", "");
+        for (String manualLine : manualLines) {
+            // If a line is empty (from a double newline, e.g., "...\n\n..."),
+            // add a blank component and move to the next line.
+            if (manualLine.isEmpty()) {
+                result.add(Component.text(""));
+                continue;
+            }
 
-            // Check if adding the new word would make the line too long.
-            if (!currentLineBuilder.isEmpty() && plainCurrentLine.length() + plainWord.length() + 1 > MAX_LINE_LENGTH) {
-                // The line is full. Finalize it and add it to the results.
+            final String[] words = manualLine.split(" ");
+            StringBuilder currentLineBuilder = new StringBuilder(activeTagsPrefix);
+
+            for (String word : words) {
+                String plainWord = word.replaceAll("<[^>]+>", "");
+                String plainCurrentLine = currentLineBuilder.toString().replaceAll("<[^>]+>", "");
+
+                // Check if adding the new word would make the line too long.
+                // An extra check ensures we don't break on the very first word of a line.
+                if (!plainCurrentLine.isEmpty() && plainCurrentLine.length() + plainWord.length() + 1 > MAX_LINE_LENGTH) {
+                    result.add(miniMessage.deserialize(currentLineBuilder.toString())
+                            .decoration(TextDecoration.ITALIC, false));
+                    currentLineBuilder.setLength(0);
+                    currentLineBuilder.append(activeTagsPrefix);
+                }
+
+                // Append the word, with a leading space if the line isn't empty.
+                if (!currentLineBuilder.toString().replaceAll("<[^>]+>", "").isEmpty()) {
+                    currentLineBuilder.append(" ");
+                }
+                currentLineBuilder.append(word);
+
+                // After adding the word, recalculate the active tags prefix for the *next* line.
+                List<String> tagStack = new ArrayList<>();
+                Matcher matcher = tagPattern.matcher(currentLineBuilder.toString());
+                while (matcher.find()) {
+                    String tagContent = matcher.group(1);
+                    if (tagContent.startsWith("/")) {
+                        String tagName = tagContent.substring(1);
+                        int lastIndex = tagStack.lastIndexOf(tagName);
+                        if (lastIndex != -1) {
+                            tagStack.remove(lastIndex);
+                        }
+                    } else {
+                        tagStack.add(tagContent);
+                    }
+                }
+
+                StringBuilder prefixBuilder = new StringBuilder();
+                for (String tagName : tagStack) {
+                    prefixBuilder.append("<").append(tagName).append(">");
+                }
+                activeTagsPrefix = prefixBuilder.toString();
+            }
+
+            // Add the final line to the result list if it has content.
+            if (!currentLineBuilder.toString().replaceAll("<[^>]+>", "").isEmpty()) {
                 result.add(miniMessage.deserialize(currentLineBuilder.toString())
                         .decoration(TextDecoration.ITALIC, false));
-
-                // Start a new line, prepending the tags that were active from the end of the last line.
-                currentLineBuilder.setLength(0);
-                currentLineBuilder.append(activeTagsPrefix);
             }
-
-            // Append the word, with a leading space if needed.
-            if (!currentLineBuilder.isEmpty() && !plainCurrentLine.isEmpty()) {
-                currentLineBuilder.append(" ");
-            }
-            currentLineBuilder.append(word);
-
-            // After adding the word, recalculate the active tags prefix for the *next* line.
-            // This is done by simulating a stack based on all tags in the current line builder.
-            List<String> tagStack = new ArrayList<>();
-            Matcher matcher = tagPattern.matcher(currentLineBuilder.toString());
-            while (matcher.find()) {
-                String tagContent = matcher.group(1);
-                if (tagContent.startsWith("/")) {
-                    // Closing tag: remove the corresponding opening tag from our stack.
-                    String tagName = tagContent.substring(1);
-                    int lastIndex = tagStack.lastIndexOf(tagName);
-                    if (lastIndex != -1) {
-                        tagStack.remove(lastIndex);
-                    }
-                } else {
-                    // Opening tag: add it to our stack.
-                    tagStack.add(tagContent);
-                }
-            }
-
-            // Reconstruct the prefix for the next line from the current tag stack.
-            StringBuilder prefixBuilder = new StringBuilder();
-            for (String tagName : tagStack) {
-                prefixBuilder.append("<").append(tagName).append(">");
-            }
-            activeTagsPrefix = prefixBuilder.toString();
-        }
-
-        // Add the final line to the result list if it has content.
-        if (!currentLineBuilder.isEmpty()) {
-            result.add(miniMessage.deserialize(currentLineBuilder.toString()).decoration(TextDecoration.ITALIC, false));
         }
 
         return result;
@@ -203,11 +205,12 @@ public class TestClass {
         components.add(MiniMessage.miniMessage()
                 .deserialize("<gray>thing!</gray>")
                 .decoration(TextDecoration.ITALIC, false));
+        components.add(Component.text(""));
         components.add(MiniMessage.miniMessage()
-                .deserialize("<newline><newline><gray>We should hope to get a</gray>")
+                .deserialize("<gray>We should hope to get a similar</gray>")
                 .decoration(TextDecoration.ITALIC, false));
         components.add(MiniMessage.miniMessage()
-                .deserialize("<gray>similar result!</gray>")
+                .deserialize("<gray>result!</gray>")
                 .decoration(TextDecoration.ITALIC, false));
 
 
