@@ -19,13 +19,13 @@ public class Decoration extends Element {
     private final int[] index;
 
     public Decoration(final String identifier, final String parent) {
-        super(identifier.endsWith("_DECORATION") ? identifier : identifier + "_DECORATION", parent, 3);
+        super(identifier.endsWith("_DECORATION") ? identifier : identifier + "_DECORATION", parent, 1);
         material = null;
         index = null;
     }
 
     public Decoration(final String identifier, final String parent, final Material material, final int[] index) {
-        super(identifier.endsWith("_DECORATION") ? identifier : identifier + "_DECORATION", parent, 3);
+        super(identifier.endsWith("_DECORATION") ? identifier : identifier + "_DECORATION", parent, 1);
         this.material = material;
         this.index = index;
     }
