@@ -120,7 +120,7 @@ public interface Component {
 
     ChatInputComponent CHAT_INPUT_COMPONENT = new ChatInputComponent();
 
-    PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", "", (a, b) -> null, (g, p) -> new ArrayList<>());
+    PageFiller<?> PAGE_FILLER = new PageFiller<>("PAGE_FILLER", PAGE, (a, b) -> null, (g, p) -> new ArrayList<>());
 
     ItemUpdater ITEM_UPDATER = new ItemUpdater(null);
 
@@ -175,7 +175,7 @@ public interface Component {
             return "";
         }
         // This pattern will find all bukkit colour codes, including the ampersand.
-        Pattern pattern = Pattern.compile("&([0-9a-fk-or])");
+        Pattern pattern = Pattern.compile("[&§]([0-9a-fk-or])");
         Matcher matcher = pattern.matcher(message);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {

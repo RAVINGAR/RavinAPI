@@ -10,7 +10,6 @@ import com.ravingarinc.api.gui.component.action.PreviousPageAction;
 import com.ravingarinc.api.gui.component.icon.PageFiller;
 import com.ravingarinc.api.gui.component.icon.PageIcon;
 import com.ravingarinc.api.gui.component.icon.StaticIcon;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 
 public class PageBuilder implements Builder<Page> {
@@ -149,6 +149,19 @@ public class PageBuilder implements Builder<Page> {
     public PageBuilder pageIcon(final String display, final String lore, final Material material,
                                 final Consumer<IconBuilder<PageIcon, PageBuilder>> builder) {
         final var icon = addPageIcon("page_icon_" + lastId++, display, lore, material);
+        builder.accept(icon);
+        return this;
+    }
+
+    public PageBuilder pageIcon(@NotNull final Supplier<String> display, @NotNull final Supplier<String> lore, @NotNull final Supplier<Material> material, final BiPredicate<BaseGui, Player> predicate,
+                                final Consumer<IconBuilder<PageIcon, PageBuilder>> builder) {
+        final IconBuilder<PageIcon, PageBuilder> icon = new IconBuilder<>(this, new PageIcon("page_icon_" + lastId++, "", "", page.getIdentifier(), Material.STONE, predicate, (t) -> {
+        }));
+        builders.add(icon);
+        icon.addItemUpdater(
+                (i, p) -> display.get(),
+                (i, p) -> lore.get(),
+                (i, p) -> material.get());
         builder.accept(icon);
         return this;
     }
@@ -308,16 +321,17 @@ public class PageBuilder implements Builder<Page> {
             if (nameProvider == null || loreProvider == null || materialProvider == null) {
                 throw new IllegalArgumentException("Cannot get() sizeable page icon when name, lore or material provider is null for page filler " + identifier);
             }
+
+            if (identifierProvider == null) {
+                final AtomicInteger counter = new AtomicInteger(0);
+                identifierProvider = (g, i) -> identifier + "_FILLER_PAGE_ICON_" + counter.getAndIncrement();
+            }
             final BiFunction<BaseGui, T, PageIcon> function = (gui, val) -> {
-                final String name = nameProvider.apply(gui, val);
-                final String lore = loreProvider.apply(gui, val);
-                final String identifier = identifierProvider == null
-                        ? ChatColor.stripColor(name).toUpperCase().replaceAll(" ", "_")
-                        : identifierProvider.apply(gui, val);
-                final PageIcon icon = new PageIcon(identifier,
-                        name,
-                        lore,
-                        this.identifier,
+                final PageIcon icon = new PageIcon(
+                        identifierProvider.apply(gui, val),
+                        nameProvider.apply(gui, val),
+                        loreProvider.apply(gui, val),
+                        identifier,
                         materialProvider.apply(gui, val),
                         predicateProvider == null ? (g, p) -> true : predicateProvider.apply(gui, val),
                         consumerProvider == null ? (i) -> {
@@ -330,7 +344,7 @@ public class PageBuilder implements Builder<Page> {
 
                 return icon;
             };
-            return new PageFiller<>(identifier, page.getIdentifier(), function, iterableSupplier);
+            return new PageFiller<>(identifier, page, function, iterableSupplier);
         }
 
         public PageBuilder finalise() {

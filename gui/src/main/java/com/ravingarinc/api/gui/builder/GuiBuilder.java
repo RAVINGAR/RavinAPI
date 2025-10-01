@@ -215,6 +215,7 @@ public class GuiBuilder<T extends BaseGui> {
         if (!mainExists) {
             GuiProvider.log(Level.SEVERE, "Main Menu was never added for GuiBuilder for " + gui.getIdentifier() + "! This is a developer error!");
         }
+        menusToAdd.clear();
         return gui;
     }
 }

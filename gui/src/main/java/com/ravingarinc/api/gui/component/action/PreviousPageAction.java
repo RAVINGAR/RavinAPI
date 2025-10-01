@@ -20,7 +20,7 @@ public class PreviousPageAction extends Action {
         gui.findComponent(Component.MENU, menu).map((menu) -> menu.findComponent(Component.PAGE, pointer)).ifPresentOrElse((optional) -> {
             optional.ifPresentOrElse(page -> {
                 page.previousPage();
-                gui.fillElement(gui, performer);
+                gui.queueRefresh();
             }, () -> GuiProvider.log(Level.WARNING, "Could not find page called " + pointer + "!"));
         }, () -> GuiProvider.log(Level.WARNING, "Could not find menu called " + menu + "!"));
     }

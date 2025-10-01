@@ -15,6 +15,7 @@ import com.ravingarinc.api.gui.component.icon.StaticIcon;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -143,15 +144,40 @@ public class MenuBuilder implements Builder<Menu> {
         return this;
     }
 
-    public MenuBuilder staticIcon(final Supplier<String> dynamicDisplay,
-                                  final Supplier<String> dynamicLore,
-                                  final Supplier<Material> dynamicMaterial,
+
+    public MenuBuilder staticIcon(@NotNull final Supplier<String> dynamicDisplay,
+                                  @NotNull final Supplier<String> dynamicLore,
+                                  @NotNull final Supplier<Material> dynamicMaterial,
+                                  @NotNull final Action action,
+                                  final int index) {
+        return staticIcon(
+                (i, p) -> dynamicDisplay.get(),
+                (i, p) -> dynamicLore.get(),
+                (i, p) -> dynamicMaterial.get(),
+                index, i -> i.actions(a -> a.addMiscAction(action)));
+    }
+
+    public MenuBuilder staticIcon(@NotNull final Supplier<String> dynamicDisplay,
+                                  @NotNull final Supplier<String> dynamicLore,
+                                  @NotNull final Supplier<Material> dynamicMaterial,
                                   final int index, Consumer<IconBuilder<StaticIcon, MenuBuilder>> builder) {
         return staticIcon(
                 (i, p) -> dynamicDisplay.get(),
                 (i, p) -> dynamicLore.get(),
                 (i, p) -> dynamicMaterial.get(),
                 index, builder);
+    }
+
+    public MenuBuilder staticIcon(final BiFunction<Interactive, Player, String> dynamicDisplay,
+                                  final BiFunction<Interactive, Player, String> dynamicLore,
+                                  final BiFunction<Interactive, Player, Material> dynamicMaterial,
+                                  final Action action,
+                                  final int index) {
+        return staticIcon(
+                dynamicDisplay,
+                dynamicLore,
+                dynamicMaterial,
+                index, i -> i.actions(a -> a.addMiscAction(action)));
     }
 
     public MenuBuilder staticIcon(final BiFunction<Interactive, Player, String> dynamicDisplay,
