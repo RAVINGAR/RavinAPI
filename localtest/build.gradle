@@ -18,7 +18,7 @@ dependencies {
     shadow project(':common')
     shadow project(':gui')
 
-    compileOnly "com.comphenix.protocol:ProtocolLib:5.0.0"
+    //compileOnly "com.comphenix.protocol:ProtocolLib:5.0.0"
 }
 
 jar {
