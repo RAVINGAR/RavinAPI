@@ -1,4 +1,3 @@
-
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
@@ -27,6 +26,13 @@ jar {
     archiveBaseName.set('localtest')
     archiveVersion.set(null)
     archiveClassifier.set('original')
+}
+
+tasks.withType(PublishToMavenRepository).configureEach {
+    it.enabled = false
+}
+tasks.withType(PublishToMavenLocal).configureEach {
+    it.enabled = false
 }
 
 
