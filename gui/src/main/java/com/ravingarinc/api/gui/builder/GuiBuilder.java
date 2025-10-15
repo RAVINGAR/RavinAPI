@@ -33,6 +33,8 @@ public class GuiBuilder<T extends BaseGui> {
 
     protected @Nullable Closeable onDestroy = null;
 
+    protected int lastId = 0;
+
 
     public GuiBuilder(final Plugin plugin, final String guiName, final Class<T> type) {
         this(plugin, guiName, type, 45);
@@ -48,6 +50,10 @@ public class GuiBuilder<T extends BaseGui> {
             GuiProvider.log(Level.SEVERE, "Gui constructor threw exception!", e.getTargetException());
         }
         init();
+    }
+
+    public int getAndIncrementId() {
+        return lastId++;
     }
 
     public GuiBuilder(T gui) {
@@ -94,6 +100,12 @@ public class GuiBuilder<T extends BaseGui> {
         return queueableActionBuilder;
     }
 
+    public GuiBuilder<T> queueableOnClose(final boolean persistent, final Consumer<QueueableActionBuilder<T>> builder) {
+        final var queueable = addQueueableOnClose(persistent);
+        builder.accept(queueable);
+        return this;
+    }
+
     public void setBackIconIndex(final int idx) {
         this.defaultBackIdx = idx;
     }
@@ -117,6 +129,12 @@ public class GuiBuilder<T extends BaseGui> {
         return lastActionBuilder;
     }
 
+    public GuiBuilder<T> actionableComponent(final Actionable actionable, final Consumer<ComponentActionBuilder<T>> builder) {
+        final var actionableBuilder = addActionableComponent(actionable);
+        builder.accept(actionableBuilder);
+        return this;
+    }
+
     public MenuBuilder createMenu(final String identifier, final String parent) {
         return createMenu(identifier, parent, defaultBackIdx);
     }
@@ -128,6 +146,12 @@ public class GuiBuilder<T extends BaseGui> {
         final MenuBuilder builder = new MenuBuilder(this, identifier, parent, backIdx);
         menusToAdd.put(identifier, builder);
         return builder;
+    }
+
+    public GuiBuilder<T> menu(final String identifier, final String parent, Consumer<MenuBuilder> builder) {
+        final var menuBuilder = createMenu(identifier, parent, defaultBackIdx);
+        builder.accept(menuBuilder);
+        return this;
     }
 
     @Nullable
@@ -191,6 +215,7 @@ public class GuiBuilder<T extends BaseGui> {
         if (!mainExists) {
             GuiProvider.log(Level.SEVERE, "Main Menu was never added for GuiBuilder for " + gui.getIdentifier() + "! This is a developer error!");
         }
+        menusToAdd.clear();
         return gui;
     }
 }

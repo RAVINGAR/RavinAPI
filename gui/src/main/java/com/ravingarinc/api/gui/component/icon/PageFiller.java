@@ -3,7 +3,7 @@ package com.ravingarinc.api.gui.component.icon;
 import com.ravingarinc.api.gui.BaseGui;
 import com.ravingarinc.api.gui.api.Component;
 import com.ravingarinc.api.gui.api.Element;
-import com.ravingarinc.api.gui.builder.GuiProvider;
+import com.ravingarinc.api.gui.component.Page;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,18 +13,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.logging.Level;
 
 public class PageFiller<P> extends Element {
     private final BiFunction<BaseGui, P, PageIcon> forEach;
     private final BiFunction<BaseGui, Player, Collection<P>> iterableSupplier;
 
     private final Map<String, PageIcon> lastIcons;
+    private final Page parent;
 
-    public PageFiller(final String identifier, final String parent, final BiFunction<BaseGui, P, PageIcon> forEach,
+    public PageFiller(final String identifier, final Page parent, final BiFunction<BaseGui, P, PageIcon> forEach,
                       final BiFunction<BaseGui, Player, Collection<P>> iterableSupplier) {
-        super(identifier, parent, 0);
+        super(identifier, parent.getIdentifier(), 0);
         this.forEach = forEach;
+        this.parent = parent;
         this.iterableSupplier = iterableSupplier;
         this.lastIcons = new HashMap<>();
     }
@@ -33,17 +34,15 @@ public class PageFiller<P> extends Element {
     @Override
     public void fillElement(final BaseGui gui, Player player) {
         super.fillElement(gui, player);
-        gui.findComponent(Component.PAGE, parent).ifPresentOrElse(page -> {
-            lastIcons.clear();
-            Collection<P> result = iterableSupplier.apply(gui, player);
-            if (result != null) {
-                result.stream().map(t -> forEach.apply(gui, t)).filter(i -> i.canDisplay(gui,
-                        player)).forEachOrdered(icon -> {
-                    page.queueIconToPlace(icon.getItem());
-                    lastIcons.put(icon.getIdentifier(), icon);
-                });
-            }
-        }, () -> GuiProvider.log(Level.WARNING, "Could not find page component for identifier " + parent));
+        lastIcons.clear();
+        Collection<P> result = iterableSupplier.apply(gui, player);
+        if (result != null) {
+            result.stream().map(t -> forEach.apply(gui, t)).filter(i -> i.canDisplay(gui,
+                    player)).forEachOrdered(icon -> {
+                parent.queueIconToPlace(icon.getItem());
+                lastIcons.put(icon.getIdentifier(), icon);
+            });
+        }
     }
 
     @Override

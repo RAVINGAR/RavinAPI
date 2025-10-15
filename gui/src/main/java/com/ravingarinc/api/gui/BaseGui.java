@@ -243,7 +243,6 @@ public class BaseGui extends Element implements InventoryHolder {
         }
         interactive.ifPresentOrElse(i -> {
             i.handleClickedItem(this, event, player);
-            // Todo, make it so if any gui actions happen that require a gui update they should do it automatically
             if (requiresRefresh) {
                 fillElement(player);
             }

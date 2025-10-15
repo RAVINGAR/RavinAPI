@@ -33,7 +33,7 @@ public class PlaceableIcon extends Element implements Interactive {
 
     private final boolean removeItemOnPickup;
 
-    private final BiConsumer<@Nullable ItemStack, Player> onChangeItem;
+    private final BiConsumer<@Nullable ItemStack, Player> onChangeItem; // todo change this to an optional wrapped item stack
 
     public PlaceableIcon(final String identifier, final String parent, final int index, final Predicate<ItemStack> validator) {
         this(identifier, parent, index, validator, null);

@@ -34,12 +34,23 @@ public abstract class ActionBuilder<P> {
         builder.accept(this);
     }
 
+    @Deprecated
     public ActionBuilder<P> addChatInputAction(final String description, BiConsumer<Player, String> onResponse) {
         actionsToAdd.add(new ChatInputAction(description, onResponse));
         return this;
     }
 
     public ActionBuilder<P> addChatInputAction(final String description, TriConsumer<BaseGui, Player, String> onResponse) {
+        actionsToAdd.add(new ChatInputAction(description, onResponse));
+        return this;
+    }
+
+    public ActionBuilder<P> addChatInputAction(net.kyori.adventure.text.Component description, TriConsumer<BaseGui, Player, String> onResponse) {
+        actionsToAdd.add(new ChatInputAction(description, onResponse));
+        return this;
+    }
+
+    public ActionBuilder<P> addChatInputAction(Function<BaseGui, net.kyori.adventure.text.Component> description, TriConsumer<BaseGui, Player, String> onResponse) {
         actionsToAdd.add(new ChatInputAction(description, onResponse));
         return this;
     }

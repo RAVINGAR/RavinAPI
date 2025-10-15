@@ -44,7 +44,7 @@ abstract class RavinPluginKotlin : SuspendingJavaPlugin(), RavinPlugin {
             }
             if (module.isLoaded || !module.isRequired) loaded++
         }
-        if (loaded > 1) {
+        if (loaded > 0) {
             if (loaded == modules.size) {
                 info("$name has been enabled successfully!")
             } else {

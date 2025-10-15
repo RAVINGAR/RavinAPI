@@ -51,6 +51,10 @@ public abstract class BaseIcon extends Element implements Interactive {
         this.predicate = predicate;
     }
 
+    public void setPredicate(BiPredicate<BaseGui, Player> predicate) {
+        this.predicate = predicate;
+    }
+
     @Override
     public void addShiftAction(Action action) {
         if (action != null) actions.add(action);
