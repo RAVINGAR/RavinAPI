@@ -127,25 +127,20 @@ public class MenuBuilder implements Builder<Menu> {
         return newBuilder;
     }
 
-    public MenuBuilder staticIcon(final String display, final String lore, final Material material, final int index,
-                                  Consumer<IconBuilder<StaticIcon, MenuBuilder>> builder) {
-        final var icon = addStaticIcon("static_icon_" + lastId++, display, lore, material, index);
-        builder.accept(icon);
-        return this;
+    public IconBuilder<StaticIcon, MenuBuilder> staticIcon(final String display, final String lore, final Material material, final int index) {
+        return addStaticIcon("static_icon_" + lastId++, display, lore, material, index);
     }
 
-    public MenuBuilder staticIcon(final String display, final String lore, final Material material, final Action action, final int index) {
-        addStaticIcon("static_icon_" + lastId++, display, lore, material, action, index);
-        return this;
+    public IconBuilder<StaticIcon, MenuBuilder> staticIcon(final String display, final String lore, final Material material, final Action action, final int index) {
+        return addStaticIcon("static_icon_" + lastId++, display, lore, material, action, index);
     }
 
-    public MenuBuilder staticIcon(final String display, final String lore, final Material material, final BiConsumer<BaseGui, Player> action, final int index) {
-        addStaticIcon("static_icon_" + lastId++, display, lore, material, new RunnableAction(action), index);
-        return this;
+    public IconBuilder<StaticIcon, MenuBuilder> staticIcon(final String display, final String lore, final Material material, final BiConsumer<BaseGui, Player> action, final int index) {
+        return addStaticIcon("static_icon_" + lastId++, display, lore, material, new RunnableAction(action), index);
     }
 
 
-    public MenuBuilder staticIcon(@NotNull final Supplier<String> dynamicDisplay,
+    public IconBuilder<StaticIcon, MenuBuilder> staticIcon(@NotNull final Supplier<String> dynamicDisplay,
                                   @NotNull final Supplier<String> dynamicLore,
                                   @NotNull final Supplier<Material> dynamicMaterial,
                                   @NotNull final Action action,
@@ -154,40 +149,42 @@ public class MenuBuilder implements Builder<Menu> {
                 (i, p) -> dynamicDisplay.get(),
                 (i, p) -> dynamicLore.get(),
                 (i, p) -> dynamicMaterial.get(),
-                index, i -> i.actions(a -> a.addMiscAction(action)));
+                action,
+                index);
     }
 
-    public MenuBuilder staticIcon(@NotNull final Supplier<String> dynamicDisplay,
+    public IconBuilder<StaticIcon, MenuBuilder> staticIcon(@NotNull final Supplier<String> dynamicDisplay,
                                   @NotNull final Supplier<String> dynamicLore,
                                   @NotNull final Supplier<Material> dynamicMaterial,
-                                  final int index, Consumer<IconBuilder<StaticIcon, MenuBuilder>> builder) {
+                                                           final int index) {
         return staticIcon(
                 (i, p) -> dynamicDisplay.get(),
                 (i, p) -> dynamicLore.get(),
                 (i, p) -> dynamicMaterial.get(),
-                index, builder);
+                index);
     }
 
-    public MenuBuilder staticIcon(final BiFunction<Interactive, Player, String> dynamicDisplay,
+    public IconBuilder<StaticIcon, MenuBuilder> staticIcon(final BiFunction<Interactive, Player, String> dynamicDisplay,
                                   final BiFunction<Interactive, Player, String> dynamicLore,
                                   final BiFunction<Interactive, Player, Material> dynamicMaterial,
                                   final Action action,
                                   final int index) {
-        return staticIcon(
+        final var icon = staticIcon(
                 dynamicDisplay,
                 dynamicLore,
                 dynamicMaterial,
-                index, i -> i.actions(a -> a.addMiscAction(action)));
+                index);
+        icon.actions(a -> a.addMiscAction(action));
+        return icon;
     }
 
-    public MenuBuilder staticIcon(final BiFunction<Interactive, Player, String> dynamicDisplay,
+    public IconBuilder<StaticIcon, MenuBuilder> staticIcon(final BiFunction<Interactive, Player, String> dynamicDisplay,
                                   final BiFunction<Interactive, Player, String> dynamicLore,
                                   final BiFunction<Interactive, Player, Material> dynamicMaterial,
-                                  final int index, Consumer<IconBuilder<StaticIcon, MenuBuilder>> builder) {
+                                                           final int index) {
         final var icon = addStaticIcon("static_icon_" + lastId++, "", "", Material.STONE, index);
         icon.addItemUpdater(dynamicDisplay, dynamicLore, dynamicMaterial);
-        builder.accept(icon);
-        return this;
+        return icon;
     }
 
     @Deprecated
